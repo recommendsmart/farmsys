@@ -71,7 +71,8 @@
         "drupal/field_bundle": "^1.0@RC",
         "drupal/access_records": "^1.0@beta",
         "drupal/commerce_demo": "^2.0",
-        "drupal/commerce": "^2.30"
+        "drupal/commerce": "^2.30",
+        "drupal/basket": "^2.0"
     },
     "repositories": [
         {
