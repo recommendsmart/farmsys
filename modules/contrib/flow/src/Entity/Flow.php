@@ -6,6 +6,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\flow\FlowTaskMode;
 use Drupal\flow\Plugin\FlowQualifierCollection;
 use Drupal\flow\Plugin\FlowSubjectCollection;
 use Drupal\flow\Plugin\FlowTaskCollection;
@@ -86,7 +87,7 @@ class Flow extends ConfigEntityBase implements FlowInterface {
    * {@inheritdoc}
    */
   public function label() {
-    return $this->id();
+    return $this->isCustom() ? $this->custom['label'] : (FlowTaskMode::service()->getAvailableTaskModes()[$this->taskMode] ?? $this->id());
   }
 
   /**
@@ -333,6 +334,7 @@ class Flow extends ConfigEntityBase implements FlowInterface {
     \Drupal::service('plugin.manager.flow.subject')->clearCachedDefinitions();
     \Drupal::service('plugin.manager.flow.task')->clearCachedDefinitions();
     \Drupal::service('plugin.manager.flow.qualifier')->clearCachedDefinitions();
+    \Drupal::service('plugin.manager.action')->clearCachedDefinitions();
   }
 
 }

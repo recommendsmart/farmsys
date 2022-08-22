@@ -7,7 +7,7 @@ configure: flow.settings
 dependencies:
   - drupal:serialization
 
-# Information added by Drupal.org packaging script on 2022-08-15
-version: '1.0.0-beta12'
+# Information added by Drupal.org packaging script on 2022-08-22
+version: '1.0.0-beta14'
 project: 'flow'
-datestamp: 1660595373
+datestamp: 1661176020

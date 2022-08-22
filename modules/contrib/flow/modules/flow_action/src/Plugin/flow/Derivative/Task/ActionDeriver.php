@@ -53,6 +53,10 @@ class ActionDeriver extends ContentDeriverBase {
       foreach ($action_definitions as $action_plugin_id => $action_plugin_definition) {
         if (isset($action_plugin_definition['provider'])) {
           $provider = $action_plugin_definition['provider'];
+          if ($provider === 'flow') {
+            // Exclude any action plugin coming from the Flow module itself.
+            continue;
+          }
           if (substr($provider, 0, 5) === 'views') {
             // Exclude any Views Bulk Operations (VBO) as they only make sense
             // to be executed via Views.

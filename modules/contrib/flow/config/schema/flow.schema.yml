@@ -256,6 +256,10 @@ flow.subject.settings.delete:
   type: mapping
   label: 'Content being deleted settings'
 
+flow.subject.settings.action:
+  type: mapping
+  label: 'Action on content settings'
+
 flow.qualifier.settings.congruent:
   type: mapping
   label: 'Congruent content settings'
@@ -293,3 +297,15 @@ flow.qualifier.settings.token:
     comparison:
       type: string
       label: 'Comparison'
+
+flow.qualifier.settings.always:
+  type: mapping
+  label: 'Always qualified content settings'
+  mapping:
+    qualified:
+      type: string
+      label: 'Qualified'
+
+action.configuration.flow:*.*:
+  type: action_configuration_default
+  label: 'Flow action'

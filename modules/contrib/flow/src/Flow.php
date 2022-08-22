@@ -12,6 +12,7 @@ use Drupal\flow\Event\FlowRuntimeContext;
 use Drupal\flow\Exception\TaskRecursionException;
 use Drupal\flow\Helpers\EventDispatcherTrait;
 use Drupal\flow\Plugin\flow\Subject\Qualified;
+use Drupal\flow\Plugin\FlowSubjectCollection;
 
 /**
  * Engine for applying configured flow.
@@ -169,11 +170,31 @@ class Flow {
     if (self::isActive() && $flow->getStatus()) {
       $queue = FlowTaskQueue::service();
 
+      $prepare_subject = static function (Entity $flow, FlowSubjectCollection $subjects, $i) {
+        /** @var \Drupal\flow\Plugin\FlowSubjectInterface $subject */
+        $subject = $subjects->get($i);
+
+        // Custom flow includes a mechanic for qualified subjects. Therefore
+        // prepare qualifying subjects according to this configuration.
+        if ($subject instanceof Qualified) {
+          $qualifiers = $flow->getQualifiers(self::$filter);
+          /** @var \Drupal\flow\Plugin\FlowSubjectInterface $qualifying */
+          foreach ($flow->getQualifyingSubjects(self::$filter) as $k => $qualifying) {
+            $qualifier = $qualifiers->get($k);
+            if (($subject->getEntityTypeId() === $qualifying->getEntityTypeId()) && ($subject->getEntityBundle() === $qualifying->getEntityBundle())) {
+              $subject->addQualifying($qualifying, $qualifier);
+            }
+          }
+        }
+
+        return $subject;
+      };
+
       // Add the tasks with their according subjects.
       $tasks = $flow->getTasks(self::$filter);
       $subjects = $flow->getSubjects(self::$filter);
       foreach ($tasks as $i => $task) {
-        $subject = $subjects->get($i);
+        $subject = $prepare_subject($flow, $subjects, $i);
         $item = new FlowTaskQueueItem($entity, $task_mode, $task, $subject);
         $queue->add($item);
         $runtime_context->addTaskQueueItem($item);
@@ -189,22 +210,7 @@ class Flow {
           $tasks = $custom_flow->getTasks(self::$filter);
           $subjects = $custom_flow->getSubjects(self::$filter);
           foreach ($tasks as $i => $task) {
-            /** @var \Drupal\flow\Plugin\FlowSubjectInterface $subject */
-            $subject = $subjects->get($i);
-
-            // Custom flow includes a mechanic for qualified subjects. Therefore
-            // prepare qualifying subjects according to this configuration.
-            if ($subject instanceof Qualified) {
-              $qualifiers = $custom_flow->getQualifiers(self::$filter);
-              /** @var \Drupal\flow\Plugin\FlowSubjectInterface $qualifying */
-              foreach ($custom_flow->getQualifyingSubjects(self::$filter) as $k => $qualifying) {
-                $qualifier = $qualifiers->get($k);
-                if (($subject->getEntityTypeId() === $qualifying->getEntityTypeId()) && ($subject->getEntityBundle() === $qualifying->getEntityBundle())) {
-                  $subject->addQualifying($qualifying, $qualifier);
-                }
-              }
-            }
-
+            $subject = $prepare_subject($flow, $subjects, $i);
             $item = new FlowTaskQueueItem($entity, $task_mode, $task, $subject);
             $queue->add($item);
             $runtime_context->addTaskQueueItem($item);

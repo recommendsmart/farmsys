@@ -5623,17 +5623,17 @@
         },
         {
             "name": "drupal/flow",
-            "version": "1.0.0-beta12",
+            "version": "1.0.0-beta14",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/flow.git",
-                "reference": "1.0.0-beta12"
+                "reference": "1.0.0-beta14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/flow-1.0.0-beta12.zip",
-                "reference": "1.0.0-beta12",
-                "shasum": "e4cc916a6bf46ee1b02f38babe756e7bb1e4eda9"
+                "url": "https://ftp.drupal.org/files/projects/flow-1.0.0-beta14.zip",
+                "reference": "1.0.0-beta14",
+                "shasum": "a3bb20e92e956f698f5d9e5e4f868fe8d028d9ee"
             },
             "require": {
                 "drupal/core": "^9 || ^10",
@@ -5645,8 +5645,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "1.0.0-beta12",
-                    "datestamp": "1660595371",
+                    "version": "1.0.0-beta14",
+                    "datestamp": "1661176017",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Beta releases are not covered by Drupal security advisories."
