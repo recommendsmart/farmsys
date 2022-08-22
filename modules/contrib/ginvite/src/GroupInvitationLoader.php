@@ -103,7 +103,8 @@ class GroupInvitationLoader implements GroupInvitationLoaderInterface {
     if (!isset($account)) {
       $account = $this->currentUser;
     }
-    if ($account->isAnonymous()) {
+
+    if ($account->isAnonymous() || !$account->getEmail()) {
       return [];
     }
 

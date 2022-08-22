@@ -5,6 +5,29 @@
  * Install, update and uninstall functions for the ginvite module.
  */
 
+use Drupal\field\Entity\FieldConfig;
+use Drupal\ginvite\Plugin\GroupContentEnabler\GroupInvitation;
+
+/**
+ * Update group_invitations configuration schema invitation_status.
+ */
+function ginvite_update_8002() {
+  $fields = \Drupal::entityTypeManager()->getStorage('field_config')->loadByProperties(['field_name' => 'invitation_status']);
+  if (empty($fields)) {
+    return;
+  }
+  foreach ($fields as $field) {
+    $new_field = $field->toArray();
+    $new_field['default_value'] = [
+      'value' => GroupInvitation::INVITATION_PENDING,
+    ];
+    $new_field = FieldConfig::create($new_field);
+    $new_field->original = $field;
+    $new_field->enforceIsNew(FALSE);
+    $new_field->save();
+  }
+}
+
 /**
  * Update group_invitations view to use the new cache group permissions context.
  */

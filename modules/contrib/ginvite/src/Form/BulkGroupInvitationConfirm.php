@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Class BulkGroupInvitationConfirm.
+ * Bulk operations related with invitation entity.
  */
 class BulkGroupInvitationConfirm extends ConfirmFormBase implements ContainerInjectionInterface {
 
@@ -106,7 +106,7 @@ class BulkGroupInvitationConfirm extends ConfirmFormBase implements ContainerInj
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to send a invitation to all e-mails listed bellow?');
+    return $this->t('Are you sure you want to send an invitation to all e-mails listed below?');
   }
 
   /**
@@ -149,7 +149,10 @@ class BulkGroupInvitationConfirm extends ConfirmFormBase implements ContainerInj
         'invitee_mail' => $email,
         'entity_id' => 0,
       ];
-      $batch['operations'][] = ['\Drupal\ginvite\Form\BulkGroupInvitationConfirm::batchCreateInvite', [$values]];
+      $batch['operations'][] = [
+        '\Drupal\ginvite\Form\BulkGroupInvitationConfirm::batchCreateInvite',
+        [$values],
+      ];
     }
 
     batch_set($batch);

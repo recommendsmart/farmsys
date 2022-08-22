@@ -6,7 +6,7 @@ use Drupal\ginvite\GroupInvitation;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Class UserRegisteredFromInvitationEvent.
+ * Event related with user registered invitation.
  *
  * @package Drupal\ginvite\Event
  */
@@ -33,6 +33,7 @@ class UserRegisteredFromInvitationEvent extends Event {
 
   /**
    * Get the group invitation.
+   *
    * @return \Drupal\ginvite\GroupInvitation
    *   The group invitation.
    */

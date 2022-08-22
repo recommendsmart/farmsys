@@ -120,6 +120,13 @@ function _data_policy_user_register_form_submit(array &$form, FormStateInterface
   /** @var \Drupal\data_policy\DataPolicyConsentManager $data_policy_manager */
   $data_policy_manager = \Drupal::service('data_policy.manager');
   $values = $form_state->getValue('data_policy');
+
+  // @todo Need to find the real reason why the empty value comes. $values
+  //   should not be empty.
+  if (empty($values)) {
+    return;
+  }
+
   $result = [];
 
   foreach ($values as $name => $value) {

@@ -49,10 +49,6 @@ Selecting the same day in a date between filter returns no results
 Source: https://www.drupal.org/files/issues/2020-07-06/2842409-15.patch
 
 
-Empty language (langcode) field wrapper inserted into contact form
-Source: https://www.drupal.org/files/issues/2022-01-29/empty-langcode-field-wrapper-2842405-23.patch
-
-
 Broken title in modal dialog when title is a render array
 Source: https://www.drupal.org/files/issues/2019-10-21/2663316-76.drupal.Broken-title-in-modal-dialog-when-title-is-a-render-array.patch
 

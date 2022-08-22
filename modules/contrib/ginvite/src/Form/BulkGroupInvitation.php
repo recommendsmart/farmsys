@@ -16,7 +16,7 @@ use Drupal\group\GroupMembershipLoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class BulkGroupInvitation.
+ * Bulk operations related with invitation entity.
  */
 class BulkGroupInvitation extends FormBase implements ContainerInjectionInterface {
 
@@ -159,7 +159,10 @@ class BulkGroupInvitation extends FormBase implements ContainerInjectionInterfac
    *   The current state of the form.
    */
   public function cancelForm(array &$form, FormStateInterface $form_state) {
-    $form_state->setRedirect('entity.group.canonical', ['group' => $this->group->id(), []]);
+    $form_state->setRedirect('entity.group.canonical', [
+      'group' => $this->group->id(),
+      [],
+    ]);
   }
 
   /**
@@ -305,11 +308,29 @@ class BulkGroupInvitation extends FormBase implements ContainerInjectionInterfac
         $error_message .= "<li>{$invalid_email} on line {$line}</li>";
       }
       $error_message .= '</ul>';
-      $form_state->setErrorByName('email_address', $this->formatPlural($count, $message_singular, $message_plural, ['@error_message' => new FormattableMarkup($error_message, [])]));
+      $form_state->setErrorByName('email_address',
+        $this->formatPlural(
+          $count,
+          $message_singular,
+          $message_plural,
+          [
+            '@error_message' => new FormattableMarkup($error_message, []),
+          ]
+        )
+      );
     }
     elseif ($count == 1) {
       $error_message = reset($invalid_emails);
-      $form_state->setErrorByName('email_address', $this->formatPlural($count, $message_singular, $message_plural, ['@error_message' => $error_message]));
+      $form_state->setErrorByName('email_address',
+        $this->formatPlural(
+          $count,
+          $message_singular,
+          $message_plural,
+          [
+            '@error_message' => $error_message,
+          ]
+        )
+      );
     }
   }
 

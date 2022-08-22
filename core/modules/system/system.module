@@ -9,15 +9,12 @@ use Drupal\Component\FileSecurity\FileSecurity;
 use Drupal\Component\Gettext\PoItem;
 use Drupal\Component\Render\PlainTextOutput;
 use Drupal\Component\Utility\UrlHelper;
-use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Asset\AttachedAssetsInterface;
 use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\ContentEntityTypeInterface;
 use Drupal\Core\Extension\Extension;
-use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\File\Exception\FileException;
 use Drupal\Core\File\Exception\InvalidStreamWrapperException;
 use Drupal\Core\File\FileSystemInterface;
@@ -1399,17 +1396,4 @@ function system_file_download($uri) {
       ];
     }
   }
-}
-
-/**
- * Implements hook_entity_field_access().
- */
-function system_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
-  if ($items) {
-    $entity_type = $items->getEntity()->getEntityType();
-    if ($entity_type->hasKey('langcode') && $entity_type->getKey('langcode') === $field_definition->getName()) {
-      return AccessResult::forbidden();
-    }
-  }
-  return AccessResult::neutral();
 }

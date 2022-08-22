@@ -210,7 +210,7 @@ class DataPolicyConsentManager implements DataPolicyConsentManagerInterface {
             break;
           }
         }
-        if (empty($existing_states)) {
+        if (empty($existing_states) || count($existing_states) != count($values)) {
           $is_equals = FALSE;
         }
 

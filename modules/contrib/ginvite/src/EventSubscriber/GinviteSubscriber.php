@@ -11,7 +11,6 @@ use Drupal\ginvite\GroupInvitationLoader;
 use Drupal\ginvite\Event\UserRegisteredFromInvitationEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -62,7 +61,6 @@ class GinviteSubscriber implements EventSubscriberInterface {
    *   The messenger service.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger factory service.
-   *
    */
   public function __construct(GroupInvitationLoader $invitation_loader, AccountInterface $current_user, MessengerInterface $messenger, LoggerChannelFactoryInterface $logger_factory) {
     $this->groupInvitationLoader = $invitation_loader;
@@ -106,12 +104,12 @@ class GinviteSubscriber implements EventSubscriberInterface {
   public function unblockInvitedUsers(UserRegisteredFromInvitationEvent $event) {
     $invitation = $event->getGroupInvitation();
     $plugin_configuration = $invitation->getGroup()->getGroupType()->getContentPlugin('group_invitation')->getConfiguration();
-    if ($plugin_configuration['unblock_invitees']){
+    if ($plugin_configuration['unblock_invitees']) {
       $invited_user = $invitation->getUser();
       $invited_user->activate();
       $invited_user->save();
-      $this->messenger->addMessage($this->t("User %user unblocked as it comes from an invitation", ["%user" => $invited_user->getUserName()]));
-      $this->loggerFactory->get('ginvite')->notice($this->t("User %user unblocked as it comes from an invitation", ["%user" => $invited_user->getUserName()]));
+      $this->messenger->addMessage($this->t("User %user unblocked as it comes from an invitation", ["%user" => $invited_user->getDisplayName()]));
+      $this->loggerFactory->get('ginvite')->notice($this->t("User %user unblocked as it comes from an invitation", ["%user" => $invited_user->getDisplayName()]));
     }
   }
 

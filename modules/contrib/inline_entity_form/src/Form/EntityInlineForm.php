@@ -11,7 +11,6 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Field\WidgetBase;
-use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Render\Element;
@@ -186,15 +185,7 @@ class EntityInlineForm implements InlineFormInterface {
       // Hide the non-translatable fields.
       foreach ($entity->getFieldDefinitions() as $field_name => $definition) {
         if (isset($entity_form[$field_name]) && $field_name != $langcode_key) {
-          // Reference fields (paragraphs and other entity reference) may be
-          // untranslatable in parent entity, but the referenced entity may be
-          // translatable. So 'entity_reference' fields should be displayed
-          // here for allow for nested inline entity forms to appear.
-          $is_reference_field =
-            is_a($definition->getItemDefinition()->getClass(), EntityReferenceItem::class, TRUE) &&
-            $this->entityTypeManager->getDefinition($definition->getSetting('target_type'))->get('translatable');
-
-          $entity_form[$field_name]['#access'] = $is_reference_field || $definition->isTranslatable();
+          $entity_form[$field_name]['#access'] = $definition->isTranslatable();
         }
       }
     }

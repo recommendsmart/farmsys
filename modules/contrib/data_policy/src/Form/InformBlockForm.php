@@ -80,8 +80,8 @@ class InformBlockForm extends EntityForm {
     $form['summary'] = [
       '#type' => 'text_format',
       '#title' => $this->t('Summary'),
-      '#default_value' => $informblock->summary['value'],
-      '#format' => $informblock->summary['format'],
+      '#default_value' => $informblock->summary['value'] ?? '',
+      '#format' => $informblock->summary['format'] ?? NULL,
       '#required' => TRUE,
       '#description' => $this->t('Summarise what data is collected.'),
     ];
@@ -89,8 +89,8 @@ class InformBlockForm extends EntityForm {
     $form['body'] = [
       '#type' => 'text_format',
       '#title' => $this->t('Description'),
-      '#default_value' => $informblock->body['value'],
-      '#format' => $informblock->body['format'],
+      '#default_value' => $informblock->body['value'] ?? '',
+      '#format' => $informblock->body['format'] ?? NULL,
       '#required' => FALSE,
       '#description' => $this->t('Describe in detail what data is collected and how it is used.'),
     ];

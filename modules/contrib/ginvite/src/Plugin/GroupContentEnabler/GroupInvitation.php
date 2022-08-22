@@ -2,8 +2,7 @@
 
 namespace Drupal\ginvite\Plugin\GroupContentEnabler;
 
-use Drupal\Core\Entity\Entity\EntityFormDisplay;
-use Drupal\Core\Entity\Entity\EntityViewDisplay;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\group\Entity\GroupInterface;
@@ -13,6 +12,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Access\GroupAccessResult;
 use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a content enabler for invitations.
@@ -25,9 +25,12 @@ use Drupal\Core\Url;
  *   pretty_path_key = "invitee",
  *   reference_label = @Translation("Invitee"),
  *   reference_description = @Translation("Invited user."),
+ *   handlers = {
+ *     "permission_provider" = "Drupal\ginvite\Plugin\GroupInvitationPermissionProvider",
+ *   },
  * )
  */
-class GroupInvitation extends GroupContentEnablerBase {
+class GroupInvitation extends GroupContentEnablerBase implements ContainerFactoryPluginInterface {
 
   /**
    * Invitation created and waiting for user's response.
@@ -45,16 +48,52 @@ class GroupInvitation extends GroupContentEnablerBase {
   const INVITATION_REJECTED = 2;
 
   /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $currentUser;
+
+  /**
+   * The current user.
+   *
+   * @var \Drupal\Core\ProxyClass\Config\ConfigInstaller
+   */
+  protected $configInstaller;
+
+  /**
+   * Entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $static = new static($configuration, $plugin_id, $plugin_definition);
+
+    $static->currentUser = $container->get('current_user');
+    $static->configInstaller = $container->get('config.installer');
+    $static->entityTypeManager = $container->get('entity_type.manager');
+
+    return $static;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getGroupOperations(GroupInterface $group) {
-    $account = \Drupal::currentUser();
     $operations = [];
 
-    if ($group->hasPermission('invite users to group', $account)) {
+    if ($group->hasPermission('invite users to group', $this->currentUser)) {
       $operations['invite-user'] = [
         'title' => $this->t('Invite user'),
-        'url' => new Url('entity.group_content.add_form', ['group' => $group->id(), 'plugin_id' => 'group_invitation']),
+        'url' => new Url('entity.group_content.add_form', [
+          'group' => $group->id(),
+          'plugin_id' => 'group_invitation',
+        ]),
         'weight' => 0,
       ];
     }
@@ -65,32 +104,8 @@ class GroupInvitation extends GroupContentEnablerBase {
   /**
    * {@inheritdoc}
    */
-  public function getGroupContentPermissions() {
-    $permissions["invite users to group"] = [
-      'title' => "Invite users to group",
-      'description' => 'Allows users with permissions to invite new users to group.',
-    ];
-    $permissions["view group invitations"] = [
-      'title' => "View group invitations",
-      'description' => 'Allows users with permissions view created invitations.',
-    ];
-    $permissions["delete own invitations"] = [
-      'title' => "Delete own invitations",
-      'description' => 'Allows users with permissions to delete own invitations to group.',
-    ];
-    $permissions["delete any invitation"] = [
-      'title' => "Delete any invitation",
-      'description' => 'Allows users with permissions to delete any invitation to group.',
-    ];
-
-    return $permissions;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function createAccess(GroupInterface $group, AccountInterface $account) {
-    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "invite users to group");
+    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, 'invite users to group');
   }
 
   /**
@@ -98,7 +113,7 @@ class GroupInvitation extends GroupContentEnablerBase {
    */
   protected function viewAccess(GroupContentInterface $group_content, AccountInterface $account) {
     $group = $group_content->getGroup();
-    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "view group invitations");
+    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, 'view group invitations');
   }
 
   /**
@@ -118,10 +133,10 @@ class GroupInvitation extends GroupContentEnablerBase {
 
     // Allow members to delete their own group content.
     if ($group_content->getOwnerId() == $account->id()) {
-      return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "delete own invitations");
+      return GroupAccessResult::allowedIfHasGroupPermission($group, $account, 'delete own invitations');
     }
 
-    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "delete any invitation");
+    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, 'delete any invitation');
   }
 
   /**
@@ -142,6 +157,11 @@ class GroupInvitation extends GroupContentEnablerBase {
     $body_message_existing_user .= 'Kind regards,' . "\n";
     $body_message_existing_user .= 'The [site:name] team';
 
+    $body_message_cancel = 'Hi there!' . "\n\n";
+    $body_message_cancel .= 'Your invitation to the group [group:title] on [site:name] has been cancelled' . "\n";
+    $body_message_cancel .= 'Kind regards,' . "\n";
+    $body_message_cancel .= 'The [site:name] team';
+
     return [
       'group_cardinality' => 0,
       'entity_cardinality' => 0,
@@ -152,6 +172,9 @@ class GroupInvitation extends GroupContentEnablerBase {
       'existing_user_invitation_subject' => 'You have a pending group invitation',
       'existing_user_invitation_body' => $body_message_existing_user,
       'send_email_existing_users' => 0,
+      'cancel_user_invitation_subject' => 'Your invitation is no longer available',
+      'cancel_user_invitation_body' => $body_message_cancel,
+      'send_cancel_email' => FALSE,
       'invitation_bypass_form' => FALSE,
     ];
   }
@@ -160,7 +183,7 @@ class GroupInvitation extends GroupContentEnablerBase {
    * {@inheritdoc}
    */
   public function postInstall() {
-    if (!\Drupal::isConfigSyncing()) {
+    if (!$this->configInstaller->isSyncing()) {
       $group_content_type_id = $this->getContentTypeConfigId();
 
       // Add the group_roles field to the newly added group content type. The
@@ -193,15 +216,21 @@ class GroupInvitation extends GroupContentEnablerBase {
         'bundle' => $group_content_type_id,
         'label' => $this->t('Invitation status'),
         'required' => TRUE,
-        'default_value' => self::INVITATION_PENDING,
+        'default_value' => [
+          [
+            'value' => self::INVITATION_PENDING,
+          ],
+        ],
       ])->save();
 
       // Build the 'default' display ID for both the entity form and view mode.
       $default_display_id = "group_content.$group_content_type_id.default";
 
+      $entity_form_display_storage = $this->entityTypeManager->getStorage('entity_form_display');
+
       // Build or retrieve the 'default' form mode.
-      if (!$form_display = EntityFormDisplay::load($default_display_id)) {
-        $form_display = EntityFormDisplay::create([
+      if (!$form_display = $entity_form_display_storage->load($default_display_id)) {
+        $form_display = $entity_form_display_storage->create([
           'targetEntityType' => 'group_content',
           'bundle' => $group_content_type_id,
           'mode' => 'default',
@@ -209,9 +238,10 @@ class GroupInvitation extends GroupContentEnablerBase {
         ]);
       }
 
+      $entity_view_display_storage = $this->entityTypeManager->getStorage('entity_view_display');
       // Build or retrieve the 'default' view mode.
-      if (!$view_display = EntityViewDisplay::load($default_display_id)) {
-        $view_display = EntityViewDisplay::create([
+      if (!$view_display = $entity_view_display_storage->load($default_display_id)) {
+        $view_display = $entity_view_display_storage->create([
           'targetEntityType' => 'group_content',
           'bundle' => $group_content_type_id,
           'mode' => 'default',
@@ -274,7 +304,7 @@ class GroupInvitation extends GroupContentEnablerBase {
       '#type' => 'checkbox',
       '#title' => $this->t('Unblock registered users coming from an invitation'),
       '#default_value' => $this->getConfiguration()['unblock_invitees'],
-      '#disabled' => !\Drupal::currentUser()->hasPermission('administer account settings')
+      '#disabled' => !$this->currentUser->hasPermission('administer account settings'),
     ];
 
     $form['invitation_bypass_form'] = [
@@ -282,6 +312,13 @@ class GroupInvitation extends GroupContentEnablerBase {
       '#title' => $this->t('Accept invitations immediately'),
       '#description' => $this->t('When accepting an invitation, the group membership entity form will be rendered. Enabling this option will bypass this step and the membership will be generated immediately. This is especially useful if your membership entity provides no configuration at all and the invitation accept route renders an empty form with a single submit button.'),
       '#default_value' => $this->getConfiguration()['invitation_bypass_form'],
+    ];
+
+    $form['invitation_expire'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Expire invites'),
+      '#default_value' => !empty($this->getConfiguration()['invitation_expire']) ? $this->getConfiguration()['invitation_expire'] : '',
+      '#description' => $this->t('Automatically remove open invites after the specified days. If left empty invites will not expire.'),
     ];
 
     // Invitation Email Configuration.
@@ -331,6 +368,29 @@ class GroupInvitation extends GroupContentEnablerBase {
       '#default_value' => $this->getConfiguration()['send_email_existing_users'],
     ];
 
+    $form['cancel_user_invitation_email'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Invitation cancelled notification'),
+      '#group' => 'invitation_email_config',
+    ];
+    $form['cancel_user_invitation_email']['cancel_user_invitation_subject'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Subject'),
+      '#default_value' => $this->getConfiguration()['cancel_user_invitation_subject'],
+      '#maxlength' => 180,
+    ];
+    $form['cancel_user_invitation_email']['cancel_user_invitation_body'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Body'),
+      '#default_value' => $this->getConfiguration()['cancel_user_invitation_body'],
+      '#rows' => 15,
+    ];
+    $form['cancel_user_invitation_email']['send_cancel_email'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Send notification when an invitation is cancelled'),
+      '#default_value' => $this->getConfiguration()['send_cancel_email'],
+    ];
+
     $form['token_help'] = [
       '#theme' => 'token_tree_link',
       '#token_types' => ['group', 'user', 'group_content'],
@@ -343,13 +403,17 @@ class GroupInvitation extends GroupContentEnablerBase {
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-    $this->configuration['unblock_invitees'] = \Drupal::currentUser()->hasPermission('administer account settings') ? $form_state->getValue('unblock_invitees') : 0;
+    $this->configuration['unblock_invitees'] = $this->currentUser->hasPermission('administer account settings') ? $form_state->getValue('unblock_invitees') : 0;
+    $this->configuration['invitation_expire'] = $form_state->getValue('invitation_expire');
     $this->configuration['invitation_subject'] = $form_state->getValue('invitation_subject');
     $this->configuration['invitation_body'] = $form_state->getValue('invitation_body');
     $this->configuration['existing_user_invitation_subject'] = $form_state->getValue('existing_user_invitation_subject');
     $this->configuration['existing_user_invitation_body'] = $form_state->getValue('existing_user_invitation_body');
     $this->configuration['send_email_existing_users'] = $form_state->getValue('send_email_existing_users');
     $this->configuration['invitation_bypass_form'] = $form_state->getValue('invitation_bypass_form');
+    $this->configuration['cancel_user_invitation_subject'] = $form_state->getValue('cancel_user_invitation_subject');
+    $this->configuration['cancel_user_invitation_body'] = $form_state->getValue('cancel_user_invitation_body');
+    $this->configuration['send_cancel_email'] = $form_state->getValue('send_cancel_email');
   }
 
 }
