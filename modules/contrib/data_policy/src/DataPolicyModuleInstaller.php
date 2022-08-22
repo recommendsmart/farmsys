@@ -8,9 +8,10 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Extension\ModuleInstaller;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Update\UpdateHookRegistry;
 
 /**
- * Class DataPolicyModuleInstaller.
+ * Class to handle the module installation and uninstallation.
  *
  * @package Drupal\data_policy
  */
@@ -41,13 +42,15 @@ class DataPolicyModuleInstaller extends ModuleInstaller {
    *   The drupal kernel.
    * @param \Drupal\Core\Database\Connection $connection
    *   The database connection.
+   * @param \Drupal\Core\Update\UpdateHookRegistry|null $update_registry
+   *   (Optional) The update registry service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
    */
-  public function __construct($root, ModuleHandlerInterface $module_handler, DrupalKernelInterface $kernel, Connection $connection, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config_factory) {
-    parent::__construct($root, $module_handler, $kernel, $connection);
+  public function __construct($root, ModuleHandlerInterface $module_handler, DrupalKernelInterface $kernel, Connection $connection, UpdateHookRegistry $update_registry, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config_factory) {
+    parent::__construct($root, $module_handler, $kernel, $connection, $update_registry);
 
     $this->storage = $entity_type_manager->getStorage('data_policy');
 

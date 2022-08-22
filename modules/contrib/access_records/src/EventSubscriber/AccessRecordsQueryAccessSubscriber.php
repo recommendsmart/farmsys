@@ -70,6 +70,15 @@ class AccessRecordsQueryAccessSubscriber implements EventSubscriberInterface {
       if ($query = $this->accessRecordQueryBuilder->selectByType($ar_type, $subject_id, $operation)) {
         $queries[] = $query;
       }
+      else {
+        // When the query could not be built, it is because the according type
+        // configuration is either incomplete or invalid. Therefore we revoke
+        // access overall and make the result uncacheable until it's fixed.
+        $conditions->alwaysFalse(TRUE);
+        $conditions->mergeCacheMaxAge(0);
+        \Drupal::logger('access_records')->alert(sprintf("The configuration of access record type '%s' is incomplete or invalid. Access on '%s' entity types is blocked until that configuration is fixed.", $ar_type->id(), $target_type_id));
+        return;
+      }
     }
     if (empty($queries)) {
       return;

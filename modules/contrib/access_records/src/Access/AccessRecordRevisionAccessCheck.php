@@ -170,7 +170,7 @@ class AccessRecordRevisionAccessCheck implements AccessInterface {
     if ($entity_type->isTranslatable()) {
       $count->condition($entity_type->getKey('default_langcode'), 1);
     }
-    return $count->execute();
+    return $count->accessCheck(FALSE)->execute();
   }
 
 }

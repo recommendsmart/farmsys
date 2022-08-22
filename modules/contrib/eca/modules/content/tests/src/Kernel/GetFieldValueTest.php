@@ -64,6 +64,44 @@ class GetFieldValueTest extends KernelTestBase {
       'entity_type' => 'node',
       'bundle' => 'article',
     ])->save();
+
+    // Create a single-value entity reference field.
+    $field_storage = FieldStorageConfig::create([
+      'field_name' => 'field_content',
+      'type' => 'entity_reference',
+      'entity_type' => 'node',
+      'settings' => [
+        'target_type' => 'node',
+      ],
+      'module' => 'core',
+      'cardinality' => 1,
+    ]);
+    $field_storage->save();
+    FieldConfig::create([
+      'label' => 'A single-value node reference.',
+      'entity_type' => 'node',
+      'bundle' => 'article',
+      'field_storage' => $field_storage,
+    ])->save();
+
+    // Create a multi-value entity reference field.
+    $field_storage = FieldStorageConfig::create([
+      'field_name' => 'field_content_multi',
+      'type' => 'entity_reference',
+      'entity_type' => 'node',
+      'settings' => [
+        'target_type' => 'node',
+      ],
+      'module' => 'core',
+      'cardinality' => FieldStorageConfig::CARDINALITY_UNLIMITED,
+    ]);
+    $field_storage->save();
+    FieldConfig::create([
+      'label' => 'A multi-value node reference.',
+      'entity_type' => 'node',
+      'bundle' => 'article',
+      'field_storage' => $field_storage,
+    ])->save();
   }
 
   /**
@@ -140,7 +178,49 @@ class GetFieldValueTest extends KernelTestBase {
       'field_name' => 'field_string_multi.value',
     ]);
     $action->execute($node);
-    $this->assertEquals($string, $token_services->replaceClear('[a_root_token]'), "By default the first item will be used.");
+    $this->assertEquals($string, $token_services->replaceClear('[a_root_token:0]'), "Multi-value list must contain all values.");
+    $this->assertEquals($string . '2', $token_services->replaceClear('[a_root_token:1]'), "Multi-value list must contain all values.");
+    $this->assertEquals($string . '3', $token_services->replaceClear('[a_root_token:2]'), "Multi-value list must contain all values.");
+
+    /** @var \Drupal\eca_content\Plugin\Action\GetFieldValue $action */
+    $action = $action_manager->createInstance('eca_get_field_value', [
+      'token_name' => 'another_token:multi',
+      'field_name' => 'field_string_multi',
+    ]);
+    $action->execute($node);
+    $this->assertEquals($string, $token_services->replaceClear('[another_token:multi:0]'), "Multi-value list must contain all values.");
+    $this->assertEquals($string . '2', $token_services->replaceClear('[another_token:multi:1]'), "Multi-value list must contain all values.");
+    $this->assertEquals($string . '3', $token_services->replaceClear('[another_token:multi:2]'), "Multi-value list must contain all values.");
+
+    $node2 = Node::create([
+      'type' => 'article',
+      'uid' => 1,
+      'title' => '123',
+      'field_content' => $node,
+    ]);
+    $node2->save();
+    /** @var \Drupal\eca_content\Plugin\Action\GetFieldValue $action */
+    $action = $action_manager->createInstance('eca_get_field_value', [
+      'token_name' => 'ref_token:single',
+      'field_name' => 'field_content',
+    ]);
+    $action->execute($node2);
+    $this->assertEquals($node->id(), $token_services->replaceClear('[ref_token:single:nid]'));
+
+    $node3 = Node::create([
+      'type' => 'article',
+      'uid' => 1,
+      'title' => '123',
+      'field_content_multi' => [$node],
+    ]);
+    $node3->save();
+    /** @var \Drupal\eca_content\Plugin\Action\GetFieldValue $action */
+    $action = $action_manager->createInstance('eca_get_field_value', [
+      'token_name' => 'ref_token:multi',
+      'field_name' => 'field_content_multi',
+    ]);
+    $action->execute($node3);
+    $this->assertEquals($node->id(), $token_services->replaceClear('[ref_token:multi:0:nid]'));
 
     $account_switcher->switchBack();
   }

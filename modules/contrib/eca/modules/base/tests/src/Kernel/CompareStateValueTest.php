@@ -19,6 +19,7 @@ class CompareStateValueTest extends KernelTestBase {
    */
   protected static $modules = [
     'system',
+    'user',
     'eca',
     'eca_base',
   ];
@@ -42,6 +43,7 @@ class CompareStateValueTest extends KernelTestBase {
    */
   public function setUp(): void {
     parent::setUp();
+    $this->installEntitySchema('user');
     $this->installConfig(static::$modules);
     $this->conditionManager = \Drupal::service('plugin.manager.eca.condition');
     $this->state = \Drupal::service('eca.state');

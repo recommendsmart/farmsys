@@ -1,7 +1,0 @@
-digital_signage_custom_platform.settings:
-  path: '/admin/config/services/digital_signage_framework/custom_platform'
-  defaults:
-    _title: 'Custom Platform'
-    _form: 'Drupal\digital_signage_custom_platform\Form\Settings'
-  requirements:
-    _permission: 'administer digital signage custom platform'

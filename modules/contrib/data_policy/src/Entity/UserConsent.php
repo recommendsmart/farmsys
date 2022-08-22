@@ -191,7 +191,9 @@ class UserConsent extends ContentEntityBase implements UserConsentInterface {
 
   /**
    * Override of the default label() function to return a human-friendly name.
-   * @return \Drupal\Component\Render\MarkupInterface|mixed|string|null
+   *
+   * @return \Drupal\Component\Render\MarkupInterface|string
+   *   Return user display name.
    */
   public function label() {
     $user = $this->getOwner();

@@ -1,5 +1,0 @@
-digital_signage_example.settings:
-  title: Example
-  route_name: digital_signage_example.settings
-  base_route: digital_signage_framework.settings
-  weight: 10

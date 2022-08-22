@@ -183,13 +183,16 @@ class Modellers {
       ->set('conditions', [])
       ->set('actions', []);
     $modeller->readComponents($config);
-    if (!$modeller->hasError()) {
-      // Only save model if reading its components succeeded without errors.
-      $config->save();
-      $config->getModel()
-        ->setData($modeller)
-        ->save();
+    if ($modeller->hasError()) {
+      // If the model contains error(s), don't save it and do not ask for a
+      // page relead, because that would cause data loss.
+      return FALSE;
     }
+    // Only save model if reading its components succeeded without errors.
+    $config->save();
+    $config->getModel()
+      ->setData($modeller)
+      ->save();
     return $requiresReload;
   }
 

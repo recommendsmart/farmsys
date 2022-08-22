@@ -230,4 +230,52 @@ class FieldFallbackNodeTest extends BrowserTestBase {
     $this->assertSession()->elementTextContains('css', '.field--name-field-secondary', 'Test value');
   }
 
+  /**
+   * Test that the fallback field doesn't exceed the configured cardinality.
+   */
+  public function testCardinalityFieldValue() {
+    // Set an unlimited cardinality for the primary field.
+    $this->drupalGet('admin/structure/types/manage/page/fields/node.page.field_primary/storage');
+    $this->submitForm(['cardinality' => -1], 'Save field settings');
+
+    // Allow max. 3 values for the secondary field.
+    $this->drupalGet('admin/structure/types/manage/page/fields/node.page.field_secondary/storage');
+    $this->submitForm(['cardinality_number' => 3], 'Save field settings');
+
+    $node = $this->drupalCreateNode([
+      'title' => $this->randomMachineName(),
+      'field_primary' => [
+        'first_value',
+        'second_value',
+        'third_value',
+      ],
+    ]);
+
+    // Check that the 3 values are shown.
+    $this->drupalGet($node->toUrl());
+    $this->assertSession()->elementTextContains('css', '.field--name-field-secondary', 'first_value');
+    $this->assertSession()->elementTextContains('css', '.field--name-field-secondary', 'second_value');
+    $this->assertSession()->elementTextContains('css', '.field--name-field-secondary', 'third_value');
+
+    // Update the cardinality to 2.
+    $this->drupalGet('admin/structure/types/manage/page/fields/node.page.field_secondary/storage');
+    $this->submitForm(['cardinality_number' => 2], 'Save field settings');
+
+    // Check that only the first 2 values are shown.
+    $this->drupalGet($node->toUrl());
+    $this->assertSession()->elementTextContains('css', '.field--name-field-secondary', 'first_value');
+    $this->assertSession()->elementTextContains('css', '.field--name-field-secondary', 'second_value');
+    $this->assertSession()->elementTextNotContains('css', '.field--name-field-secondary', 'third_value');
+
+    // Update the cardinality to 1.
+    $this->drupalGet('admin/structure/types/manage/page/fields/node.page.field_secondary/storage');
+    $this->submitForm(['cardinality_number' => 1], 'Save field settings');
+
+    // Check that only the first value is shown.
+    $this->drupalGet($node->toUrl());
+    $this->assertSession()->elementTextContains('css', '.field--name-field-secondary', 'first_value');
+    $this->assertSession()->elementTextNotContains('css', '.field--name-field-secondary', 'second_value');
+    $this->assertSession()->elementTextNotContains('css', '.field--name-field-secondary', 'third_value');
+  }
+
 }

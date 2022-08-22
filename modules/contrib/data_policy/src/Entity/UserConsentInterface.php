@@ -100,7 +100,10 @@ interface UserConsentInterface extends ContentEntityInterface, EntityChangedInte
   public function setRevision(DataPolicyInterface $data_policy);
 
   /**
+   * Returns the display name of user.
+   *
    * @return string|null
+   *   Name of user.
    */
   public function label();
 

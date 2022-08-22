@@ -7,7 +7,7 @@ dependencies:
   - drupal:content_moderation
   - eca:eca
 
-# Information added by Drupal.org packaging script on 2022-07-13
-version: '1.0.0-rc4'
+# Information added by Drupal.org packaging script on 2022-08-09
+version: '1.0.1'
 project: 'eca'
-datestamp: 1657702152
+datestamp: 1660057036

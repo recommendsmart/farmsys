@@ -8,7 +8,6 @@ use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
-use Drupal\field\FieldConfigInterface;
 
 /**
  * Base class for field fallback converters.
@@ -85,7 +84,7 @@ abstract class FieldFallbackConverterBase extends PluginBase implements FieldFal
   /**
    * {@inheritdoc}
    */
-  public function isApplicable(FieldConfigInterface $target_field, FieldConfigInterface $source_field): bool {
+  public function isApplicable(FieldDefinitionInterface $target_field, FieldDefinitionInterface $source_field): bool {
     return TRUE;
   }
 

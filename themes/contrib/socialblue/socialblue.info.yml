@@ -121,6 +121,6 @@ regions:
   footer: Footer
 
 # Information added by Drupal.org packaging script on 2022-06-21
-version: '2.2.4'
+version: '2.3.0'
 project: 'socialblue'
-datestamp: 1655793812
+datestamp: 1655800091

@@ -11,7 +11,7 @@ services:
     arguments: ['@config_update.config_list', '@config_update.config_update', '@update_helper.config_differ', '@update_helper.config_diff_transformer', '@module_handler', '@serialization.yaml', '@update_helper.config_exporter']
   update_helper.updater:
     class: Drupal\update_helper\Updater
-    arguments: ['@config.factory', '@module_installer', '@config_update.config_update', '@update_helper.config_handler', '@update_helper.logger', '@event_dispatcher']
+    arguments: ['@config.factory', '@module_installer', '@theme_installer', '@config_update.config_update', '@update_helper.config_handler', '@update_helper.logger', '@event_dispatcher', '@config.manager']
   update_helper.config_exporter:
     class: Drupal\update_helper\ConfigExporter
     arguments: ['@config_update.extension_storage', '@config_update.extension_optional_storage', '@serialization.yaml']

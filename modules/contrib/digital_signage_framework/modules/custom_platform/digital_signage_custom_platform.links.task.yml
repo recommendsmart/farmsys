@@ -1,5 +1,0 @@
-digital_signage_custom_platform.settings:
-  title: Custom Platform
-  route_name: digital_signage_custom_platform.settings
-  base_route: digital_signage_framework.settings
-  weight: 10

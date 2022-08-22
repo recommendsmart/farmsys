@@ -128,18 +128,31 @@ function access_records_entity_type_build(array &$entity_types) {
  */
 function access_records_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
   $etm = \Drupal::entityTypeManager();
-  // Target entity types are content entities only, and we can only check
-  // when we have a user entity as subject. Also matching access records can
-  // only be done on persisted targets.
-  if (!($entity instanceof ContentEntityInterface) || $entity->isNew() || !($subject = $etm->getStorage('user')->load($account->id()))) {
+  // Target entity types are content entities only, and matching access records
+  // can only be done on persisted targets.
+  if (!($entity instanceof ContentEntityInterface) || $entity->isNew()) {
     return AccessResult::neutral();
   }
-  /** @var \Drupal\user\UserInterface $subject */
+
   $target = $entity;
   $target_type = $target->getEntityType();
   $cacheability = new CacheableMetadata();
 
-  // Either no configured access record types exist for this type of entity,
+  /** @var \Drupal\user\UserInterface $subject */
+  if (!($subject = $etm->getStorage('user')->load($account->id()))) {
+    // When the subject has no stored entity, one is created on runtime here,
+    // and then lookup whether an access record type exists for the target type.
+    // If so, always revoke access, because matching records may only be valid
+    // for existing user entities.
+    $subject = $etm->getStorage('user')->create([
+      'uid' => $account->id(),
+      'status' => 0,
+      'name' => '',
+    ]);
+    return AccessRecordType::loadForAccessCheck($subject, $target_type->id(), $operation, $cacheability, FALSE) ? AccessResult::forbidden()->addCacheableDependency($cacheability) : AccessResult::neutral()->addCacheableDependency($cacheability);
+  }
+
+  // Either no configured access record type exists for this type of entity,
   // or the user is an admin and thus has access anyway.
   if (AccessRecordType::loadForAccessCheck($subject, $target_type->id(), $operation, $cacheability)) {
     // As we are now aware of existing access record types that belong to this
@@ -149,7 +162,7 @@ function access_records_entity_access(EntityInterface $entity, $operation, Accou
     // Access doesn't care about given account metadata. Sorry!
     $count = 0;
     $account_switched = FALSE;
-    if (\Drupal::currentUser()->id() !== $subject->id()) {
+    if ((string) \Drupal::currentUser()->id() !== (string) $subject->id()) {
       /** @var \Drupal\Core\Session\AccountSwitcherInterface $account_switcher */
       $account_switcher = \Drupal::service('account_switcher');
       $account_switcher->switchTo($subject);
@@ -157,6 +170,8 @@ function access_records_entity_access(EntityInterface $entity, $operation, Accou
     }
     try {
       $query = $etm->getStorage($target_type->id())->getQuery()
+        ->addMetaData('op', $operation)
+        ->accessCheck(TRUE)
         ->condition($target_type->getKey('id'), $target->id());
       if ($target instanceof TranslatableInterface) {
         $query->condition($target_type->getKey('langcode'), $target->language()->getId());
@@ -166,6 +181,7 @@ function access_records_entity_access(EntityInterface $entity, $operation, Accou
         $query->condition($target_type->getKey('revision'), $target->getRevisionId());
       }
       $count = $query->count()
+        ->accessCheck(TRUE)
         ->execute();
     }
     finally {

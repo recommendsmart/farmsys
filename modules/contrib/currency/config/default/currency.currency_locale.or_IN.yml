@@ -1,4 +1,0 @@
-locale: "or_IN"
-pattern: "¤ #,##,##0.00"
-decimalSeparator: "."
-groupingSeparator: ","

@@ -2,6 +2,7 @@
 
 namespace Drupal\Core\Flood;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -17,6 +18,13 @@ class MemoryBackend implements FloodInterface {
   protected $requestStack;
 
   /**
+   * The time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $time;
+
+  /**
    * An array holding flood events, keyed by event name and identifier.
    */
   protected $events = [];
@@ -26,9 +34,15 @@ class MemoryBackend implements FloodInterface {
    *
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   The request stack used to retrieve the current request.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
    */
-  public function __construct(RequestStack $request_stack) {
+  public function __construct(RequestStack $request_stack, TimeInterface $time = NULL) {
     $this->requestStack = $request_stack;
+    if (!$time) {
+      @trigger_error('Calling MemoryBackend::__construct() without the $time argument is deprecated in drupal:9.4.0 and will be required before drupal:10.0.0. See https://www.drupal.org/node/3253739.', E_USER_DEPRECATED);
+    }
+    $this->time = $time ?? \Drupal::time();
   }
 
   /**
@@ -100,7 +114,7 @@ class MemoryBackend implements FloodInterface {
    *   The current time in seconds with microseconds.
    */
   protected function getCurrentMicroTime(): float {
-    return microtime(TRUE);
+    return $this->time->getRequestMicroTime();
   }
 
 }

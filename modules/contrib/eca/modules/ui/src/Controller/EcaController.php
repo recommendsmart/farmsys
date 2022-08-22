@@ -182,9 +182,16 @@ class EcaController extends ControllerBase {
           $editUrl = Url::fromRoute('entity.eca.edit_form', ['eca' => mb_strtolower($modeller->getId())], ['absolute' => TRUE])->toString();
           $response->addCommand(new RedirectCommand($editUrl));
         }
-        $message = new MessageCommand('Successfully saved the model.', NULL, [
-          'type' => 'status',
-        ]);
+        if (!$modeller->hasError()) {
+          $message = new MessageCommand('Successfully saved the model.', NULL, [
+            'type' => 'status',
+          ]);
+        }
+        else {
+          $message = new MessageCommand('Model contains error(s) and can not be saved.', NULL, [
+            'type' => 'error',
+          ]);
+        }
       }
       catch (\Exception $ex) {
         // @todo Log details about the exception.
@@ -204,6 +211,7 @@ class EcaController extends ControllerBase {
         $response->addCommand(new MessageCommand($message, NULL, ['type' => $type], FALSE));
       }
     }
+    $this->messenger()->deleteAll();
     return $response;
   }
 

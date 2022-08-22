@@ -206,6 +206,16 @@ abstract class CheckoutFlowBase extends PluginBase implements CheckoutFlowInterf
   /**
    * {@inheritdoc}
    */
+  public function getStepId($requested_step_id = NULL) {
+    // Customers can't edit orders that have already been placed.
+    if ($this->order->getState()->getId() != 'draft') {
+      return 'complete';
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getSteps() {
     // Each checkout flow plugin defines its own steps.
     // These two steps are always expected to be present.

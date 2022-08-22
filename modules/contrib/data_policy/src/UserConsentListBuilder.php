@@ -67,7 +67,7 @@ class UserConsentListBuilder extends EntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     $owner = $entity->getOwner();
-    /* @var \Drupal\data_policy\Entity\UserConsentInterface $entity */
+    /** @var \Drupal\data_policy\Entity\UserConsentInterface $entity */
     return [
       'id' => $entity->id(),
       'user' => ($owner instanceof UserInterface) ? $owner->getDisplayName() : $this->t('Deleted user'),

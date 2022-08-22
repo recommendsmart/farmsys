@@ -18,7 +18,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }
 
       Object.keys(settings.tableDrag || {}).forEach(function (base) {
-        initTableDrag($(context).find("#".concat(base)).once('tabledrag'), base);
+        initTableDrag($(once('tabledrag', "#".concat(base), context)), base);
       });
     }
   };
@@ -162,7 +162,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     }
 
     this.$toggleWeightButton.html(Drupal.theme('toggleButtonContent', displayWeight));
-    $('table').findOnce('tabledrag').trigger('columnschange', !!displayWeight);
+    $(once.filter('tabledrag', 'table')).trigger('columnschange', !!displayWeight);
   };
 
   Drupal.tableDrag.prototype.toggleColumns = function () {
@@ -177,7 +177,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   };
 
   Drupal.tableDrag.prototype.hideColumns = function () {
-    var $tables = $('table').findOnce('tabledrag');
+    var $tables = $(once.filter('tabledrag', 'table'));
     $tables.find('.tabledrag-hide').css('display', 'none');
     $tables.find('.tabledrag-handle').css('display', '');
     $tables.find('.tabledrag-has-colspan').each(function () {
@@ -186,7 +186,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   };
 
   Drupal.tableDrag.prototype.showColumns = function () {
-    var $tables = $('table').findOnce('tabledrag');
+    var $tables = $(once.filter('tabledrag', 'table'));
     $tables.find('.tabledrag-hide').css('display', '');
     $tables.find('.tabledrag-handle').css('display', 'none');
     $tables.find('.tabledrag-has-colspan').each(function () {
@@ -780,7 +780,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     if (this.indentEnabled) {
       this.indents = $tableRow.find('.js-indentation').length;
       this.children = this.findChildren(addClasses);
-      this.group = $.merge(this.group, this.children);
+      this.group = this.group.concat(this.children);
 
       for (var n = 0; n < this.group.length; n++) {
         this.groupDepth = Math.max($(this.group[n]).find('.js-indentation').length, this.groupDepth);

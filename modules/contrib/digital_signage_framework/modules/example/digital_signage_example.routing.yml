@@ -1,7 +1,0 @@
-digital_signage_example.settings:
-  path: '/admin/config/services/digital_signage_framework/example'
-  defaults:
-    _title: 'Example'
-    _form: 'Drupal\digital_signage_example\Form\Settings'
-  requirements:
-    _permission: 'administer site configuration'

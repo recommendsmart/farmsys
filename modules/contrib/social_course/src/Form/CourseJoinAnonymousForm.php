@@ -2,6 +2,7 @@
 
 namespace Drupal\social_course\Form;
 
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
@@ -17,30 +18,35 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class CourseJoinAnonymousForm extends FormBase {
 
   /**
-   * Group entity.
-   *
-   * @var \Drupal\group\Entity\GroupInterface
+   * The group entity object.
    */
-  protected $group;
+  protected ?GroupInterface $group;
 
   /**
-   * Request stack.
-   *
-   * @var \Symfony\Component\HttpFoundation\RequestStack
+   * The module handler.
    */
-  protected $requestStack;
+  private ModuleHandlerInterface $moduleHandler;
 
   /**
-   * GroupRequestMembershipRejectForm constructor.
+   * CourseJoinAnonymousForm constructor.
    *
    * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation
    *   The string translation.
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   The request stack.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
    */
-  public function __construct(TranslationInterface $string_translation, RequestStack $request_stack) {
-    $this->setStringTranslation($string_translation);
-    $this->requestStack = $request_stack;
+  public function __construct(
+    TranslationInterface $string_translation,
+    RequestStack $request_stack,
+    ModuleHandlerInterface $module_handler
+  ) {
+    $this
+      ->setStringTranslation($string_translation)
+      ->setRequestStack($request_stack);
+
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -49,7 +55,8 @@ class CourseJoinAnonymousForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('string_translation'),
-      $container->get('request_stack')
+      $container->get('request_stack'),
+      $container->get('module_handler'),
     );
   }
 
@@ -63,20 +70,34 @@ class CourseJoinAnonymousForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, GroupInterface $group = NULL) {
-    $this->group = $group;
-
+  public function buildForm(
+    array $form,
+    FormStateInterface $form_state,
+    GroupInterface $group = NULL
+  ) {
     $form['description'] = [
       '#type' => 'html_tag',
       '#tag' => 'p',
       '#value' => $this->t('In order to join a course, please first sign up or log in.'),
     ];
 
-    $previous_url = $this->requestStack->getCurrentRequest()->headers->get('referer');
-    $request = Request::create($previous_url);
-    $referer_path = $request->getRequestUri();
-    $dest = Url::fromRoute('social_group_quickjoin.quickjoin_group', ['group' => $group->id()])->toString();
     $form['actions']['#type'] = 'actions';
+
+    if (($this->group = $group) !== NULL) {
+      $previous_url = $this->getRequest()->headers->get('referer');
+      $request = Request::create($previous_url);
+      $referer_path = $request->getRequestUri();
+
+      if ($this->moduleHandler->moduleExists('social_group_quickjoin')) {
+        $destination = Url::fromRoute(
+          'social_group_quickjoin.quickjoin_group',
+          ['group' => $group->id()],
+        )->toString();
+
+        $referer_path .= '?' . $destination;
+      }
+    }
+
     $form['actions']['sign_up'] = [
       '#type' => 'link',
       '#title' => $this->t('Sign up'),
@@ -88,9 +109,10 @@ class CourseJoinAnonymousForm extends FormBase {
           'waves-btn',
         ],
       ],
-      '#url' => Url::fromRoute('user.register', [
-        'destination' => $referer_path . '?' . $dest,
-      ]),
+      '#url' => Url::fromRoute(
+        'user.register',
+        isset($referer_path) ? ['destination' => $referer_path] : [],
+      ),
     ];
 
     $form['actions']['log_in'] = [
@@ -104,9 +126,10 @@ class CourseJoinAnonymousForm extends FormBase {
           'waves-btn',
         ],
       ],
-      '#url' => Url::fromRoute('user.login', [
-        'destination' => $dest,
-      ]),
+      '#url' => Url::fromRoute(
+        'user.login',
+        isset($destination) ? ['destination' => $destination] : [],
+      ),
     ];
 
     return $form;

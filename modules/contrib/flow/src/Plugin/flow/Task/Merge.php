@@ -20,6 +20,7 @@ use Drupal\flow\Helpers\FormBuilderTrait;
 use Drupal\flow\Helpers\ModuleHandlerTrait;
 use Drupal\flow\Helpers\SingleTaskOperationTrait;
 use Drupal\flow\Helpers\TokenTrait;
+use Drupal\flow\Helpers\UserAccount;
 use Drupal\flow\Plugin\FlowTaskBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -173,7 +174,7 @@ class Merge extends FlowTaskBase implements PluginFormInterface {
       }
       foreach ($comparison_merge_values as $i => $source_value) {
         foreach ($comparison_current_values as $k => $target_value) {
-          if ($source_value === $target_value) {
+          if (($source_value === $target_value) || (is_scalar($source_value) && is_scalar($target_value) && (((string) $source_value === (string) $target_value) || ($source_value === FALSE && $target_value === '0')))) {
             $merge_values[$i] = $current_values[$k];
             continue 2;
           }
@@ -237,6 +238,10 @@ class Merge extends FlowTaskBase implements PluginFormInterface {
         continue;
       }
       $field_options[$field_name] = $this->configuredContentEntity->get($field_name)->getFieldDefinition()->getLabel();
+    }
+
+    if ($entity_type->id() === 'user') {
+      $field_options += UserAccount::getAvailableFields();
     }
 
     $weight += 10;
@@ -348,6 +353,9 @@ class Merge extends FlowTaskBase implements PluginFormInterface {
     $entity_type = $this->configuredContentEntity->getEntityType();
     $form_display = EntityFormDisplay::collectRenderDisplay($this->configuredContentEntity, $this->entityFormDisplay, TRUE);
     $available_fields = array_keys($form_display->getComponents());
+    if ($entity_type->id() === 'user') {
+      $available_fields = array_merge($available_fields, array_keys(UserAccount::getAvailableFields()));
+    }
     $available_fields = array_combine($available_fields, $available_fields);
     $selected_fields_to_merge = isset($this->settings['fields']) ? array_combine($this->settings['fields'], $this->settings['fields']) : [];
     $langcode_key = $entity_type->hasKey('langcode') ? $entity_type->getKey('langcode') : 'langcode';

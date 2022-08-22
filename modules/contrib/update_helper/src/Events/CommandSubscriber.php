@@ -4,7 +4,7 @@ namespace Drupal\update_helper\Events;
 
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\update_helper\Generators\ConfigurationUpdate;
-use DrupalCodeGenerator\Asset;
+use DrupalCodeGenerator\Asset\File;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -51,16 +51,20 @@ class CommandSubscriber implements EventSubscriberInterface {
 
     $module_path = $this->moduleHandler->getModule($vars['module'])
       ->getPath();
-    $update_file = $module_path . '/' . $vars['module'] . '.install';
+    if (strpos($vars['update_name'], 'post_update') === 0) {
+      $update_file = $module_path . '/' . $vars['module'] . '.post_update.php';
+    }
+    else {
+      $update_file = $module_path . '/' . $vars['module'] . '.install';
+    }
 
-    $vars['update_hook_name'] = ConfigurationUpdate::getUpdateFunctionName($vars['module'], $vars['update-n']);
+    $vars['update_hook_name'] = ConfigurationUpdate::getUpdateFunctionName($vars['module'], $vars['update_name']);
     $vars['file_exists'] = file_exists($update_file);
 
     // Add the update hook template.
-    $asset = (new Asset())->type('file')
+    $asset = (new File($update_file))
       ->vars($vars)
-      ->path($update_file)
-      ->action('append')
+      ->appendIfExists()
       ->template('configuration_update_hook.php.twig');
 
     $execute_event->addAsset($asset);

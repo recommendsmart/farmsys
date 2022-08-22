@@ -2,6 +2,7 @@
 
 namespace Drupal\field_fallback_test\Plugin\FieldFallbackConverter;
 
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\field_fallback\Plugin\FieldFallbackConverterBase;
 
@@ -23,6 +24,13 @@ class ConvertStringToAnyValue extends FieldFallbackConverterBase {
    */
   public function convert(FieldItemListInterface $field) {
     return 'test value';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isApplicable(FieldDefinitionInterface $target_field, FieldDefinitionInterface $source_field): bool {
+    return $source_field->getName() !== 'title';
   }
 
 }

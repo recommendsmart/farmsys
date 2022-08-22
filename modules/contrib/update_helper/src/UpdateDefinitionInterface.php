@@ -22,6 +22,11 @@ interface UpdateDefinitionInterface {
   const GLOBAL_ACTION_INSTALL_MODULES = 'install_modules';
 
   /**
+   * Global action key for installing themes.
+   */
+  const GLOBAL_ACTION_INSTALL_THEMES = 'install_themes';
+
+  /**
    * Global action key for importing configurations.
    */
   const GLOBAL_ACTION_IMPORT_CONFIGS = 'import_configs';

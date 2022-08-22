@@ -1,6 +1,0 @@
-expose_actions.confirm:
-  path: '/trigger/{action}/{entity_type}/{entity_id}'
-  defaults:
-    _form: 'Drupal\expose_actions\Form\Confirm'
-  requirements:
-    _custom_access: 'Drupal\expose_actions\Form\Confirm::checkAccess'

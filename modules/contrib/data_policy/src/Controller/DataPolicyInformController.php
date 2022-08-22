@@ -8,7 +8,7 @@ use Drupal\data_policy\Entity\InformBlock;
 use Drupal\data_policy\InformBlockInterface;
 
 /**
- * Class DataPolicyInformController.
+ * Controller class for data_policy.
  *
  * @package Drupal\data_policy\Controller
  */

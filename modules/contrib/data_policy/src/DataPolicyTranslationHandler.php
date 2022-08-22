@@ -23,4 +23,5 @@ class DataPolicyTranslationHandler extends ContentTranslationHandler {
       $form['content_translation']['#access'] = FALSE;
     }
   }
+
 }

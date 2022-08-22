@@ -1,4 +1,0 @@
-locale: "bo_CN"
-pattern: "¤ #,##0.00"
-decimalSeparator: "."
-groupingSeparator: ","

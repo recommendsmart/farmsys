@@ -159,14 +159,11 @@ class FieldBundle extends EditorialContentEntityBase implements FieldBundleInter
    */
   public function getStringRepresentation() {
     $string = '';
-    $module_handler = \Drupal::moduleHandler();
-    $hook = 'field_bundle_get_string_representation';
+    \Drupal::moduleHandler()->invokeAllWith('field_bundle_get_string_representation', function (callable $hook, string $module) use (&$string) {
+      $string = $hook($this, $string);
+    });
 
-    foreach ($module_handler->getImplementations($hook) as $module) {
-      $string = $module_handler->invoke($module, $hook, [$this, $string]);
-    }
-
-    if (empty($string)) {
+    if (trim($string) === '') {
       $string = $this->generateFallbackStringRepresentation();
     }
 

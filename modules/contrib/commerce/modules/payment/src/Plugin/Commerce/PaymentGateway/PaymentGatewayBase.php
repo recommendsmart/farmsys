@@ -220,6 +220,9 @@ abstract class PaymentGatewayBase extends PluginBase implements PaymentGatewayIn
    * {@inheritdoc}
    */
   public function getSupportedModes() {
+    // If modes are not explicitly set on the payment gateway plugin, supported
+    // modes will default to test and live in the payment gateway annotation.
+    // @see \Drupal\commerce_payment\Annotation\CommercePaymentGateway
     return $this->pluginDefinition['modes'];
   }
 

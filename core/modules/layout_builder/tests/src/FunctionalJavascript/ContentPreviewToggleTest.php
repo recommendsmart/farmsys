@@ -125,8 +125,10 @@ class ContentPreviewToggleTest extends WebDriverTestBase {
 
   /**
    * Checks if contextual links are working properly.
+   *
+   * @internal
    */
-  protected function assertContextualLinks() {
+  protected function assertContextualLinks(): void {
     $page = $this->getSession()->getPage();
     $assert_session = $this->assertSession();
 
@@ -143,8 +145,10 @@ class ContentPreviewToggleTest extends WebDriverTestBase {
    *
    * @param string[] $items
    *   An ordered list of strings that should appear in the blocks.
+   *
+   * @internal
    */
-  protected function assertOrderInPage(array $items) {
+  protected function assertOrderInPage(array $items): void {
     $session = $this->getSession();
     $page = $session->getPage();
     $blocks = $page->findAll('css', '[data-layout-content-preview-placeholder-label]');

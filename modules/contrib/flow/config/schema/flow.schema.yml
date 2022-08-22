@@ -279,3 +279,17 @@ flow.qualifier.settings.congruent:
         multi:
           type: string
           label: 'Congruency on multi-value fields'
+
+flow.qualifier.settings.token:
+  type: mapping
+  label: 'Token matching content settings'
+  mapping:
+    left:
+      type: string
+      label: 'Left value'
+    right:
+      type: string
+      label: 'Right value'
+    comparison:
+      type: string
+      label: 'Comparison'

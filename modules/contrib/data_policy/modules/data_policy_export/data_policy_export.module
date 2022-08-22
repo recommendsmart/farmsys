@@ -20,7 +20,7 @@ function data_policy_export_file_download($uri) {
   $query->condition('uri', $uri);
   $fid = $query->execute();
 
-  /* @var \Drupal\file\FileInterface $file */
+  /** @var \Drupal\file\FileInterface $file */
   $file = File::load(reset($fid));
 
   $access = FALSE;

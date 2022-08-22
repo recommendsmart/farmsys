@@ -99,8 +99,11 @@ class DependencyCalculation {
    *   The ECA configuration entity to calculate dependencies for.
    * @param array &$dependencies
    *   Current array of dependencies where new dependencies will be added to.
+   * @param array &$scanned_ids
+   *   An internal list of already scanned components, keyed by component ID.
+   *   This list is mainly used to prevent infinite recursion.
    */
-  protected function addDependenciesFromComponent(array $component, array &$entity_field_info, Eca $eca, array &$dependencies): void {
+  protected function addDependenciesFromComponent(array $component, array &$entity_field_info, Eca $eca, array &$dependencies, array &$scanned_ids = []): void {
     $plugin_id_parts = !empty($component['plugin']) ? explode(':', $component['plugin']) : [];
     foreach ($plugin_id_parts as $id_part) {
       $this->addEntityFieldInfo($id_part, $entity_field_info);
@@ -110,14 +113,15 @@ class DependencyCalculation {
     }
     if (!empty($component['successors'])) {
       foreach ($component['successors'] as $successor) {
-        if (empty($successor['id'])) {
+        if (!isset($successor['id']) || $successor['id'] === '' || isset($scanned_ids[$successor['id']])) {
           continue;
         }
         $successor_id = $successor['id'];
         foreach (['events', 'conditions', 'actions', 'gateways'] as $prop) {
           $components = $eca->get($prop) ?? [];
           if (isset($components[$successor_id])) {
-            $this->addDependenciesFromComponent($components[$successor_id], $entity_field_info, $eca, $dependencies);
+            $scanned_ids[$successor_id] = 1;
+            $this->addDependenciesFromComponent($components[$successor_id], $entity_field_info, $eca, $dependencies, $scanned_ids);
             break;
           }
         }

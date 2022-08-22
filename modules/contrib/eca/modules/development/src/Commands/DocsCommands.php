@@ -121,6 +121,7 @@ class DocsCommands extends DrushCommands {
    * @command eca:doc:plugins
    */
   public function plugins(): void {
+    @$this->fileSystem->mkdir('../mkdocs/include/modules', NULL, TRUE);
     @$this->fileSystem->mkdir('../mkdocs/include/plugins', NULL, TRUE);
 
     foreach ($this->modellerServices->events() as $event) {
@@ -223,6 +224,9 @@ class DocsCommands extends DrushCommands {
       // Initialize TOC for a new provider.
       $values['toc'][$values['provider_name']]['placeholder'] = $values['provider_path'] . '/index.md';
       file_put_contents('../mkdocs/docs/' . $values['provider_path'] . '/index.md', $this->render(__DIR__ . '/../../templates/docs/provider.md.twig', $values));
+      if (!file_exists('../mkdocs/include/modules/' . $values['provider'] . '.md')) {
+        file_put_contents('../mkdocs/include/modules/' . $values['provider'] . '.md', '');
+      }
     }
     $values['toc'][$values['provider_name']][ucfirst($values['type']) . 's'][(string) $values['label']] = $filename;
   }

@@ -7,7 +7,7 @@ use Drupal\Core\DependencyInjection\ServiceProviderBase;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Class DataPolicyServiceProvider.
+ * Alters the container class.
  *
  * @package Drupal\data_policy
  */

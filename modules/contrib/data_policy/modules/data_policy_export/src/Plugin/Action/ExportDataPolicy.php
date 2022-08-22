@@ -20,6 +20,7 @@ use Drupal\csv_serialization\Encoder\CsvEncoder;
 use League\Csv\Writer;
 use Drupal\Core\Link;
 use Drupal\data_policy_export\Plugin\DataPolicyExportPluginManager;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Exports data policies to CSV.
@@ -33,6 +34,7 @@ use Drupal\data_policy_export\Plugin\DataPolicyExportPluginManager;
  */
 class ExportDataPolicy extends ViewsBulkOperationsActionBase implements ContainerFactoryPluginInterface, PluginFormInterface {
   use MessengerTrait;
+  use StringTranslationTrait;
 
   /**
    * The Data Policy export plugin manager.
@@ -198,9 +200,9 @@ class ExportDataPolicy extends ViewsBulkOperationsActionBase implements Containe
    */
   public function getStateName($state_id) {
     $options = [
-      UserConsentInterface::STATE_UNDECIDED => t('Undecided'),
-      UserConsentInterface::STATE_NOT_AGREE => t('Not agree'),
-      UserConsentInterface::STATE_AGREE => t('Agree'),
+      UserConsentInterface::STATE_UNDECIDED => $this->t('Undecided'),
+      UserConsentInterface::STATE_NOT_AGREE => $this->t('Not agree'),
+      UserConsentInterface::STATE_AGREE => $this->t('Agree'),
     ];
 
     return $options[$state_id];
@@ -218,7 +220,7 @@ class ExportDataPolicy extends ViewsBulkOperationsActionBase implements Containe
    */
   public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
     /** @var \Drupal\data_policy\Entity\DataPolicyInterface $object */
-    // TODO Check for export access instead.
+    // @todo Check for export access instead.
     return $object->access('view', $account, $return_as_object);
   }
 
@@ -232,8 +234,9 @@ class ExportDataPolicy extends ViewsBulkOperationsActionBase implements Containe
   /**
    * Returns the directory that forms the base for this exports file output.
    *
-   * This method wraps FileSystemInterface::getTempDirectory() to give inheriting classes the
-   * ability to use a different file system than the temporary file system.
+   * This method wraps FileSystemInterface::getTempDirectory() to give
+   * inheriting classes the ability to use a different file system than the
+   * temporary file system.
    * This was previously possible but was changed in #3075818.
    *
    * @return string

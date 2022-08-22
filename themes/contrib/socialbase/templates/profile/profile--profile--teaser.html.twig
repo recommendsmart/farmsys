@@ -93,7 +93,7 @@
 
     <div class="card__actionbar">
       {% block card_actionbar %}
-        {% if content.flag_follow_user %}
+        {% if content.flag_follow_user and following_enabled %}
           {{ content.flag_follow_user }}
         {% endif %}
 

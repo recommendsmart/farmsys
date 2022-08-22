@@ -1,3 +1,0 @@
-services:
-  digital_signage_computed_content.render.view:
-    class: Drupal\digital_signage_computed_content\RenderView

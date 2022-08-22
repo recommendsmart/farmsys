@@ -8,7 +8,6 @@ use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
-use Drupal\field\FieldConfigInterface;
 
 /**
  * Interface for field fallback converter plugins.
@@ -75,14 +74,14 @@ interface FieldFallbackConverterInterface extends PluginInspectionInterface, Con
   /**
    * Method that checks if the converter is applicable for the given fields.
    *
-   * @param \Drupal\field\FieldConfigInterface $target_field
+   * @param \Drupal\Core\Field\FieldDefinitionInterface $target_field
    *   The target field.
-   * @param \Drupal\field\FieldConfigInterface $source_field
+   * @param \Drupal\Core\Field\FieldDefinitionInterface $source_field
    *   The source field.
    *
    * @return bool
    *   A boolean indicating whether the converter is available.
    */
-  public function isApplicable(FieldConfigInterface $target_field, FieldConfigInterface $source_field): bool;
+  public function isApplicable(FieldDefinitionInterface $target_field, FieldDefinitionInterface $source_field): bool;
 
 }

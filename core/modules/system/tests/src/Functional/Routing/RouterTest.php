@@ -5,6 +5,7 @@ namespace Drupal\Tests\system\Functional\Routing;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\EventSubscriber\MainContentViewSubscriber;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\router_test\TestControllers;
 use Drupal\Tests\BrowserTestBase;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Drupal\Core\Url;
@@ -34,10 +35,11 @@ class RouterTest extends BrowserTestBase {
   public function testFinishResponseSubscriber() {
     $renderer_required_cache_contexts = ['languages:' . LanguageInterface::TYPE_INTERFACE, 'theme', 'user.permissions'];
     $expected_cache_contexts = Cache::mergeContexts($renderer_required_cache_contexts, ['url.query_args:' . MainContentViewSubscriber::WRAPPER_FORMAT]);
+    sort($expected_cache_contexts);
 
     // Confirm that the router can get to a controller.
     $this->drupalGet('router_test/test1');
-    $this->assertSession()->pageTextContains('test1');
+    $this->assertSession()->pageTextContains(TestControllers::LONG_TEXT);
     $session = $this->getSession();
 
     // Check expected headers from FinishResponseSubscriber.
@@ -45,7 +47,9 @@ class RouterTest extends BrowserTestBase {
     $this->assertSession()->responseHeaderEquals('Content-language', 'en');
     $this->assertSession()->responseHeaderEquals('X-Content-Type-Options', 'nosniff');
     $this->assertSession()->responseHeaderEquals('X-Frame-Options', 'SAMEORIGIN');
-    $this->assertSession()->responseHeaderDoesNotExist('Vary');
+    if (strcasecmp($session->getResponseHeader('vary'), 'accept-encoding') !== 0) {
+      $this->assertSession()->responseHeaderDoesNotExist('Vary');
+    }
 
     $this->drupalGet('router_test/test2');
     $this->assertSession()->pageTextContains('test2');
@@ -65,12 +69,19 @@ class RouterTest extends BrowserTestBase {
     // X-Drupal-Cache-Contexts and X-Drupal-Cache-Tags headers.
     // 1. controller result: render array, globally cacheable route access.
     $this->drupalGet('router_test/test18');
-    $this->assertSession()->responseHeaderEquals('X-Drupal-Cache-Contexts', implode(' ', Cache::mergeContexts($renderer_required_cache_contexts, ['url'])));
+    $expected_cache_contexts = Cache::mergeContexts($renderer_required_cache_contexts, ['url']);
+    sort($expected_cache_contexts);
+    $this->assertSession()->responseHeaderEquals('X-Drupal-Cache-Contexts', implode(' ', $expected_cache_contexts));
     $this->assertSession()->responseHeaderEquals('X-Drupal-Cache-Tags', 'config:user.role.anonymous foo http_response rendered');
     $this->assertSession()->responseHeaderEquals('X-Drupal-Cache-Max-Age', '60');
     // 2. controller result: render array, per-role cacheable route access.
     $this->drupalGet('router_test/test19');
-    $this->assertSession()->responseHeaderEquals('X-Drupal-Cache-Contexts', implode(' ', Cache::mergeContexts($renderer_required_cache_contexts, ['url', 'user.roles'])));
+    $expected_cache_contexts = Cache::mergeContexts($renderer_required_cache_contexts, [
+      'url',
+      'user.roles',
+    ]);
+    sort($expected_cache_contexts);
+    $this->assertSession()->responseHeaderEquals('X-Drupal-Cache-Contexts', implode(' ', $expected_cache_contexts));
     $this->assertSession()->responseHeaderEquals('X-Drupal-Cache-Tags', 'config:user.role.anonymous foo http_response rendered');
     // 3. controller result: Response object, globally cacheable route access.
     $this->drupalGet('router_test/test1');

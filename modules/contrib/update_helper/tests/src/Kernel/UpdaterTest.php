@@ -4,6 +4,7 @@ namespace Drupal\Tests\update_helper\Kernel;
 
 use Drupal\Core\Serialization\Yaml;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 
 /**
  * @covers \Drupal\update_helper\Updater
@@ -13,6 +14,7 @@ use Drupal\KernelTests\KernelTestBase;
  * @package Drupal\Tests\update_helper\Kernel
  */
 class UpdaterTest extends KernelTestBase {
+  use ContentTypeCreationTrait;
 
   /**
    * Config directory path.
@@ -27,6 +29,13 @@ class UpdaterTest extends KernelTestBase {
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
   protected $moduleHandler = NULL;
+
+  /**
+   * Theme handler service.
+   *
+   * @var \Drupal\Core\Extension\ThemeHandlerInterface
+   */
+  protected $themeHandler;
 
   /**
    * Following configurations will be manipulated during testing.
@@ -66,6 +75,9 @@ class UpdaterTest extends KernelTestBase {
         'install_modules' => [
           'help',
         ],
+        'install_themes' => [
+          'seven',
+        ],
         'import_configs' => [
           'tour.tour.tour-update-helper-test',
         ],
@@ -77,7 +89,6 @@ class UpdaterTest extends KernelTestBase {
             'max_length' => 123,
           ],
           'status' => FALSE,
-          'type' => 'text',
         ],
         'update_actions' => [
           'add' => [
@@ -86,7 +97,6 @@ class UpdaterTest extends KernelTestBase {
           'change' => [
             'settings' => [],
             'status' => TRUE,
-            'type' => 'text_with_summary',
           ],
           'delete' => [
             'lost_config' => 'text',
@@ -131,10 +141,11 @@ class UpdaterTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->moduleHandler = \Drupal::moduleHandler();
+    $this->themeHandler = \Drupal::service('theme_handler');
     $module_dir = $this->moduleHandler->getModule('update_helper_test')->getPath();
     mkdir($module_dir . '/config/install', 0755, TRUE);
     // Prepare config file for testing of configuration import.
@@ -180,6 +191,7 @@ class UpdaterTest extends KernelTestBase {
         ],
       ]
     ));
+    $this->installEntitySchema('node');
   }
 
   /**
@@ -198,7 +210,6 @@ class UpdaterTest extends KernelTestBase {
 
     $config_data = $config->get();
     $config_data['status'] = FALSE;
-    $config_data['type'] = 'text';
     unset($config_data['cardinality']);
     $config_data['settings'] = ['max_length' => 123];
     $config_data['lost_config'] = 'text';
@@ -209,6 +220,7 @@ class UpdaterTest extends KernelTestBase {
     $update_helper = \Drupal::service('update_helper.updater');
 
     $this->assertFalse($this->moduleHandler->moduleExists('help'), 'Module "help" should not be installed.');
+    $this->assertFalse($this->themeHandler->themeExists('seven'), 'Theme "seven" should not be installed.');
 
     // Create some configuration file for tour, so that it can be imported.
     $this->assertEquals(NULL, $config_factory->get('tour.tour.tour-update-helper-test')->get('id'), 'Tour configuration should not exist.');
@@ -218,8 +230,9 @@ class UpdaterTest extends KernelTestBase {
 
     $update_helper->executeUpdate('update_helper_test', 'test_updater');
 
-    $this->assertEquals($expected_config_data, $config_factory->get('field.storage.node.body')->get());
+    $this->assertEquals($expected_config_data, $this->container->get('config.factory')->get('field.storage.node.body')->get());
     $this->assertTrue($this->moduleHandler->moduleExists('help'), 'Module "help" should be installed.');
+    $this->assertTrue($this->themeHandler->themeExists('seven'), 'Theme "seven" should be installed.');
     $this->assertEquals('tour-update-helper-test', $this->container->get('config.factory')->get('tour.tour.tour-update-helper-test')->get('id'), 'Tour configuration should exist.');
   }
 
@@ -248,6 +261,49 @@ class UpdaterTest extends KernelTestBase {
     // Execute update and validate new state.
     $update_helper->executeUpdate('update_helper_test', 'test_updater_only_delete');
     $this->assertEquals($expected_config_data, $this->config('field.storage.node.body')->get());
+  }
+
+  public function testConfigurationDependencies() {
+    // Create an article content type this will add the body field to it.
+    $this->installConfig(['node']);
+    $this->createContentType(['type' => 'article']);
+
+    // An entity display exists with dependencies on user and text.
+    $this->assertEquals(['text', 'user'], $this->container->get('config.factory')->get('core.entity_view_display.node.article.default')->get('dependencies.module'));
+
+    // Use the updater to remove the body field from the display and ensure the
+    // dependencies are updated.
+    /** @var \Drupal\update_helper\ConfigHandler $config_handler */
+    $config_handler = \Drupal::service('update_helper.config_handler');
+    $patch_file_path = $config_handler->getPatchFile('update_helper_test', 'test_updater_dependencies', TRUE);
+    file_put_contents($patch_file_path, Yaml::encode(
+      [
+        'core.entity_view_display.node.article.default' => [
+          'expected_config' => [],
+          'update_actions' => [
+            'delete' => [
+              'content' => [
+                'body' => [
+                  'type' => 'text_default',
+                  'label' => 'hidden',
+                  'settings' => [],
+                  'third_party_settings' => [],
+                  'weight' => 101,
+                  'region' => 'content',
+                ],
+              ],
+            ],
+          ],
+        ],
+      ]
+    ));
+
+    /** @var \Drupal\update_helper\Updater $update_helper */
+    $update_helper = \Drupal::service('update_helper.updater');
+    $update_helper->executeUpdate('update_helper_test', 'test_updater_dependencies');
+
+    // An entity display exists with dependencies only on user.
+    $this->assertEquals(['user'], $this->container->get('config.factory')->get('core.entity_view_display.node.article.default')->get('dependencies.module'));
   }
 
 }

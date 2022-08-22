@@ -1,4 +1,0 @@
-locale: "ps_AF"
-pattern: "#,##0.00 ¤"
-decimalSeparator: "٫"
-groupingSeparator: "٬"

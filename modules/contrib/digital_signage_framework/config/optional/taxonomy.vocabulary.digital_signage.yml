@@ -1,7 +1,0 @@
-langcode: en
-status: true
-dependencies: {  }
-name: 'Digital Signage'
-vid: digital_signage
-description: 'Defines segments for digital signage devices'
-weight: 0

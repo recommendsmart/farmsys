@@ -3,9 +3,12 @@
 namespace Drupal\field_fallback\Form;
 
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Config\Entity\ThirdPartySettingsInterface;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
@@ -20,6 +23,13 @@ class FieldFallbackFieldConfigForm {
 
   use DependencySerializationTrait;
   use StringTranslationTrait;
+
+  /**
+   * The entity field manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
 
   /**
    * The field config storage.
@@ -38,6 +48,8 @@ class FieldFallbackFieldConfigForm {
   /**
    * FieldConfigForm constructor.
    *
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   *   The entity field manager service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    * @param \Drupal\field_fallback\Plugin\FieldFallbackConverterManagerInterface $field_fallback_converter_manager
@@ -46,7 +58,8 @@ class FieldFallbackFieldConfigForm {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, FieldFallbackConverterManagerInterface $field_fallback_converter_manager) {
+  public function __construct(EntityFieldManagerInterface $entity_field_manager, EntityTypeManagerInterface $entity_type_manager, FieldFallbackConverterManagerInterface $field_fallback_converter_manager) {
+    $this->entityFieldManager = $entity_field_manager;
     $this->fieldConfigStorage = $entity_type_manager->getStorage('field_config');
     $this->fieldFallbackConverterManager = $field_fallback_converter_manager;
   }
@@ -103,11 +116,9 @@ class FieldFallbackFieldConfigForm {
     $field_value = isset($user_input['third_party_settings']['field_fallback']['field']) ? $user_input['third_party_settings']['field_fallback']['field'] : ($settings['field'] ?? NULL);
 
     if (!empty($field_value)) {
-      $fallback_field = $this->fieldConfigStorage->load($field_config->getTargetEntityTypeId() . '.' . $field_config->getTargetBundle() . '.' . $field_value);
+      $converter_options = $this->buildConverterOptions($field_config, $field_value);
 
-      if ($fallback_field instanceof FieldConfigInterface) {
-        $converter_options = $this->buildConverterOptions($field_config, $fallback_field);
-
+      if (!empty($converter_options)) {
         $default_converter = $settings['converter'] ?? NULL;
         if ($default_converter === NULL) {
           $default_converter = count($converter_options) === 1 ? key($converter_options) : NULL;
@@ -270,6 +281,13 @@ class FieldFallbackFieldConfigForm {
       }
     }
 
+    $base_field_definitions = $this->entityFieldManager->getBaseFieldDefinitions($configured_field->getTargetEntityTypeId());
+    foreach ($base_field_definitions as $base_field_definition) {
+      if (in_array($base_field_definition->getType(), $source_field_types, TRUE) && $this->isFieldConfigApplicable($configured_field, $base_field_definition)) {
+        $options[$base_field_definition->getName()] = $base_field_definition->getLabel();
+      }
+    }
+
     natcasesort($options);
 
     return $options;
@@ -280,13 +298,24 @@ class FieldFallbackFieldConfigForm {
    *
    * @param \Drupal\field\FieldConfigInterface $target_field
    *   The target field.
-   * @param \Drupal\field\FieldConfigInterface $source_field
-   *   The source field on which the value will be based.
+   * @param string $source_field_name
+   *   The name of the source field on which the value will be based.
    *
    * @return array
    *   An option array containing field configs.
    */
-  protected function buildConverterOptions(FieldConfigInterface $target_field, FieldConfigInterface $source_field): array {
+  protected function buildConverterOptions(FieldConfigInterface $target_field, string $source_field_name): array {
+    $source_field = $this->fieldConfigStorage->load($target_field->getTargetEntityTypeId() . '.' . $target_field->getTargetBundle() . '.' . $source_field_name);
+
+    if (!$source_field instanceof FieldConfigInterface) {
+      $base_fields = $this->entityFieldManager->getBaseFieldDefinitions($target_field->getTargetEntityTypeId());
+      $source_field = $base_fields[$source_field_name] ?? NULL;
+    }
+
+    if ($source_field === NULL) {
+      return [];
+    }
+
     $converter_definitions = $this->fieldFallbackConverterManager->getDefinitionsBySourceAndTarget(
         $source_field->getType(),
         $target_field->getType()
@@ -303,30 +332,29 @@ class FieldFallbackFieldConfigForm {
   /**
    * Checks if a field can be configured as a fallback field.
    *
-   * @param \Drupal\field\FieldConfigInterface $configured_field
+   * @param \Drupal\Core\Field\FieldDefinitionInterface $configured_field
    *   The currently configured field.
-   * @param \Drupal\field\FieldConfigInterface $fallback_field
+   * @param \Drupal\Core\Field\FieldDefinitionInterface $fallback_field
    *   The fallback field.
    *
    * @return bool
    *   True, when the field can be configured as a fallback field, else FALSE.
    */
-  protected function isFieldConfigApplicable(FieldConfigInterface $configured_field, FieldConfigInterface $fallback_field): bool {
+  protected function isFieldConfigApplicable(FieldDefinitionInterface $configured_field, FieldDefinitionInterface $fallback_field): bool {
     // Chaining multiple fields is not supported right now.
-    if ($fallback_field->getThirdPartySetting('field_fallback', 'field') !== NULL) {
+    if ($fallback_field instanceof ThirdPartySettingsInterface && $fallback_field->getThirdPartySetting('field_fallback', 'field') !== NULL) {
       return FALSE;
     }
 
     // You can't use the same field as a fallback field.
-    if ($configured_field->id() === $fallback_field->id()) {
+    if ($configured_field->getName() === $fallback_field->getName()) {
       return FALSE;
     }
 
     // When a field has the current field configured as a fallback, you can't
     // use that field as a fallback field, since that would result in an
     // infinite loop.
-    $fallback_field_value = (string) $fallback_field->getThirdPartySetting('field_fallback', 'field');
-    if ($fallback_field_value === $configured_field->getName()) {
+    if ($fallback_field instanceof ThirdPartySettingsInterface && (string) $fallback_field->getThirdPartySetting('field_fallback', 'field') === $configured_field->getName()) {
       return FALSE;
     }
 

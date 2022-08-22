@@ -126,6 +126,31 @@ class FieldFallbackConfigTest extends KernelTestBase {
         ],
       ],
     ])->save();
+
+    // Create a fallback title field.
+    FieldStorageConfig::create([
+      'entity_type' => 'node',
+      'field_name' => 'field_fallback_title',
+      'type' => 'string',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+    ])->save();
+    FieldConfig::create([
+      'entity_type' => 'node',
+      'field_name' => 'field_fallback_title',
+      'bundle' => 'page',
+      'label' => 'Fallback title',
+      'widget' => [
+        'type' => 'text_textfield',
+        'weight' => 0,
+      ],
+      'third_party_settings' => [
+        'field_fallback' => [
+          'field' => 'title',
+          'converter' => 'default',
+        ],
+      ],
+    ])->save();
   }
 
   /**
@@ -149,6 +174,21 @@ class FieldFallbackConfigTest extends KernelTestBase {
       'field' => 'field_primary',
       'converter' => 'default',
     ], $fallback_field);
+  }
+
+  /**
+   * Test the config cleanup when a base field is deleted.
+   */
+  public function testBaseFieldDeletionCleanup() {
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+    $base_fields = \Drupal::service('entity_field.manager')->getBaseFieldDefinitions('node');
+    $update_manager->uninstallFieldStorageDefinition($base_fields['title']);
+
+    // Check that the field was cleared from the config, since it no longer
+    // exists.
+    $fallback_field = $this->config('field.field.node.page.field_fallback_title')
+      ->get('third_party_settings.field_fallback');
+    $this->assertEmpty($fallback_field);
   }
 
 }

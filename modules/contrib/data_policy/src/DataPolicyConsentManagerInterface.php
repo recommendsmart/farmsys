@@ -41,7 +41,7 @@ interface DataPolicyConsentManagerInterface {
    *   - not agree,
    *   - agree.
    */
-  public function saveConsent($user_id, $action = NULL, $values = ['state' => UserConsentInterface::STATE_UNDECIDED]);
+  public function saveConsent($user_id, $action = NULL, array $values = ['state' => UserConsentInterface::STATE_UNDECIDED]);
 
   /**
    * Get existing user consents.

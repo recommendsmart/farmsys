@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class DataPolicyAddForm.
+ * Form for adding data policy.
  *
  * @package Drupal\data_policy\Form
  */

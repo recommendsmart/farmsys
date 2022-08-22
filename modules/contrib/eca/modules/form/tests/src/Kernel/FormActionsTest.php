@@ -3,6 +3,7 @@
 namespace Drupal\Tests\eca_form\Kernel;
 
 use Drupal\Core\Action\ActionManager;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Form\FormState;
 use Drupal\eca\Token\TokenInterface;
@@ -69,6 +70,7 @@ class FormActionsTest extends KernelTestBase {
     $this->installConfig(static::$modules);
     User::create(['uid' => 0, 'name' => 'guest'])->save();
     User::create(['uid' => 1, 'name' => 'admin'])->save();
+    User::create(['uid' => 2, 'name' => 'auth'])->save();
 
     // Create the Article content type with a standard body field.
     /** @var \Drupal\node\NodeTypeInterface $node_type */
@@ -348,7 +350,125 @@ class FormActionsTest extends KernelTestBase {
   }
 
   /**
-   * Tests the action plugin "eca_form_add_optionsfield".
+   * Tests the action plugin "eca_form_add_optionsfield" using checkboxes.
+   */
+  public function testFormAddCheckboxes(): void {
+    $users = [User::load(0), User::load(1), User::load(2)];
+    $this->tokenServices->addTokenData('users', $users);
+
+    /** @var \Drupal\eca_form\Plugin\Action\FormAddOptionsfield $action */
+    $action = $this->actionManager->createInstance('eca_form_add_optionsfield', [
+      'name' => 'mycheckboxes',
+      'type' => 'checkboxes',
+      'multiple' => TRUE,
+      'options' => '[users]',
+      'default_value' => '1',
+      'use_yaml' => FALSE,
+    ]);
+
+    /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher */
+    $event_dispatcher = \Drupal::service('event_dispatcher');
+    $form_builder = \Drupal::formBuilder();
+
+    $access_result = NULL;
+    $form = NULL;
+    $event_dispatcher->addListener(FormEvents::PROCESS, function (FormProcess $event) use (&$access_result, &$form, $action) {
+      $action->setEvent($event);
+      $access_result = $access_result ?? $action->access(NULL);
+      if ($action->access(NULL)) {
+        $action->execute();
+      }
+      $form = $event->getForm();
+    });
+
+    $form_object = \Drupal::entityTypeManager()->getFormObject('node', 'default');
+    $form_object->setEntity(Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(),
+    ]));
+    $form_state = new FormState();
+    $build = $form_builder->buildForm($form_object, $form_state);
+
+    $this->assertTrue($access_result);
+    $this->assertTrue(isset($form['mycheckboxes']));
+    $this->assertEquals('checkboxes', $form['mycheckboxes']['#type']);
+    $this->assertSame([
+      '0' => User::load(0)->label(),
+      '1' => User::load(1)->label(),
+      '2' => User::load(2)->label(),
+    ], $form['mycheckboxes']['#options']);
+
+    /** @var \Drupal\Core\Render\RendererInterface $renderer */
+    $renderer = \Drupal::service('renderer');
+    $rendered = $renderer->renderPlain($build);
+    $this->assertStringContainsString('name="mycheckboxes[0]" value="0"', $rendered);
+    $this->assertStringNotContainsString('name="mycheckboxes[0]" value="0" checked="checked"', $rendered);
+    $this->assertStringContainsString('name="mycheckboxes[1]" value="1" checked="checked"', $rendered);
+    $this->assertStringContainsString('name="mycheckboxes[2]" value="2"', $rendered);
+    $this->assertStringNotContainsString('name="mycheckboxes[2]" value="2" checked="checked"', $rendered);
+  }
+
+  /**
+   * Tests the action plugin "eca_form_add_optionsfield" using checkboxes.
+   *
+   * Default values for the checkboxes are entities.
+   */
+  public function testFormAddCheckboxesDefaultValueEntities(): void {
+    $users = [User::load(0), User::load(1), User::load(2)];
+    $this->tokenServices->addTokenData('users', $users);
+
+    /** @var \Drupal\eca_form\Plugin\Action\FormAddOptionsfield $action */
+    $action = $this->actionManager->createInstance('eca_form_add_optionsfield', [
+      'name' => 'mycheckboxes',
+      'type' => 'checkboxes',
+      'multiple' => TRUE,
+      'options' => '[users]',
+      'default_value' => '[users]',
+      'use_yaml' => FALSE,
+    ]);
+
+    /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher */
+    $event_dispatcher = \Drupal::service('event_dispatcher');
+    $form_builder = \Drupal::formBuilder();
+
+    $access_result = NULL;
+    $form = NULL;
+    $event_dispatcher->addListener(FormEvents::PROCESS, function (FormProcess $event) use (&$access_result, &$form, $action) {
+      $action->setEvent($event);
+      $access_result = $access_result ?? $action->access(NULL);
+      if ($action->access(NULL)) {
+        $action->execute();
+      }
+      $form = $event->getForm();
+    });
+
+    $form_object = \Drupal::entityTypeManager()->getFormObject('node', 'default');
+    $form_object->setEntity(Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(),
+    ]));
+    $form_state = new FormState();
+    $build = $form_builder->buildForm($form_object, $form_state);
+
+    $this->assertTrue($access_result);
+    $this->assertTrue(isset($form['mycheckboxes']));
+    $this->assertEquals('checkboxes', $form['mycheckboxes']['#type']);
+    $this->assertSame([
+      '0' => User::load(0)->label(),
+      '1' => User::load(1)->label(),
+      '2' => User::load(2)->label(),
+    ], $form['mycheckboxes']['#options']);
+
+    /** @var \Drupal\Core\Render\RendererInterface $renderer */
+    $renderer = \Drupal::service('renderer');
+    $rendered = $renderer->renderPlain($build);
+    $this->assertStringContainsString('name="mycheckboxes[0]" value="0" checked="checked"', $rendered);
+    $this->assertStringContainsString('name="mycheckboxes[1]" value="1" checked="checked"', $rendered);
+    $this->assertStringContainsString('name="mycheckboxes[2]" value="2" checked="checked"', $rendered);
+  }
+
+  /**
+   * Tests the action plugin "eca_form_add_submit_button".
    */
   public function testFormAddSubmitButton(): void {
     /** @var \Drupal\eca_form\Plugin\Action\FormAddSubmitButton $action */
@@ -582,6 +702,36 @@ class FormActionsTest extends KernelTestBase {
    * Tests the action plugin "eca_form_field_default_value".
    */
   public function testFormFieldDefaultValue(): void {
+    // Create a reference field.
+    $field_definition = FieldStorageConfig::create([
+      'field_name' => 'field_node_ref',
+      'type' => 'entity_reference',
+      'entity_type' => 'node',
+      'settings' => [
+        'target_type' => 'node',
+      ],
+      'cardinality' => FieldStorageConfig::CARDINALITY_UNLIMITED,
+    ]);
+    $field_definition->save();
+    $field = FieldConfig::create([
+      'field_storage' => $field_definition,
+      'label' => 'A node reference.',
+      'entity_type' => 'node',
+      'bundle' => 'article',
+    ]);
+    $field->save();
+
+    /** @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface $display_repository */
+    $display_repository = \Drupal::service('entity_display.repository');
+    $form_display = $display_repository->getFormDisplay('node', 'article');
+    $form_display->setComponent('field_node_ref', [
+      'type' => 'entity_reference_autocomplete',
+      'settings' => [
+        'match_operator' => 'CONTAINS',
+      ],
+    ]);
+    $form_display->save();
+
     /** @var \Drupal\eca_form\Plugin\Action\FormFieldDefaultValue $action */
     $action = $this->actionManager->createInstance('eca_form_field_default_value', [
       'value' => 'Default title value',
@@ -597,7 +747,7 @@ class FormActionsTest extends KernelTestBase {
 
     $access_result = NULL;
     $form = NULL;
-    $event_dispatcher->addListener(FormEvents::PROCESS, function (FormProcess $event) use (&$access_result, &$form, $action) {
+    $event_dispatcher->addListener(FormEvents::PROCESS, function (FormProcess $event) use (&$access_result, &$form, &$action) {
       $action->setEvent($event);
       $access_result = $access_result ?? $action->access(NULL);
       if ($action->access(NULL)) {
@@ -617,6 +767,68 @@ class FormActionsTest extends KernelTestBase {
     $this->assertTrue($access_result);
     $this->assertTrue(isset($form['title']['widget'][0]['value']['#default_value']));
     $this->assertEquals('Default title value', $form['title']['widget'][0]['value']['#default_value']);
+
+    // Test the entity autocomplete field using the node reference field above.
+    /** @var \Drupal\eca_form\Plugin\Action\FormFieldDefaultValue $action */
+    $action = $this->actionManager->createInstance('eca_form_field_default_value', [
+      'value' => '[node1]',
+      'field_name' => 'field_node_ref',
+      'strip_tags' => FALSE,
+      'trim' => FALSE,
+      'xss_filter' => FALSE,
+    ]);
+
+    $node1 = Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(),
+    ]);
+    $node1->save();
+    $this->tokenServices->addTokenData('node1', $node1);
+
+    $node2 = Node::create([
+      'type' => 'article',
+      'title' => $this->randomMachineName(),
+    ]);
+    $this->tokenServices->addTokenData('node2', $node2);
+
+    $form_object = \Drupal::entityTypeManager()->getFormObject('node', 'default');
+    $form_object->setEntity($node2);
+    $form_state = new FormState();
+    $form_builder->buildForm($form_object, $form_state);
+
+    $this->assertTrue($access_result);
+    $this->assertFalse(isset($form['field_node_ref']['widget'][0]['target_id']['#default_value']), "Anonymous user must not have access to reference to inaccessible items.");
+
+    /** @var \Drupal\Core\Session\AccountSwitcherInterface $account_switcher */
+    $account_switcher = \Drupal::service('account_switcher');
+    $account_switcher->switchTo(User::load(1));
+
+    $form_object = \Drupal::entityTypeManager()->getFormObject('node', 'default');
+    $form_object->setEntity($node2);
+    $form_state = new FormState();
+    $form_builder->buildForm($form_object, $form_state);
+    $this->assertTrue($access_result);
+    $this->assertTrue(isset($form['field_node_ref']['widget'][0]['target_id']['#default_value']) && $form['field_node_ref']['widget'][0]['target_id']['#default_value'] instanceof NodeInterface);
+    $this->assertSame($node1->id(), $form['field_node_ref']['widget'][0]['target_id']['#default_value']->id());
+
+    // Test the datetime field using the "created" base field of the node.
+    /** @var \Drupal\eca_form\Plugin\Action\FormFieldDefaultValue $action */
+    $action = $this->actionManager->createInstance('eca_form_field_default_value', [
+      'value' => '1657884192976',
+      'field_name' => 'created',
+      'strip_tags' => FALSE,
+      'trim' => FALSE,
+      'xss_filter' => FALSE,
+    ]);
+
+    $form_object = \Drupal::entityTypeManager()->getFormObject('node', 'default');
+    $form_object->setEntity($node1);
+    $form_state = new FormState();
+    $form_builder->buildForm($form_object, $form_state);
+
+    $this->assertTrue($access_result);
+    $this->assertTrue(isset($form['created']['widget'][0]['value']['#default_value']) && $form['created']['widget'][0]['value']['#default_value'] instanceof DrupalDateTime);
+    $this->assertSame(1657884192976, $form['created']['widget'][0]['value']['#default_value']->getTimestamp());
   }
 
   /**

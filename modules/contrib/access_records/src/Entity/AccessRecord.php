@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\access_records\AccessRecordInterface;
 use Drupal\access_records\AccessRecordTypeInterface;
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem;
@@ -102,18 +103,25 @@ class AccessRecord extends EditorialContentEntityBase implements AccessRecordInt
       'ar_uid' => static::getDefaultEntityOwner(),
       'ar_changed_uid' => \Drupal::currentUser()->id(),
     ];
-    if (!isset($values['enabled'])) {
-      /** @var \Drupal\access_records\AccessRecordTypeInterface $access_record_type */
-      if (isset($values['ar_type']) && ($access_record_type = \Drupal::entityTypeManager()->getStorage('access_record_type')->load($values['ar_type']))) {
-        $values['ar_enabled'] = $access_record_type->getStatus();
-      }
-      else {
-        $values['ar_enabled'] = FALSE;
-      }
-    }
     if (isset($values['ar_label']) && $values['ar_label'] !== '') {
       // Disable the label pattern when a label is already there.
       $values['label_pattern'] = '';
+    }
+    /** @var \Drupal\access_records\AccessRecordTypeInterface $access_record_type */
+    $access_record_type = isset($values['ar_type']) ? \Drupal::entityTypeManager()->getStorage('access_record_type')->load($values['ar_type']) : NULL;
+    if ($access_record_type) {
+      if (!isset($values['ar_subject_type'])) {
+        $values['ar_subject_type'] = $access_record_type->getSubjectTypeId();
+      }
+      if (!isset($values['ar_target_type'])) {
+        $values['ar_target_type'] = $access_record_type->getTargetTypeId();
+      }
+      if (!isset($values['ar_operation'])) {
+        $values['ar_operation'] = $access_record_type->getOperations();
+      }
+      if (!isset($values['ar_enabled'])) {
+        $values['ar_enabled'] = $access_record_type->getStatus();
+      }
     }
   }
 
@@ -225,19 +233,16 @@ class AccessRecord extends EditorialContentEntityBase implements AccessRecordInt
    */
   public function getStringRepresentation(): string {
     $string = '';
-    $module_handler = \Drupal::moduleHandler();
-    $hook = 'access_record_get_string_representation';
+    \Drupal::moduleHandler()->invokeAllWith('access_record_get_string_representation', function (callable $hook, string $module) use (&$string) {
+      $string = $hook($this, $string);
+    });
 
-    foreach ($module_handler->getImplementations($hook) as $module) {
-      $string = $module_handler->invoke($module, $hook, [$this, $string]);
-    }
-
-    if (empty($string)) {
+    if (trim($string) === '') {
       $string = $this->generateFallbackStringRepresentation();
     }
 
-    if (strlen($string) > 255) {
-      $string = substr($string, 0, 252) . '...';
+    if (mb_strlen($string) > 255) {
+      $string = Unicode::truncate($string, 255, TRUE, TRUE, 20);
     }
 
     return $string;
@@ -267,7 +272,14 @@ class AccessRecord extends EditorialContentEntityBase implements AccessRecordInt
       }
     }
     if (!empty($label_pattern)) {
-      $this->ar_label->value = \Drupal::token()->replace($label_pattern, ['access_record' => $this], ['langcode' => $this->language()->getId()]);
+      $string = (string) \Drupal::token()->replace($label_pattern, ['access_record' => $this], [
+        'langcode' => $this->language()->getId(),
+        'clear' => TRUE,
+      ]);
+      if (mb_strlen($string) > 255) {
+        $string = Unicode::truncate($string, 255, TRUE, TRUE, 20);
+      }
+      $this->ar_label->value = $string;
     }
   }
 
@@ -320,6 +332,11 @@ class AccessRecord extends EditorialContentEntityBase implements AccessRecordInt
 
     $fields['ar_enabled']
       ->setLabel(t('Enabled'))
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'settings' => ['display_label' => TRUE],
+        'weight' => 0,
+      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 

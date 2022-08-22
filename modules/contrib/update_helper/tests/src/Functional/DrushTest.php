@@ -59,8 +59,10 @@ class DrushTest extends BrowserTestBase {
 
   /**
    * Tests `drush generate configuration-update`.
+   *
+   * @dataProvider generatePatchFileFromActiveConfigUsingDrushProvider
    */
-  public function testGeneratePatchFileFromActiveConfigUsingDrush() {
+  public function testGeneratePatchFileFromActiveConfigUsingDrush(string $answers, string $update_file, string $install_file) {
 
     // Copy the node module so we can modify config for testing.
     $file_system = new Filesystem();
@@ -77,25 +79,104 @@ class DrushTest extends BrowserTestBase {
     $configData['lost_config'] = 'text';
 
     $config->setData($configData)->save(TRUE);
-    $optionsExample['answers'] = json_encode([
-      'module' => 'test_node_config',
-      'update-n' => 9001,
-      'description' => 'Some description',
-      'include-modules' => ['test_node_config'],
-      'from-active' => TRUE,
-    ]);
-    $optionsExample['yes'] = NULL;
 
-    $install_file = $this->siteDirectory . '/modules/test_node_config/test_node_config.install';
-    $update_file = $this->siteDirectory . '/modules/test_node_config/config/update/test_node_config_update_9001.yml';
-    $this->assertFileNotExists($install_file);
-    $this->assertFileNotExists($update_file);
+    $install_file = $this->siteDirectory . '/modules/test_node_config/' . $install_file;
+    $update_file = $this->siteDirectory . '/modules/test_node_config/config/update/' . $update_file;
+    $this->assertFileDoesNotExist($install_file);
+    $this->assertFileDoesNotExist($update_file);
 
-    $this->drush('generate', ['configuration-update'], $optionsExample, NULL, NULL, 0, NULL, ['SHELL_INTERACTIVE' => 1]);
-
+    $this->drush('generate', ['config-update'], [], NULL, NULL, 0, "--answer test_node_config $answers --answer 'Some description' --answer test_node_config --answer Yes --yes", ['SHELL_INTERACTIVE' => 1]);
     $this->assertFileExists($install_file);
     $this->assertFileExists($update_file);
     $this->assertEquals(ConfigHandlerTest::getUpdateDefinition(), file_get_contents($update_file));
+    include_once $install_file;
+    $this->assertTrue(function_exists(basename($update_file, '.yml')), basename($update_file, '.yml') . '() function exists');
+  }
+
+  /**
+   * Provider function for testGeneratePatchFileFromActiveConfigUsingDrush().
+   */
+  public function generatePatchFileFromActiveConfigUsingDrushProvider() {
+    return [
+      [
+        '--answer hook_update_N --answer 9001',
+        'test_node_config_update_9001.yml',
+        'test_node_config.install',
+      ],
+      [
+        '--answer post_update --answer test',
+        'test_node_config_post_update_0001_test.yml',
+        'test_node_config.post_update.php',
+      ],
+    ];
+  }
+
+
+  /**
+   * Tests `drush generate configuration-update`.
+   *
+   * @dataProvider generatePatchFileFromActiveConfigUsingDrushExistingUpdatesProvider
+   */
+  public function testGeneratePatchFileFromActiveConfigUsingDrushExistingUpdates(string $answers, string $update_file, string $install_file, string $install_file_contents) {
+
+    // Copy the node module so we can modify config for testing.
+    $file_system = new Filesystem();
+    $file_system->mirror('core/modules/node/config/install', $this->siteDirectory . '/modules/test_node_config/config/install');
+
+    /** @var \Drupal\Core\Config\ConfigFactory $configFactory */
+    $configFactory = \Drupal::service('config.factory');
+    $config = $configFactory->getEditable('field.storage.node.body');
+    $configData = $config->get();
+    $configData['status'] = FALSE;
+    $configData['type'] = 'text';
+    unset($configData['cardinality']);
+    $configData['settings'] = ['max_length' => 123];
+    $configData['lost_config'] = 'text';
+
+    $config->setData($configData)->save(TRUE);
+
+    $install_file = $this->siteDirectory . '/modules/test_node_config/' . $install_file;
+    $update_file = $this->siteDirectory . '/modules/test_node_config/config/update/' . $update_file;
+    file_put_contents($install_file, $install_file_contents);
+    $this->assertFileDoesNotExist($update_file);
+
+    $this->drush('generate', ['config-update'], [], NULL, NULL, 0, "--answer test_node_config $answers --answer 'Some description' --answer test_node_config --answer Yes --yes", ['SHELL_INTERACTIVE' => 1]);
+    $this->assertFileExists($update_file);
+    $this->assertEquals(ConfigHandlerTest::getUpdateDefinition(), file_get_contents($update_file));
+    include_once $install_file;
+    $this->assertTrue(function_exists(basename($update_file, '.yml')), basename($update_file, '.yml') . '() function exists');
+  }
+
+  /**
+   * Provider function for testGeneratePatchFileFromActiveConfigUsingDrush().
+   */
+  public function generatePatchFileFromActiveConfigUsingDrushExistingUpdatesProvider() {
+    return [
+      [
+        '--answer post_update --answer test',
+        'test_node_config_post_update_0001_test.yml',
+        'test_node_config.post_update.php',
+        "<?php\n",
+      ],
+      [
+        '--answer post_update --answer test',
+        'test_node_config_post_update_0002_test.yml',
+        'test_node_config.post_update.php',
+        "<?php\nfunction test_node_config_post_update_0001_test() {}",
+      ],
+      [
+        '--answer post_update --answer test',
+        'test_node_config_post_update_1002_test.yml',
+        'test_node_config.post_update.php',
+        "<?php\nfunction test_node_config_removed_post_updates() { return ['test_node_config_post_update_1001_test' => '9.3.2']; }",
+      ],
+      [
+        '--answer post_update --answer test',
+        'test_node_config_post_update_8052_test.yml',
+        'test_node_config.post_update.php',
+        "<?php\nfunction test_node_config_removed_post_updates() { return ['test_node_config_post_update_1001_test' => '9.3.2']; }\nfunction test_node_config_post_update_8051_test() {}",
+      ],
+    ];
   }
 
 }

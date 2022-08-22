@@ -3,7 +3,6 @@
 namespace Drupal\data_policy\Plugin\Block;
 
 use Drupal\Component\Serialization\Json;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityTypeManagerInterface;

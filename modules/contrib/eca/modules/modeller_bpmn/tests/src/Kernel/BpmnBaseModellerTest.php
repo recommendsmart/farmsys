@@ -44,6 +44,7 @@ class BpmnBaseModellerTest extends Base {
    */
   protected function setUp(): void {
     parent::setUp();
+    $this->installEntitySchema('user');
     /** @var \Drupal\eca\PluginManager\Modeller $modelManager */
     $modelManager = \Drupal::service('plugin.manager.eca.modeller');
     /* @noinspection PhpFieldAssignmentTypeMismatchInspection */

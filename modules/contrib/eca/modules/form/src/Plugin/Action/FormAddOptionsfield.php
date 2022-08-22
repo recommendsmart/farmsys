@@ -31,16 +31,13 @@ class FormAddOptionsfield extends FormAddFieldActionBase {
     $element = parent::buildFieldElement();
     // Options will be filled up within ::execute().
     $element['#options'] = [];
-    $is_multiple = $this->configuration['multiple'];
+    $is_multiple = (bool) $this->configuration['multiple'];
     $element['#multiple'] = $is_multiple;
     if (!$is_multiple && $element['#type'] === 'checkboxes') {
       $element['#type'] = 'radios';
     }
     elseif ($is_multiple && $element['#type'] === 'radios') {
       $element['#type'] = 'checkboxes';
-    }
-    if ($is_multiple && isset($element['#default_value']) && !is_iterable($element['#default_value'])) {
-      $element['#default_value'] = DataTransferObject::buildArrayFromUserInput((string) $element['#default_value']);
     }
     return $element;
   }
@@ -108,6 +105,17 @@ class FormAddOptionsfield extends FormAddFieldActionBase {
       $dependencies['module'][] = 'select2';
     }
     return $dependencies;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function buildDefaultValue() {
+    if ($default_options = $this->buildOptionsArray($this->configuration['default_value'])) {
+      $is_multiple = (bool) $this->configuration['multiple'];
+      return $is_multiple ? array_keys($default_options) : key($default_options);
+    }
+    return parent::buildDefaultValue();
   }
 
 }

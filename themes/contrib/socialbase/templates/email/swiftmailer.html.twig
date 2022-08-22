@@ -391,10 +391,25 @@
         .powered-by a {
             text-decoration: none; }
 
+        .list {
+            display: flex;
+            flex-direction: column; }
+
         hr {
             border: 0;
             border-bottom: 1px solid #f6f6f6;
             margin: 20px 0; }
+
+        .sr-only {
+          position: absolute;
+          height: 1px;
+          width: 1px;
+          overflow: hidden;
+          word-wrap: normal;
+          margin: -1px;
+          padding: 0;
+          clip: rect(0, 0, 0, 0);
+          border: 0; }
 
         /* -------------------------------------
             RESPONSIVE AND MOBILE FRIENDLY STYLES
@@ -430,6 +445,71 @@
                 height: auto !important;
                 max-width: 100% !important;
                 width: auto !important; }}
+
+        /* -------------------------------------
+            STYLES FOR THE NODE EMAIL
+        ------------------------------------- */
+        .card__node-email {
+            border: 1px solid #adadad;
+        }
+        .card__node-email--header {
+            padding-top: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #adadad;
+        }
+        .card__node-email--location,
+        .card__node-email--addtocal,
+        .card__node-email--header {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        .card__node-email--location,
+        .card__node-email--header {
+            margin-bottom: 25px;
+        }
+        .card__node-email--header a,
+        .card__node-email--title {
+            font-weight: 700;
+        }
+        .card__node-email--title {
+            margin-bottom: 4px;
+            font-size: 14px;
+            line-height: 21px;
+            text-transform: uppercase;
+            color: {{ primary }}
+        }
+        .card__node-email--header a {
+            font-size: 16px;
+            line-height: 24px;
+            color: #4d4d4d;
+            text-decoration: underline;
+        }
+        .card__node-email--header a:hover {
+            color: #4d4d4d;
+            text-decoration: none;
+        }
+        .card__node-email--location > div {
+            margin-bottom: 10px;
+        }
+        .card__node-email--location > div:last-child {
+            margin-bottom: 0;
+        }
+        .add-to-calendar > span {
+            display: block;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        .add-to-calendar > a {
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 21px;
+            color: #4d4d4d;
+            text-decoration: underline;
+        }
+        .add-to-calendar > a:hover {
+            text-decoration: none;
+        }
 
         /* -------------------------------------
             PRESERVE THESE STYLES IN THE HEAD

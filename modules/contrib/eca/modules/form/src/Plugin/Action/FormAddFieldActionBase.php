@@ -67,8 +67,8 @@ abstract class FormAddFieldActionBase extends FormActionBase {
     if ($this->configuration['description'] !== '') {
       $field_element['#description'] = $this->tokenServices->replaceClear($this->configuration['description']);
     }
-    if ($this->configuration['default_value'] !== '') {
-      $field_element['#default_value'] = $this->tokenServices->replaceClear($this->configuration['default_value']);
+    if (trim((string) $this->configuration['default_value']) !== '') {
+      $field_element['#default_value'] = $this->buildDefaultValue();
     }
     return $field_element;
   }
@@ -169,6 +169,16 @@ abstract class FormAddFieldActionBase extends FormActionBase {
     $this->configuration['required'] = !empty($form_state->getValue('required'));
     $this->configuration['weight'] = $form_state->getValue('weight');
     $this->configuration['default_value'] = $form_state->getValue('default_value');
+  }
+
+  /**
+   * Builds up the default value for the form element.
+   *
+   * @return mixed
+   *   The default value.
+   */
+  protected function buildDefaultValue() {
+    return $this->tokenServices->replaceClear($this->configuration['default_value']);
   }
 
 }

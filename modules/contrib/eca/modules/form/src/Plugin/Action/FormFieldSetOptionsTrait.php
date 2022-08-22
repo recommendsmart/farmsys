@@ -58,38 +58,7 @@ trait FormFieldSetOptionsTrait {
       }
     }
     else {
-      $token = $this->tokenServices;
-      $options = (mb_substr($options, 0, 1) === '[') && (mb_substr($options, -1, 1) === ']') && (mb_strlen($options) <= 255) && $token->hasTokenData($options) ? $token->getTokenData($options) : (string) $token->replaceClear($options);
-      $options_array = [];
-      if (is_string($options)) {
-        $options_array = DataTransferObject::buildArrayFromUserInput($options);
-      }
-      elseif (is_iterable($options)) {
-        foreach ($options as $key => $value) {
-          if ($value instanceof EntityAdapter) {
-            $value = $value->getValue();
-          }
-          if ($value instanceof EntityInterface) {
-            if (!$value->isNew()) {
-              $key = $value->id();
-            }
-            elseif ($value->uuid()) {
-              $key = $value->uuid();
-            }
-            $value = (string) $value->label();
-          }
-          elseif ($value instanceof TypedDataInterface) {
-            $value = $value->getString();
-          }
-          elseif (is_object($value) && method_exists($value, '__toString')) {
-            $value = (string) $value;
-          }
-          if (is_scalar($value) && trim((string) $value) !== '') {
-            $options_array[$key] = trim((string) $value);
-          }
-        }
-      }
-      $options = $options_array;
+      $options = $this->buildOptionsArray($options);
     }
 
     $element['#options'] = $options;
@@ -144,6 +113,51 @@ trait FormFieldSetOptionsTrait {
    */
   public function setYamlParser(YamlParser $yaml_parser): void {
     $this->yamlParser = $yaml_parser;
+  }
+
+  /**
+   * Builds up an array of options, directly usable in a form element.
+   *
+   * @param string $input
+   *  The unprocessed configuration input, which may hold a token or a fixed
+   *  value, or any other sort of values.
+   *
+   * @return array
+   *   The options array.
+   */
+  protected function buildOptionsArray(string $input): array {
+    $token = $this->tokenServices;
+    $options = (mb_substr($input, 0, 1) === '[') && (mb_substr($input, -1, 1) === ']') && (mb_strlen($input) <= 255) && $token->hasTokenData($input) ? $token->getTokenData($input) : (string) $token->replaceClear($input);
+    $options_array = [];
+    if (is_string($options)) {
+      $options_array = DataTransferObject::buildArrayFromUserInput($options);
+    }
+    elseif (is_iterable($options)) {
+      foreach ($options as $key => $value) {
+        if ($value instanceof EntityAdapter) {
+          $value = $value->getValue();
+        }
+        if ($value instanceof EntityInterface) {
+          if (!$value->isNew()) {
+            $key = $value->id();
+          }
+          elseif ($value->uuid()) {
+            $key = $value->uuid();
+          }
+          $value = (string) $value->label();
+        }
+        elseif ($value instanceof TypedDataInterface) {
+          $value = $value->getString();
+        }
+        elseif (is_object($value) && method_exists($value, '__toString')) {
+          $value = (string) $value;
+        }
+        if (is_scalar($value) && trim((string) $value) !== '') {
+          $options_array[$key] = trim((string) $value);
+        }
+      }
+    }
+    return $options_array;
   }
 
 }

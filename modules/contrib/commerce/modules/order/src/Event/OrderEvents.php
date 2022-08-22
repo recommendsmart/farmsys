@@ -13,7 +13,7 @@ final class OrderEvents {
    *
    * Note:
    * At this point the order still has the original data (customer, email).
-   * Use $event->getOrder()-getCustomer()->isAnonymous() to check whether the
+   * Use $event->getOrder()->getCustomer()->isAnonymous() to check whether the
    * original customer was anonymous.
    *
    * Fired before the order is saved.

@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\system\Unit\Flood;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Flood\MemoryBackend;
 use Drupal\Tests\UnitTestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,13 @@ class MemoryBackendTest extends UnitTestCase {
   protected $testMemoryBackend;
 
   /**
+   * A test time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $time;
+
+  /**
    * A request for testing.
    *
    * @var \PHPUnit\Framework\MockObject\MockObject|\Symfony\Component\HttpFoundation\Request
@@ -40,32 +48,8 @@ class MemoryBackendTest extends UnitTestCase {
     $requestStack->expects($this->any())
       ->method('getCurrentRequest')
       ->willReturn($this->testRequest);
-
-    $this->testMemoryBackend = new class($requestStack) extends MemoryBackend {
-
-      /**
-       * The current time for testing.
-       *
-       * @var float
-       */
-      protected $currentMicroTime;
-
-      /**
-       * {@inheritdoc}
-       */
-      protected function getCurrentMicroTime(): float {
-        return $this->currentMicroTime;
-      }
-
-      /**
-       * Set the current time.
-       *
-       * @param float $currentTime
-       *   The current time.
-       */
-      public function setCurrentMicroTime(float $currentTime): void {
-        $this->currentMicroTime = $currentTime;
-      }
+    $this->time = $this->createMock(TimeInterface::class);
+    $this->testMemoryBackend = new class($requestStack, $this->time) extends MemoryBackend {
 
       /**
        * Get all flood events.
@@ -78,8 +62,6 @@ class MemoryBackendTest extends UnitTestCase {
       }
 
     };
-
-    $this->testMemoryBackend->setCurrentMicroTime(0.0);
   }
 
   /**
@@ -89,6 +71,9 @@ class MemoryBackendTest extends UnitTestCase {
    */
   public function testIsAllowed() {
     $this->testRequest->expects($this->never())->method('getClientIp');
+    $this->time->expects($this->any())
+      ->method('getRequestMicroTime')
+      ->willReturn(0.0);
     $eventName = 'test_event_name';
     $identifier = 'test_identifier';
     $window = 10;
@@ -109,6 +94,9 @@ class MemoryBackendTest extends UnitTestCase {
     $this->testRequest->expects($this->exactly(3))
       ->method('getClientIp')
       ->willReturn($ip);
+    $this->time->expects($this->any())
+      ->method('getRequestMicroTime')
+      ->willReturn(0.0);
     $this->testMemoryBackend->register($eventName, $window, $identifier);
     $this->assertCount(1, $this->testMemoryBackend->getEvents()[$eventName][$ip]);
     $this->testMemoryBackend->isAllowed($eventName, $window, $identifier);
@@ -126,6 +114,9 @@ class MemoryBackendTest extends UnitTestCase {
    */
   public function testIsAllowedExpired() {
     $this->testRequest->expects($this->never())->method('getClientIp');
+    $this->time->expects($this->any())
+      ->method('getRequestMicroTime')
+      ->willReturn(0.0);
     $eventName = 'test_event_name';
     $identifier = 'test_identifier';
     $window = 10;
@@ -147,7 +138,9 @@ class MemoryBackendTest extends UnitTestCase {
    */
   public function testGarbageCollection() {
     $this->testRequest->expects($this->never())->method('getClientIp');
-    $this->testMemoryBackend->setCurrentMicroTime(1.0);
+    $this->time->expects($this->any())
+      ->method('getRequestMicroTime')
+      ->willReturnOnConsecutiveCalls(0.0, 6.0, 12.0);
     $eventName = 'test_event_name';
     $identifier = 'test_identifier';
     $window = 10;
@@ -157,12 +150,10 @@ class MemoryBackendTest extends UnitTestCase {
     $this->assertCount(1, $this->testMemoryBackend->getEvents()[$eventName][$identifier]);
 
     // Progress time before window, event still exists after garbage collection.
-    $this->testMemoryBackend->setCurrentMicroTime(6.0);
     $this->testMemoryBackend->garbageCollection();
     $this->assertCount(1, $this->testMemoryBackend->getEvents()[$eventName][$identifier]);
 
     // Progress time after window, event deleted after garbage collection.
-    $this->testMemoryBackend->setCurrentMicroTime(12.0);
     $this->testMemoryBackend->garbageCollection();
     $this->assertCount(0, $this->testMemoryBackend->getEvents()[$eventName][$identifier]);
   }
@@ -174,6 +165,9 @@ class MemoryBackendTest extends UnitTestCase {
    */
   public function testClear() {
     $this->testRequest->expects($this->never())->method('getClientIp');
+    $this->time->expects($this->any())
+      ->method('getRequestMicroTime')
+      ->willReturn(0.0);
     $eventName = 'test_event_name';
     $identifier = 'test_identifier';
     $window = 10;

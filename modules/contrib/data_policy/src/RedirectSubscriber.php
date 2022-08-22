@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * Class RedirectSubscriber.
+ * Redirection subscriber.
  *
  * @package Drupal\data_policy
  */
@@ -247,9 +247,9 @@ class RedirectSubscriber implements EventSubscriberInterface {
     $is_new_consents = array_diff($revision_ids_from_consent_text, $existing_revisions);
 
     if (empty($diff) && empty($this->getActiveUserRevisionData(TRUE)
-        ->condition('state', 0)
-        ->execute()
-        ->fetchAll()) && empty($is_new_consents)) {
+      ->condition('state', 0)
+      ->execute()
+      ->fetchAll()) && empty($is_new_consents)) {
       return;
     }
 
@@ -273,7 +273,6 @@ class RedirectSubscriber implements EventSubscriberInterface {
       return;
     }
 
-
     $this->doRedirect($event);
   }
 
@@ -283,7 +282,7 @@ class RedirectSubscriber implements EventSubscriberInterface {
    * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
    *   The event.
    */
-  private function doRedirect($event): void {
+  private function doRedirect(GetResponseEvent $event): void {
     // Set the destination that redirects the user after accepting the
     // data policy agreements.
     $destination = $this->getDestination();
@@ -336,6 +335,7 @@ class RedirectSubscriber implements EventSubscriberInterface {
    *   True if the query should re returned instead of query result.
    *
    * @return \Drupal\Core\Database\Query\SelectInterface|array
+   *   Active users.
    */
   private function getActiveUserRevisionData($return_query = FALSE) {
     $query = $this->database->select('user_consent', 'uc');

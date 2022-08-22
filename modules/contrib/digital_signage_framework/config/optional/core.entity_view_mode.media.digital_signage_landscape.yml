@@ -1,9 +1,0 @@
-langcode: en
-status: true
-dependencies:
-  module:
-    - media
-id: media.digital_signage_landscape
-label: 'Digital signage landscape'
-targetEntityType: media
-cache: true

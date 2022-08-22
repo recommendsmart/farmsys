@@ -361,7 +361,6 @@ class ProductVariation extends CommerceContentEntityBase implements ProductVaria
     // Invalidate the variations view builder and product caches.
     return Cache::mergeTags($tags, [
       'commerce_product:' . $this->getProductId(),
-      'commerce_product_variation_view',
     ]);
   }
 

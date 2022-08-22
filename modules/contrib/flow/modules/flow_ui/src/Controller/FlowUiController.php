@@ -47,7 +47,7 @@ class FlowUiController extends ControllerBase {
   public function flowDeleteForm(string $entity_type_id, string $bundle, string $flow_task_mode): array {
     $flow = Flow::getFlow($entity_type_id, $bundle, $flow_task_mode);
 
-    if (!$flow->isNew() && !$flow->getTasks()->count() && (!$flow->isCustom() || !$flow->getQualifiers()->count())) {
+    if (!$flow->isNew() && !$flow->getTasks()->count()) {
       return [
         'form' => $this->entityFormBuilder()->getForm($flow, 'delete'),
       ];

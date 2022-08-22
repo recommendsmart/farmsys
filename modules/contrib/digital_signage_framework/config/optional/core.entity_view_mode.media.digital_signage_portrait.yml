@@ -1,9 +1,0 @@
-langcode: en
-status: true
-dependencies:
-  module:
-    - media
-id: media.digital_signage_portrait
-label: 'Digital signage portrait'
-targetEntityType: media
-cache: true

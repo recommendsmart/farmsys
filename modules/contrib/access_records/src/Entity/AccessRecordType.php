@@ -403,6 +403,7 @@ class AccessRecordType extends ConfigEntityBundleBase implements AccessRecordTyp
 
     $ar_type_ids = $ar_type_storage
       ->getQuery()
+      ->accessCheck(FALSE)
       ->condition('status', TRUE)
       ->condition('subject_type', $subject_type_id)
       ->condition('target_type', $target_type_id)

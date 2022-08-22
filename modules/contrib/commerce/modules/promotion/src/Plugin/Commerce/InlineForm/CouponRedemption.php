@@ -172,7 +172,7 @@ class CouponRedemption extends InlineFormBase {
     // Runs if the 'Apply coupon' button was clicked, or the main form
     // was submitted by the user clicking the primary submit button.
     $triggering_element = $form_state->getTriggeringElement();
-    $button_type = isset($triggering_element['#button_type']) ? $triggering_element['#button_type'] : NULL;
+    $button_type = $triggering_element['#button_type'] ?? NULL;
     if ($triggering_element['#name'] != 'apply_coupon' && $button_type != 'primary') {
       return;
     }

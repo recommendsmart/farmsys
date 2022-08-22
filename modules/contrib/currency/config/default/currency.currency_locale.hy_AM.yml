@@ -1,4 +1,0 @@
-locale: "hy_AM"
-pattern: "#0.00 ¤"
-decimalSeparator: ","
-groupingSeparator: "."

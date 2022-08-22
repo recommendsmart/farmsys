@@ -18,6 +18,8 @@ class CompareScalarTest extends KernelTestBase {
    * {@inheritdoc}
    */
   protected static $modules = [
+    'system',
+    'user',
     'eca',
     'eca_base',
   ];
@@ -34,6 +36,7 @@ class CompareScalarTest extends KernelTestBase {
    */
   public function setUp(): void {
     parent::setUp();
+    $this->installEntitySchema('user');
     $this->installConfig(static::$modules);
     $this->conditionManager = \Drupal::service('plugin.manager.eca.condition');
   }

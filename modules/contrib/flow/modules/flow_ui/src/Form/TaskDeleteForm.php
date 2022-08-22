@@ -66,11 +66,11 @@ class TaskDeleteForm extends TaskForm {
     $flow = $this->flow;
     $tasks_array = $flow->get('tasks');
     unset($tasks_array[$this->taskIndex]);
-    if (!empty($tasks_array)) {
+    if (!empty($tasks_array) || $flow->isCustom()) {
       $flow->setTasks($tasks_array);
       $flow->save();
     }
-    elseif (!$flow->isCustom()) {
+    else {
       $flow->delete();
     }
     $this->messenger->addStatus($this->t('The task has been successfully removed.'));

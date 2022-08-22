@@ -6,7 +6,7 @@
         "drupal/inline_entity_form": "~1.0",
         "drupal/video_embed_field": "^2.4",
         "drupal/weight": "^3.0",
-        "goalgorilla/open_social": "^11"
+        "goalgorilla/open_social": "^11.4.0-alpha2"
     },
     "extra": {
         "enable-patching": true,

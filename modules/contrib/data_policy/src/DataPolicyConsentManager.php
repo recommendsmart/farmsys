@@ -116,7 +116,6 @@ class DataPolicyConsentManager implements DataPolicyConsentManagerInterface {
     $query->addField('ucr', 'data_policy_revision_id_value');
     $user_agree_revision_ids = $query->execute()->fetchCol();
 
-
     foreach ($revisions as $key => $revision) {
       // Get translation for current revision if exists.
       $revision = $this->entityRepository->getTranslationFromContext($revision);
@@ -159,7 +158,11 @@ class DataPolicyConsentManager implements DataPolicyConsentManagerInterface {
         continue;
       }
 
-      $enforce_consent_text = str_replace(["[id:{$entity_id}*]", "[id:{$entity_id}]"], $link->toString(), $data['text']);
+      $enforce_consent_text = str_replace(
+          ["[id:{$entity_id}*]", "[id:{$entity_id}]"],
+          $link->toString(),
+          $data['text']
+      );
 
       $form['account']['data_policy']['data_policy_' . $entity_id] = [
         '#type' => 'checkbox',
@@ -174,7 +177,7 @@ class DataPolicyConsentManager implements DataPolicyConsentManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function saveConsent($user_id, $action = NULL, $values = ['state' => UserConsentInterface::STATE_UNDECIDED]) {
+  public function saveConsent($user_id, $action = NULL, array $values = ['state' => UserConsentInterface::STATE_UNDECIDED]) {
     // This logic determines whether we need to create a new "user_consent"
     // entity or not, depending on whether there are new and active
     // "data_policy" with which the user should agree. Previously, there
@@ -315,6 +318,7 @@ class DataPolicyConsentManager implements DataPolicyConsentManagerInterface {
    *   The state value;.
    *
    * @return int
+   *   User consent.
    */
   private function getStateNumber($state) {
     if ($state === TRUE) {
@@ -348,8 +352,10 @@ class DataPolicyConsentManager implements DataPolicyConsentManagerInterface {
    *   The user id.
    * @param int $state
    *   The state for consent entity.
+   * @param int $required
+   *   Required status.
    */
-  private function createUserConsent(DataPolicyInterface $data_policy, $user_id, $state, $required) {
+  private function createUserConsent(DataPolicyInterface $data_policy, int $user_id, int $state, int $required) {
     $this->entityTypeManager->getStorage('user_consent')
       ->create()
       ->setRevision($data_policy)

@@ -2,9 +2,9 @@ name: Entity version
 description: Provides a way to store and keep track of the version of entities.
 
 type: module
-core_version_requirement: ^9.2
+core_version_requirement: ^9.3
 
-# Information added by Drupal.org packaging script on 2022-02-07
-version: '8.x-1.0-beta8'
+# Information added by Drupal.org packaging script on 2022-08-02
+version: '8.x-1.0'
 project: 'entity_version'
-datestamp: 1644248372
+datestamp: 1659428856

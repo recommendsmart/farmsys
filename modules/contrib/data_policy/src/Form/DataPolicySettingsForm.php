@@ -6,7 +6,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class DataPolicySettingsForm.
+ * Settings form.
  *
  * @ingroup data_policy
  */

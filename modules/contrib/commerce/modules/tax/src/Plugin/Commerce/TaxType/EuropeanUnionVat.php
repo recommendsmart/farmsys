@@ -727,7 +727,7 @@ class EuropeanUnionVat extends LocalTaxTypeBase {
       'display_label' => $labels['vat'],
       'territories' => [
         // Italy without Livigno, Campione d’Italia and Lake Lugano.
-        ['country_code' => 'IT', 'excluded_postal_codes' => '23030, 22060'],
+        ['country_code' => 'IT', 'excluded_postal_codes' => '23041, 22061'],
       ],
       'rates' => [
         [

@@ -24,7 +24,9 @@
 
 {% if content.flag_follow_user %}
   <div class="follow-user-wrapper">
-    {{ content.flag_follow_user }}
+    {% if following_enabled %}
+      {{ content.flag_follow_user }}
+    {% endif %}
     {% if profile_contact_label == 'private_message' %}
       <div class="hero-footer__cta">
         <a href="{{ profile_contact_url }}" class="btn btn-default">

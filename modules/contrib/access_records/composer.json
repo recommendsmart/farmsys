@@ -3,14 +3,12 @@
   "type": "drupal-module",
   "description": "A Drupal module for managing access with customizable content entities.",
   "license": "GPL-2.0-or-later",
-  "minimum-stability": "dev",
   "support": {
     "issues": "https://drupal.org/project/issues/access_records",
     "source": "https://drupal.org/project/access_records"
   },
   "require": {
     "php": ">=7.4",
-    "drupal/core": "^9",
-    "drupal/entity": "^1.2"
+    "drupal/entity": "^1.3"
   }
 }

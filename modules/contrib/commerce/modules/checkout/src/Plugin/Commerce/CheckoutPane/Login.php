@@ -402,7 +402,7 @@ class Login extends CheckoutPaneBase implements CheckoutPaneInterface, Container
         // @see \Drupal\user\AccountForm::flagViolations
         $violations = $account->validate();
         foreach ($violations->getByFields(['name', 'pass', 'mail']) as $violation) {
-          list($field_name) = explode('.', $violation->getPropertyPath(), 2);
+          [$field_name] = explode('.', $violation->getPropertyPath(), 2);
           $form_state->setError($pane_form['register'][$field_name], $violation->getMessage());
         }
 

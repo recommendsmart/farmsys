@@ -5,6 +5,7 @@ namespace Drupal\update_helper;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\config_update\ConfigRevertInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\ConfigManagerInterface;
 use Drupal\Core\Extension\MissingDependencyException;
 use Drupal\Core\Extension\ModuleInstallerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -12,6 +13,7 @@ use Drupal\update_helper\Events\ConfigurationUpdateEvent;
 use Drupal\update_helper\Events\UpdateHelperEvents;
 use Drupal\Component\Utility\DiffArray;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Drupal\Core\Extension\ThemeInstallerInterface;
 
 /**
  * Helper class to update configuration.
@@ -33,6 +35,13 @@ class Updater implements UpdaterInterface {
    * @var \Drupal\Core\Extension\ModuleInstallerInterface
    */
   protected $moduleInstaller;
+
+  /**
+   * The theme installer service.
+   *
+   * @var \Drupal\Core\Extension\ThemeInstallerInterface
+   */
+  protected $themeInstaller;
 
   /**
    * Config reverter service.
@@ -67,12 +76,21 @@ class Updater implements UpdaterInterface {
   protected $eventDispatcher;
 
   /**
+   * Config manager.
+   *
+   * @var \Drupal\Core\Config\ConfigManagerInterface
+   */
+  protected $configManager;
+
+  /**
    * Constructs the PathBasedBreadcrumbBuilder.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Config factory service.
    * @param \Drupal\Core\Extension\ModuleInstallerInterface $module_installer
    *   Module installer service.
+   * @param \Drupal\Core\Extension\ThemeInstallerInterface $theme_installer
+   *   Theme installer service.
    * @param \Drupal\config_update\ConfigRevertInterface $config_reverter
    *   Config reverter service.
    * @param \Drupal\update_helper\ConfigHandler $config_handler
@@ -81,14 +99,18 @@ class Updater implements UpdaterInterface {
    *   Update logger.
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   Event dispatcher.
+   * @param \Drupal\Core\Config\ConfigManagerInterface $config_manager
+   *   The config manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, ModuleInstallerInterface $module_installer, ConfigRevertInterface $config_reverter, ConfigHandler $config_handler, UpdateLogger $logger, EventDispatcherInterface $event_dispatcher) {
+  public function __construct(ConfigFactoryInterface $config_factory, ModuleInstallerInterface $module_installer, ThemeInstallerInterface $theme_installer, ConfigRevertInterface $config_reverter, ConfigHandler $config_handler, UpdateLogger $logger, EventDispatcherInterface $event_dispatcher, ConfigManagerInterface $config_manager) {
     $this->configFactory = $config_factory;
     $this->moduleInstaller = $module_installer;
+    $this->themeInstaller = $theme_installer;
     $this->configReverter = $config_reverter;
     $this->configHandler = $config_handler;
     $this->logger = $logger;
     $this->eventDispatcher = $event_dispatcher;
+    $this->configManager = $config_manager;
   }
 
   /**
@@ -156,6 +178,7 @@ class Updater implements UpdaterInterface {
    *
    * Global actions can be:
    * - install_modules: list of modules to install
+   * - install_themes: list of themes to install
    * - import_configs: list of configurations to import.
    *
    * @param array $global_actions
@@ -164,6 +187,10 @@ class Updater implements UpdaterInterface {
   protected function executeGlobalActions(array $global_actions) {
     if (isset($global_actions[UpdateDefinitionInterface::GLOBAL_ACTION_INSTALL_MODULES])) {
       $this->installModules($global_actions[UpdateDefinitionInterface::GLOBAL_ACTION_INSTALL_MODULES]);
+    }
+
+    if (isset($global_actions[UpdateDefinitionInterface::GLOBAL_ACTION_INSTALL_THEMES])) {
+      $this->installThemes($global_actions[UpdateDefinitionInterface::GLOBAL_ACTION_INSTALL_THEMES]);
     }
 
     if (isset($global_actions[UpdateDefinitionInterface::GLOBAL_ACTION_IMPORT_CONFIGS])) {
@@ -250,6 +277,28 @@ class Updater implements UpdaterInterface {
       }
       catch (MissingDependencyException $e) {
         $this->logWarning($this->t('Unable to enable @module because of missing dependencies.', ['@module' => $module]));
+      }
+    }
+  }
+
+  /**
+   * Installs themes.
+   *
+   * @param array $themes
+   *   List of theme names.
+   */
+  protected function installThemes(array $themes): void {
+    foreach ($themes as $theme) {
+      try {
+        if ($this->themeInstaller->install([$theme])) {
+          $this->logInfo($this->t('Theme @theme is successfully enabled.', ['@theme' => $theme]));
+        }
+        else {
+          $this->logWarning($this->t('Unable to enable @theme.', ['@theme' => $theme]));
+        }
+      }
+      catch (MissingDependencyException $e) {
+        $this->logWarning($this->t('Unable to enable @theme because of missing dependencies.', ['@theme' => $theme]));
       }
     }
   }
@@ -372,8 +421,22 @@ class Updater implements UpdaterInterface {
       return FALSE;
     }
 
-    $config->setData($update_config_data);
-    $config->save();
+    // Update configuration entities using their API to ensure dependencies are
+    // recalculated.
+    if ($entity_type = $this->configManager->getEntityTypeIdByName($config_name)) {
+      /** @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface $entity_storage */
+      $entity_storage = $this->configManager
+        ->getEntityTypeManager()
+        ->getStorage($entity_type);
+      $id = $entity_storage->getIDFromConfigName($config_name, $entity_storage->getEntityType()->getConfigPrefix());
+      $entity = $entity_storage->load($id);
+      $entity = $entity_storage->updateFromStorageRecord($entity, $update_config_data);
+      $entity->save();
+    }
+    else {
+      $config->setData($update_config_data);
+      $config->save();
+    }
 
     return TRUE;
   }

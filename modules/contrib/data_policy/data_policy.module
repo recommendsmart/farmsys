@@ -32,8 +32,8 @@ function data_policy_help($route_name, RouteMatchInterface $route_match) {
       $url = Link::createFromRoute(t('Data usage explanation'), 'entity.informblock.collection');
 
       return '<p>' . t('Go to @url page for setting block title on specific pages.', [
-          '@url' => $url->toString(),
-        ]) . '</p>';
+        '@url' => $url->toString(),
+      ]) . '</p>';
   }
 }
 

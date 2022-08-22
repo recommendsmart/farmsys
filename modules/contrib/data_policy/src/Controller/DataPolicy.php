@@ -10,7 +10,6 @@ use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Link;
-use Drupal\Core\Render\Markup;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Url;
 use Drupal\data_policy\DataPolicyConsentManagerInterface;
@@ -293,16 +292,16 @@ class DataPolicy extends ControllerBase implements ContainerInjectionInterface {
           $links['revert'] = [
             'title' => $this->t('Revert'),
             'url' => $has_translations ?
-              Url::fromRoute('entity.data_policy.translation_revert', [
-                'data_policy' => $data_policy->id(),
-                'data_policy_revision' => $vid,
-                'langcode' => $langcode,
-              ]) :
-              Url::fromRoute('entity.data_policy.revision_revert', [
-                'data_policy' => $data_policy->id(),
-                'data_policy_revision' => $vid,
-                'entity_id' => $entity_id,
-              ]),
+            Url::fromRoute('entity.data_policy.translation_revert', [
+              'data_policy' => $data_policy->id(),
+              'data_policy_revision' => $vid,
+              'langcode' => $langcode,
+            ]) :
+            Url::fromRoute('entity.data_policy.revision_revert', [
+              'data_policy' => $data_policy->id(),
+              'data_policy_revision' => $vid,
+              'entity_id' => $entity_id,
+            ]),
           ];
         }
 

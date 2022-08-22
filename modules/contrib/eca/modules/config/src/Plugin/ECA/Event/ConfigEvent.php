@@ -82,6 +82,7 @@ class ConfigEvent extends EventBase {
         '#type' => 'markup',
         '#markup' => $this->t('This event provides two tokens: <em>"[config:*]"</em> to access properties of a configuration, and <em>"[config_name]"</em> to get the machine name of a configuration (e.g. "system.site").'),
         '#weight' => 10,
+        '#description' => $this->t('This event provides two tokens: <em>"[config:*]"</em> to access properties of a configuration, and <em>"[config_name]"</em> to get the machine name of a configuration (e.g. "system.site").'),
       ];
     }
     return $form;

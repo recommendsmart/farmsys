@@ -230,7 +230,7 @@ class CompletionRegister extends CheckoutPaneBase implements CheckoutPaneInterfa
     // @see \Drupal\user\AccountForm::flagViolations
     $violations = $account->validate();
     foreach ($violations->getByFields(['name', 'pass']) as $violation) {
-      list($field_name) = explode('.', $violation->getPropertyPath(), 2);
+      [$field_name] = explode('.', $violation->getPropertyPath(), 2);
       $form_state->setError($pane_form[$field_name], $violation->getMessage());
     }
   }

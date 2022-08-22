@@ -68,6 +68,7 @@ class AccessRecordListBuilder extends EntityListBuilder {
     $total = $this->getStorage()
       ->getQuery()
       ->count()
+      ->accessCheck(TRUE)
       ->execute();
 
     $build['summary']['#markup'] = $this->t('Total access records: @total', ['@total' => $total]);

@@ -1,4 +1,0 @@
-locale: "de_LU"
-pattern: "#,##0.00 ¤"
-decimalSeparator: ","
-groupingSeparator: "."

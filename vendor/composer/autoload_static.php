@@ -15,12 +15,11 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '0d59ee240a4cd96ddbb4ff164fccea4d' => __DIR__ . '/..' . '/symfony/polyfill-php73/bootstrap.php',
-        '7e9bd612cc444b3eed788ebbe46263a0' => __DIR__ . '/..' . '/laminas/laminas-zendframework-bridge/src/autoload.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        'def43f6c87e4f8dfd0c9e1b1bab14fe8' => __DIR__ . '/..' . '/symfony/polyfill-iconv/bootstrap.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
+        'def43f6c87e4f8dfd0c9e1b1bab14fe8' => __DIR__ . '/..' . '/symfony/polyfill-iconv/bootstrap.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '07d7f1a47144818725fd8d91a907ac57' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/create_uploaded_file.php',
         'da94ac5d3ca7d2dbab84ce561ce72bfd' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/marshal_headers_from_sapi.php',
@@ -39,13 +38,14 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
         '786bf90caabc9e09b6ad4cc5ca8f0e30' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/normalize_uploaded_files.legacy.php',
         '751a5a3f463e4be759be31748b61737c' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/parse_cookie_header.legacy.php',
         '2f69d3914119f042cca9e44442d5ce95' => __DIR__ . '/../..' . '/core/includes/bootstrap.inc',
+        '6db5533840cb1ae1bc049452845aa88e' => __DIR__ . '/../..' . '/core/includes/guzzle_php81_shim.php',
         '9e4824c5afbdc1482b6025ce3d4dfde8' => __DIR__ . '/..' . '/league/csv/src/functions_include.php',
+        '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
+        'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
-        '952683d815ff0a7bf322b93c0be7e4e4' => __DIR__ . '/..' . '/chi-teck/drupal-code-generator/src/bootstrap.php',
         '04c6c5c2f7095ccf6c481d3e53e1776f' => __DIR__ . '/..' . '/mustangostang/spyc/Spyc.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
-        '9eb40347f70870d4d4c016d3dd2f5056' => __DIR__ . '/..' . '/jawira/plantuml-encoding/src/plantuml_functions.php',
         '029bffbd721800038bcfaf4916fa491c' => __DIR__ . '/..' . '/mtownsend/xml-to-array/src/helpers.php',
     );
 
@@ -90,6 +90,7 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
             'Symfony\\Polyfill\\Intl\\Idn\\' => 26,
+            'Symfony\\Polyfill\\Intl\\Grapheme\\' => 31,
             'Symfony\\Polyfill\\Iconv\\' => 23,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Contracts\\Translation\\' => 30,
@@ -100,6 +101,7 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
             'Symfony\\Component\\VarDumper\\' => 28,
             'Symfony\\Component\\Validator\\' => 28,
             'Symfony\\Component\\Translation\\' => 30,
+            'Symfony\\Component\\String\\' => 25,
             'Symfony\\Component\\Serializer\\' => 29,
             'Symfony\\Component\\Routing\\' => 26,
             'Symfony\\Component\\Process\\' => 26,
@@ -145,7 +147,6 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
         'L' => 
         array (
             'League\\Csv\\' => 11,
-            'Laminas\\ZendFrameworkBridge\\' => 28,
             'Laminas\\Stdlib\\' => 15,
             'Laminas\\Feed\\' => 13,
             'Laminas\\Escaper\\' => 16,
@@ -185,16 +186,16 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
         array (
             'Drupal\\social\\Behat\\' => 20,
             'Drupal\\social\\' => 14,
-            'Drupal\\plugin\\' => 14,
             'Drupal\\entity_version\\' => 22,
             'Drupal\\description_list_field\\' => 30,
-            'Drupal\\currency\\' => 16,
             'Drupal\\aggrid\\' => 14,
             'Drupal\\Driver\\' => 14,
             'Drupal\\Core\\' => 12,
             'Drupal\\Composer\\Plugin\\Scaffold\\' => 32,
             'Drupal\\Component\\' => 17,
+            'Drupal\\CacheableTypes\\' => 22,
             'DrupalCodeGenerator\\' => 20,
+            'Doctrine\\Deprecations\\' => 22,
             'Doctrine\\Common\\Lexer\\' => 22,
             'Doctrine\\Common\\Collections\\' => 28,
             'Doctrine\\Common\\Annotations\\' => 28,
@@ -209,8 +210,6 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
             'Composer\\Installers\\' => 20,
             'Composer\\CaBundle\\' => 18,
             'Complex\\' => 8,
-            'Commercie\\Currency\\' => 19,
-            'Commercie\\CurrencyExchange\\' => 27,
             'CommerceGuys\\Intl\\' => 18,
             'CommerceGuys\\Addressing\\' => 24,
         ),
@@ -294,6 +293,10 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-idn',
         ),
+        'Symfony\\Polyfill\\Intl\\Grapheme\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme',
+        ),
         'Symfony\\Polyfill\\Iconv\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-iconv',
@@ -333,6 +336,10 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
         'Symfony\\Component\\Translation\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/translation',
+        ),
+        'Symfony\\Component\\String\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/string',
         ),
         'Symfony\\Component\\Serializer\\' => 
         array (
@@ -467,10 +474,6 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
         array (
             0 => __DIR__ . '/..' . '/league/csv/src',
         ),
-        'Laminas\\ZendFrameworkBridge\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/laminas/laminas-zendframework-bridge/src',
-        ),
         'Laminas\\Stdlib\\' => 
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-stdlib/src',
@@ -556,10 +559,6 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
         array (
             0 => __DIR__ . '/../..' . '/profiles/contrib/social/src',
         ),
-        'Drupal\\plugin\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/modules/contrib/plugin/src',
-        ),
         'Drupal\\entity_version\\' => 
         array (
             0 => __DIR__ . '/../..' . '/modules/contrib/entity_version/src',
@@ -567,10 +566,6 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
         'Drupal\\description_list_field\\' => 
         array (
             0 => __DIR__ . '/../..' . '/modules/contrib/description_list_field/src',
-        ),
-        'Drupal\\currency\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/modules/contrib/currency/src',
         ),
         'Drupal\\aggrid\\' => 
         array (
@@ -592,9 +587,17 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
         array (
             0 => __DIR__ . '/../..' . '/core/lib/Drupal/Component',
         ),
+        'Drupal\\CacheableTypes\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/drupal/cacheable_types/src',
+        ),
         'DrupalCodeGenerator\\' => 
         array (
             0 => __DIR__ . '/..' . '/chi-teck/drupal-code-generator/src',
+        ),
+        'Doctrine\\Deprecations\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations',
         ),
         'Doctrine\\Common\\Lexer\\' => 
         array (
@@ -639,14 +642,6 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
         'Complex\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
-        ),
-        'Commercie\\Currency\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/commercie/currency/src',
-        ),
-        'Commercie\\CurrencyExchange\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/commercie/currency-exchange/src',
         ),
         'CommerceGuys\\Intl\\' => 
         array (
@@ -744,7 +739,7 @@ class ComposerStaticInitc57549eb6c7c9f12f114a0a413c5516d
         'JsonException' => __DIR__ . '/..' . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
         'PEAR_Exception' => __DIR__ . '/..' . '/pear/pear_exception/PEAR/Exception.php',
-        'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
+        'Stringable' => __DIR__ . '/..' . '/myclabs/php-enum/stubs/Stringable.php',
         'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
         'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
         'geoPHP' => __DIR__ . '/..' . '/phayes/geophp/geoPHP.inc',

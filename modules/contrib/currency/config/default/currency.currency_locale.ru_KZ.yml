@@ -1,4 +1,0 @@
-locale: "ru_KZ"
-pattern: "#,##0.00 ¤"
-decimalSeparator: ","
-groupingSeparator: " "

@@ -2,7 +2,12 @@
 
 namespace Drupal\eca_form\Plugin\Action;
 
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
+use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\TypedData\TypedDataInterface;
 
 /**
  * Set default value of a form field.
@@ -22,8 +27,63 @@ class FormFieldDefaultValue extends FormFieldActionBase {
   public function execute(): void {
     if ($element = &$this->getTargetElement()) {
       $element = &$this->jumpToFirstFieldChild($element);
-      $value = $this->tokenServices->replaceClear($this->configuration['value']);
-      $this->filterFormFieldValue($value);
+      $value = $this->configuration['value'];
+
+      switch ($element['#type'] ?? NULL) {
+
+        case 'date':
+        case 'datelist':
+        case 'datetime':
+          $value = (string) $this->tokenServices->replaceClear($value);
+          $this->filterFormFieldValue($value);
+          if (mb_substr($value, 0, 1) === '@') {
+            $value = mb_substr($value, 1);
+          }
+          $value = ctype_digit($value) ? new DrupalDateTime("@{$value}") : new DrupalDateTime($value, new \DateTimeZone('UTC'));
+          break;
+
+        case 'entity_autocomplete':
+          $value = $this->tokenServices->getOrReplace($value);
+          if ($value instanceof EntityReferenceFieldItemListInterface) {
+            $value = $value->referencedEntities();
+          }
+          elseif ($value instanceof EntityReferenceItem) {
+            $value = $value->entity ?? NULL;
+          }
+          elseif ($value instanceof TypedDataInterface) {
+            $value = $value->getValue();
+          }
+          if (is_object($value) && !($value instanceof EntityInterface) && method_exists($value, '__toString')) {
+            $value = (string) $value;
+          }
+          $entities = [];
+          $values = is_array($value) ? $value : [$value];
+          foreach ($values as $value) {
+            if ($value instanceof EntityInterface) {
+              $entities[] = $value;
+            }
+            elseif (is_scalar($value) && isset($element['#target_type']) && ($entity = $this->entityTypeManager->getStorage($element['#target_type'])->load($value))) {
+              $entities[] = $entity;
+            }
+          }
+          $value = array_filter($entities, function ($entity) {
+            /** @var \Drupal\Core\Entity\EntityInterface $entity */
+            return $entity->access('view', $this->currentUser);
+          });
+          if (empty($value)) {
+            $value = NULL;
+          }
+          elseif ((($element['#tags'] ?? NULL) !== TRUE) || (count($value) === 1)) {
+            $value = reset($value);
+          }
+          break;
+
+        default:
+          $value = (string) $this->tokenServices->replaceClear($value);
+          $this->filterFormFieldValue($value);
+
+      }
+
       $element['#default_value'] = $value;
     }
   }

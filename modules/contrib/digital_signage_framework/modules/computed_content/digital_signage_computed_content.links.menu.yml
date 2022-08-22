@@ -1,9 +1,0 @@
-entity.digsig_computed_content_type.collection:
-  title: 'Computed content types'
-  parent: system.admin_structure
-  description: 'Manage and CRUD actions on digital signage computed content types.'
-  route_name: entity.digsig_computed_content_type.collection
-digsig_computed_content.collection:
-  title: Computed content
-  parent: system.admin_content
-  route_name: entity.digsig_computed_content.collection

@@ -9,7 +9,6 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Url;
-use Drupal\menu_link_content\MenuLinkContentInterface;
 use Drupal\node\NodeInterface;
 use Drupal\views\ViewExecutable;
 
@@ -242,12 +241,12 @@ function social_activity_theme($existing, $type, $theme, $path) {
  * @param array $status
  *   Filter by status.
  *
- * @return int|void
- *   Returns the amount of notifications.
+ * @return int
+ *   The amount of notifications.
  *
  * @see \Drupal\activity_creator\ActivityNotifications
  */
-function social_activity_social_account_notifications_counter(AccountInterface $account, array $status = [ACTIVITY_STATUS_RECEIVED]) {
+function social_activity_social_account_notifications_counter(AccountInterface $account, array $status = [ACTIVITY_STATUS_RECEIVED]) : int {
   $account_notifications = \Drupal::service('activity_creator.activity_notifications');
 
   return count($account_notifications->getNotifications($account, $status)) ?? 0;
@@ -357,8 +356,5 @@ function social_activity_social_core_default_main_menu_links_alter(array &$links
     ]);
   $link = end($link);
 
-  // Ensure that the end() doesn't return FALSE, and we have link instance.
-  if ($link instanceof MenuLinkContentInterface) {
-    $links[] = $link;
-  }
+  $links[] = $link;
 }

@@ -4,7 +4,7 @@ namespace Drupal\variationcache\Cache;
 
 use Drupal\Core\Cache\CacheFactoryInterface;
 use Drupal\Core\Cache\Context\CacheContextsManager;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Drupal\Core\Http\RequestStack;
 
 /**
  * Defines the variation cache factory.
@@ -23,7 +23,7 @@ class VariationCacheFactory implements VariationCacheFactoryInterface {
   /**
    * The request stack.
    *
-   * @var \Symfony\Component\HttpFoundation\RequestStack
+   * @var \Drupal\Core\Http\RequestStack
    */
   protected $requestStack;
 
@@ -44,7 +44,7 @@ class VariationCacheFactory implements VariationCacheFactoryInterface {
   /**
    * Constructs a new VariationCacheFactory object.
    *
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   * @param \Drupal\Core\Http\RequestStack $request_stack
    *   The request stack.
    * @param \Drupal\Core\Cache\CacheFactoryInterface $cache_factory
    *   The cache factory.

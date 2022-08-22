@@ -280,27 +280,35 @@ abstract class EcaObject {
       $config = $this->configuration;
     }
 
+    $token = $this->token();
+
     // If the plugin is configurable and an entity is being declared as the
     // required one by a set key field, this will grab that object from the
     // token service using the defined key and returns it.
     if (!empty($config)) {
       foreach (static::$keyFields as $key_field) {
-        if (isset($config[$key_field]) && is_string($config[$key_field]) && trim($config[$key_field]) !== '' && $data = $this->filterEntities($this->token()->getTokenData($config[$key_field]))) {
+        if (isset($config[$key_field]) && is_string($config[$key_field]) && trim($config[$key_field]) !== '' && $data = $this->filterEntities($token->getTokenData($config[$key_field]))) {
           return $data;
         }
       }
     }
 
     if ($plugin instanceof ActionInterface || $plugin instanceof CoreActionInterface || $plugin instanceof ConditionInterface) {
-      // Check if the plugin ID contains a hint to the used entity / token type.
+      // Check if the plugin ID contains a hint to the entity to use.
       $id_parts = explode(':', $plugin->getPluginId());
       while ($id_part = array_pop($id_parts)) {
-        if ($data = $this->filterEntities($this->token()->getTokenData($id_part))) {
+        if ($data = $this->filterEntities($token->getTokenData($id_part))) {
           return $data;
         }
-        if (($type = $this->token()->getTokenTypeForEntityType($id_part)) && $type !== $id_part && ($data = $this->filterEntities($this->token()->getTokenData($type)))) {
+        if (($type = $token->getTokenTypeForEntityType($id_part)) && $type !== $id_part && ($data = $this->filterEntities($token->getTokenData($type)))) {
           return $data;
         }
+      }
+
+      // Check if the plugin type contains a hint to the entity to use.
+      $definition = $plugin->getPluginDefinition();
+      if (isset($definition['type']) && is_string($definition['type']) && ($type = $token->getTokenTypeForEntityType($definition['type'])) && ($data = $this->filterEntities($token->getTokenData($type)))) {
+        return $data;
       }
 
       // Ask predecessor(s) for having previously declared entities.

@@ -1,0 +1,10 @@
+--- modules/system/system.module
++++ modules/system/system.module
+@@ -30,6 +33,7 @@
+ use Drupal\Core\Queue\QueueGarbageCollectionInterface;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ use Drupal\Core\Routing\StackedRouteMatchInterface;
++use Drupal\Core\Session\AccountInterface;
+ use Drupal\Core\Url;
+ use GuzzleHttp\Exception\TransferException;
+ use Symfony\Component\HttpFoundation\RedirectResponse;

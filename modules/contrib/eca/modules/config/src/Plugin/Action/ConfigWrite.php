@@ -122,6 +122,7 @@ class ConfigWrite extends ConfigActionBase {
       '#title' => $this->t('Save configuration'),
       '#default_value' => $this->configuration['save_config'],
       '#weight' => -50,
+      '#description' => $this->t('Save the given config to the Drupal database.'),
     ];
     return $form;
   }

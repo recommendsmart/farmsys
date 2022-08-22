@@ -769,7 +769,7 @@ class FlowForm extends EntityForm {
     $target_type = $this->entityTypeManager->getDefinition($flow->getTargetEntityTypeId());
     $bundle_type_id = $target_type->getBundleEntityType() ?: 'bundle';
 
-    if (!$flow->isNew() && !$flow->getTasks()->count() && (!$flow->isCustom() || !$flow->getQualifiers()->count())) {
+    if (!$flow->isNew() && !$flow->getTasks()->count()) {
       $actions['delete'] = [
         '#type' => 'link',
         '#title' => $this->t('Delete'),

@@ -21,6 +21,7 @@ class TokenSetValueTest extends KernelTestBase {
    */
   protected static $modules = [
     'system',
+    'user',
     'eca',
     'eca_base',
   ];
@@ -30,6 +31,7 @@ class TokenSetValueTest extends KernelTestBase {
    */
   public function setUp(): void {
     parent::setUp();
+    $this->installEntitySchema('user');
     $this->installConfig(static::$modules);
   }
 

@@ -191,7 +191,7 @@ class QualifierForm implements FormInterface, ContainerInjectionInterface {
       '#submit' => ['::submitForm', '::save', '::redirectAfterSave'],
       '#weight' => 10,
     ];
-    if (!$qualifier_is_new && isset($qualifier_config['active']) && !$qualifier_config['active']) {
+    if (!$qualifier_is_new && !$this->flow->getTasks()->count()) {
       $form['actions']['delete'] = [
         '#type' => 'submit',
         '#value' => $this->t('Delete'),

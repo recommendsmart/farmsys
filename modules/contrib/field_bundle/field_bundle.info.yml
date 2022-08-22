@@ -7,7 +7,7 @@ configure: entity.field_bundle_config.collection
 dependencies:
   - drupal:user
 
-# Information added by Drupal.org packaging script on 2022-05-10
-version: '1.0.2'
+# Information added by Drupal.org packaging script on 2022-07-25
+version: '1.0.3'
 project: 'field_bundle'
-datestamp: 1652179168
+datestamp: 1658741688

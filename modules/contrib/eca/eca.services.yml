@@ -38,6 +38,7 @@ services:
     class: Drupal\eca\PluginManager\Action
     calls:
       - [setDecoratedActionManager, ['@plugin.manager.eca.action.inner']]
+      - [setEntityTypeManager, ['@entity_type.manager']]
 
   eca.service.modeller:
     class: Drupal\eca\Service\Modellers
@@ -93,6 +94,12 @@ services:
     parent: eca.default_event_subscriber
     tags:
       - { name: event_subscriber }
+
+  eca.token_data.current_user:
+    class: Drupal\eca\Token\CurrentUserDataProvider
+    arguments: ['@current_user', '@entity_type.manager']
+    tags:
+      - { name: eca.token_data_provider, priority: -100 }
 
 parameters:
   eca.max_recursion_level: 1

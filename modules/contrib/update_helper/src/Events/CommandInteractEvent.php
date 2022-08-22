@@ -2,7 +2,7 @@
 
 namespace Drupal\update_helper\Events;
 
-use Symfony\Component\EventDispatcher\Event;
+use Drupal\Component\EventDispatcher\Event;
 
 /**
  * Event for command interactive.

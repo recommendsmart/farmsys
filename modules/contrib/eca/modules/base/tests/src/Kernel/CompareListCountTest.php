@@ -19,6 +19,9 @@ class CompareListCountTest extends KernelTestBase {
    * {@inheritdoc}
    */
   protected static $modules = [
+    'system',
+    'user',
+    'field',
     'eca',
     'eca_base',
   ];
@@ -42,6 +45,7 @@ class CompareListCountTest extends KernelTestBase {
    */
   public function setUp(): void {
     parent::setUp();
+    $this->installEntitySchema('user');
     $this->installConfig(static::$modules);
     $this->conditionManager = \Drupal::service('plugin.manager.eca.condition');
     $this->tokenServices = \Drupal::service('eca.token_services');

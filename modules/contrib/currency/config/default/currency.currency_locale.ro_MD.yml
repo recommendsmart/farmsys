@@ -1,4 +1,0 @@
-locale: "ro_MD"
-pattern: "#,##0.00 ¤"
-decimalSeparator: ","
-groupingSeparator: "."

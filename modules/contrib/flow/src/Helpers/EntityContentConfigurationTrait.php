@@ -7,6 +7,7 @@ use Drupal\Core\Entity\ContentEntityFormInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Form\SubformState;
 use Drupal\Core\Form\SubformStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -166,6 +167,9 @@ trait EntityContentConfigurationTrait {
     $content_config_entities[$wrapper_id] = [$entity, $form_display];
     $form_state->set('flow__content_configuration', $content_config_entities);
     $form_display->buildForm($entity, $element, $form_state);
+    if ($entity->getEntityTypeId() === 'user') {
+      UserAccount::processUserAccountForm($element, $form_state);
+    }
     return $element;
   }
 
@@ -243,6 +247,10 @@ trait EntityContentConfigurationTrait {
       if (!isset($components[$k_1]) && !in_array($k_1, $entity_keys)) {
         unset($values[$k_1]);
       }
+    }
+
+    if ($entity->getEntityTypeId() === 'user') {
+      UserAccount::submitUserAccountForm($form['values'], SubformState::createForSubform($form['values'], $form, $form_state));
     }
 
     $this->setConfiguredContentEntity($entity);

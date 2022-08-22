@@ -1,11 +1,20 @@
 # Changelog
 
+## [1.0.0-alpha4](https://github.com/openeuropa/description_list_field/tree/1.0.0-alpha4) (2022-07-29)
+
+[Full Changelog](https://github.com/openeuropa/description_list_field/compare/1.0.0-alpha3...1.0.0-alpha4)
+
+**Merged pull requests:**
+
+- EWPP-2358: Drupal 9.4 support. [\#13](https://github.com/openeuropa/description_list_field/pull/13) ([yenyasinn](https://github.com/yenyasinn))
+
 ## [1.0.0-alpha3](https://github.com/openeuropa/description_list_field/tree/1.0.0-alpha3) (2022-02-10)
 
 [Full Changelog](https://github.com/openeuropa/description_list_field/compare/1.0.0-alpha2...1.0.0-alpha3)
 
 **Merged pull requests:**
 
+- EWPP-0000: Prepare for 1.0.0-alpha3 release. [\#12](https://github.com/openeuropa/description_list_field/pull/12) ([hernani](https://github.com/hernani))
 - EWPP-1915: Update to PHP8 [\#11](https://github.com/openeuropa/description_list_field/pull/11) ([yenyasinn](https://github.com/yenyasinn))
 
 ## [1.0.0-alpha2](https://github.com/openeuropa/description_list_field/tree/1.0.0-alpha2) (2021-08-16)

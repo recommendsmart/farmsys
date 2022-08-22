@@ -167,3 +167,15 @@ function commerce_payment_post_update_3(&$sandbox = NULL) {
     $sandbox['#finished'] = ($sandbox['total_count'] - $sandbox['current_count']) / $sandbox['total_count'];
   }
 }
+
+/**
+ * Import the payments view.
+ */
+function commerce_payment_post_update_4() {
+  /** @var \Drupal\commerce\Config\ConfigUpdaterInterface $config_updater */
+  $config_updater = \Drupal::service('commerce.config_updater');
+  $result = $config_updater->import([
+    'views.view.commerce_order_payments',
+  ]);
+  return implode('<br>', $result->getFailed());
+}

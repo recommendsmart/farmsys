@@ -9,33 +9,31 @@ use Drupal\update_helper\ConfigHandler;
 use Drupal\update_helper\Events\CommandExecuteEvent;
 use Drupal\update_helper\Events\CommandInteractEvent;
 use Drupal\update_helper\Events\UpdateHelperEvents;
-use DrupalCodeGenerator\Command\BaseGenerator;
-use DrupalCodeGenerator\Utils;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use DrupalCodeGenerator\Command\DrupalGenerator;
+use DrupalCodeGenerator\Asset\AssetCollection;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 
 /**
- * Implements d8:configuration:update command.
+ * Implements update_helper:configuration-update command.
  */
-class ConfigurationUpdate extends BaseGenerator {
+class ConfigurationUpdate extends DrupalGenerator {
 
   /**
    * {@inheritdoc}
    */
-  protected $name = 'd8:configuration:update';
+  protected string $name = 'update_helper:configuration-update';
 
   /**
    * {@inheritdoc}
    */
-  protected $description = 'Generate a configuration update';
+  protected string $description = 'Generates a configuration update';
 
   /**
    * {@inheritdoc}
    */
-  protected $alias = 'config-update';
+  protected string $alias = 'config-update';
 
   /**
    * The module extension list service.
@@ -69,7 +67,7 @@ class ConfigurationUpdate extends BaseGenerator {
    * {@inheritdoc}
    */
   public function __construct(ModuleExtensionList $extension_list, EventDispatcherInterface $event_dispatcher, ModuleHandlerInterface $module_handler, ConfigHandler $config_handler) {
-    parent::__construct();
+    parent::__construct($this->name);
 
     $this->extensionList = $extension_list;
     $this->eventDispatcher = $event_dispatcher;
@@ -80,80 +78,93 @@ class ConfigurationUpdate extends BaseGenerator {
   /**
    * {@inheritdoc}
    */
-  protected function interact(InputInterface $input, OutputInterface $output) {
-
+  protected function generate(array &$vars): void {
     $extensions = $this->getExtensions();
-
-    $questions['module'] = new Question('Enter a module/profile');
-    $questions['module']->setAutocompleterValues(array_keys($extensions));
-    $questions['module']->setValidator(function ($module_name) use ($extensions) {
-      if (empty($module_name) || !in_array($module_name, array_keys($extensions))) {
+    $question = new Question('Enter a module/profile');
+    $question->setAutocompleterValues(array_keys($extensions));
+    $question->setValidator(function ($module_name) use ($extensions) {
+      if (empty($module_name) || !array_key_exists($module_name, $extensions)) {
         throw new \InvalidArgumentException(
-          dt(
-            'The module name "!module_name" is not valid',
-            ['!module_name' => $module_name]
+          sprintf(
+            'The module name "%s" is not valid',
+            $module_name
           )
         );
       }
       return $module_name;
     });
 
-    $vars = $this->collectVars($input, $output, $questions);
+    $vars['module'] = $this->io->askQuestion($question);
 
-    $lastUpdate = drupal_get_installed_schema_version($vars['module']);
-    $nextUpdate = $lastUpdate > 0 ? ($lastUpdate + 1) : 8001;
+    $question = new ChoiceQuestion('Do you want to create a post_update or hook_update_N update function?',
+      ['post_update', 'hook_update_N'], 'post_update');
+    $update_method = $this->io->askQuestion($question);
 
-    $questions['update-n'] = new Question('Please provide the number for update hook to be added', $nextUpdate);
-    $questions['update-n']->setValidator(function ($update_number) use ($lastUpdate) {
-      if ($update_number === NULL || $update_number === '' || !is_numeric($update_number) || $update_number <= $lastUpdate) {
-        throw new \InvalidArgumentException(
-          dt(
-            'The update number "!number" is not valid',
-            ['!number' => $update_number]
-          )
-        );
+    if ($update_method === 'post_update') {
+      $question = new Question('Please enter the machine name for the update', NULL);
+      $question->setValidator([static::class, 'validateMachineName']);
+
+      // Number post update hooks for implicit ordering of post update functions
+      // created by the Update Helper module. This is because Update Helper uses
+      // diffs and therefore requires that it's updates are run in a particular
+      // order. The update numbers DO NOT reflect the module schema and start
+      // from 0001.
+      /** @var \Drupal\Core\Update\UpdateRegistry $service */
+      $service = \Drupal::service('update.post_update_registry');
+      $updates = array_merge($service->getModuleUpdateFunctions($vars['module']), array_keys($service->getRemovedPostUpdates($vars['module'])));
+      $lastUpdate = 0;
+      foreach($updates as $update) {
+        if (preg_match('/^'. preg_quote($vars['module']) . '_post_update_(\d*)_.*$/', $update, $matches)) {
+          $lastUpdate = max($lastUpdate, $matches[1]);
+        }
       }
-      return $update_number;
-    });
+      $lastUpdate = str_pad((string) $lastUpdate + 1, 4, '0', STR_PAD_LEFT);
+      $vars['update_name'] = 'post_update_' . $lastUpdate . '_' . $this->io->askQuestion($question);
+    }
+    else {
+      /** @var \Drupal\Core\Update\UpdateHookRegistry $service */
+      $service = \Drupal::service('update.update_hook_registry');
+      $lastUpdate = $service->getInstalledVersion($vars['module']);
+      $nextUpdate = $lastUpdate > 0 ? ($lastUpdate + 1) : 8001;
 
-    $questions['description'] = new Question('Please enter a description text for update. This will be used as the comment for update hook.', 'Configuration update.');
-    $questions['description']->setValidator([Utils::class, 'validateRequired']);
+      $question = new Question('Please provide the number for update hook to be added', $nextUpdate);
+      $question->setValidator(function ($update_number) use ($lastUpdate) {
+        if ($update_number === NULL || $update_number === '' || !is_numeric($update_number) || $update_number <= $lastUpdate) {
+          throw new \InvalidArgumentException(
+            sprintf(
+              'The update number "%s" is not valid',
+              $update_number
+            )
+          );
+        }
+        return $update_number;
+      });
+      $vars['update_name'] = 'update_' . $this->io->askQuestion($question);
+    }
+
+    $vars['description'] = $this->ask('Please enter a description text for update. This will be used as the comment for update hook.', 'Configuration update.', '::validateRequired');
 
     $enabled_modules = array_filter($this->moduleHandler->getModuleList(), function (Extension $extension) {
-      return ($extension->getType() == 'module');
+      return ($extension->getType() === 'module' || $extension->getType() === 'profile');
     });
     $enabled_modules = array_keys($enabled_modules);
 
-    $questions['include-modules'] = new Question('Provide a comma-separated list of modules which configurations should be included in update.', implode(',', $enabled_modules));
-    $questions['include-modules']->setNormalizer(function ($input) {
-      return explode(',', $input);
-    });
-    $questions['include-modules']->setValidator(function ($modules) use ($enabled_modules) {
-      $not_enabled_modules = array_diff($modules, $enabled_modules);
-      if ($not_enabled_modules) {
-        throw new \InvalidArgumentException(
-          dt(
-            'These modules are not enabled: !modules',
-            ['!modules' => implode(', ', $not_enabled_modules)]
-          )
-        );
-      }
-      return $modules;
-    });
+    $question = new ChoiceQuestion('Provide a comma-separated list of modules which configurations should be included in update.', $enabled_modules);
+    $question->setMultiselect(TRUE);
+    $vars['include-modules'] = $this->io->askQuestion($question);
 
-    $questions['from-active'] = new ConfirmationQuestion('Generate update from active configuration in database to configuration in Yml files?');
-    $questions['from-active']->setValidator([Utils::class, 'validateRequired']);
-
-    $vars = $this->collectVars($input, $output, $questions);
+    $vars['from-active'] = $this->confirm('Generate update from active configuration in database to configuration in Yml files?');
 
     // Get additional options provided by other modules.
     $event = new CommandInteractEvent($vars);
     $this->eventDispatcher->dispatch($event, UpdateHelperEvents::COMMAND_GCU_INTERACT);
 
-    $vars = $this->collectVars($input, $output, $event->getQuestions());
+    foreach ($event->getQuestions() as $key => $question) {
+      $vars[$key] = $this->io->askQuestion($question);
+    }
 
     // Get patch data and save it into file.
-    $patch_data = $this->configHandler->generatePatchFile($this->vars['include-modules'], $this->vars['from-active']);
+    $patch_data = $this->configHandler->generatePatchFile($vars['include-modules'], $vars['from-active']);
 
     if (!empty($patch_data)) {
 
@@ -162,19 +173,19 @@ class ConfigurationUpdate extends BaseGenerator {
       $this->eventDispatcher->dispatch($event, UpdateHelperEvents::COMMAND_GCU_EXECUTE);
 
       foreach ($event->getTemplatePaths() as $path) {
-        $this->getHelper('dcg_renderer')->addPath($path);
+        $this->getHelper('renderer')->prependPath($path);
       }
 
-      $this->assets = $event->getAssets();
+      $this->assets = new AssetCollection($event->getAssets());
 
-      $patch_file_path = $this->configHandler->getPatchFile($this->vars['module'], static::getUpdateFunctionName($this->vars['module'], $this->vars['update-n']), TRUE);
+      $patch_file_path = $this->configHandler->getPatchFile($vars['module'], static::getUpdateFunctionName($vars['module'], $vars['update_name']), TRUE);
 
       // Add the patchfile.
       $this->addFile($patch_file_path)
         ->content($patch_data);
     }
     else {
-      $output->write('There are no configuration changes that should be exported for the update.', TRUE);
+      $this->io->write('There are no configuration changes that should be exported for the update.', TRUE);
     }
   }
 
@@ -199,14 +210,14 @@ class ConfigurationUpdate extends BaseGenerator {
    *
    * @param string $module_name
    *   Module name.
-   * @param string $update_number
+   * @param string $update_name
    *   Update number.
    *
    * @return string
    *   Returns update hook function name.
    */
-  public static function getUpdateFunctionName($module_name, $update_number) {
-    return $module_name . '_update_' . $update_number;
+  public static function getUpdateFunctionName($module_name, $update_name): string {
+    return $module_name . '_' . $update_name;
   }
 
 }

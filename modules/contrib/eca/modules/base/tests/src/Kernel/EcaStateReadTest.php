@@ -20,6 +20,7 @@ class EcaStateReadTest extends KernelTestBase {
    */
   protected static $modules = [
     'system',
+    'user',
     'eca',
     'eca_base',
   ];
@@ -29,6 +30,7 @@ class EcaStateReadTest extends KernelTestBase {
    */
   public function setUp(): void {
     parent::setUp();
+    $this->installEntitySchema('user');
     $this->installConfig(static::$modules);
   }
 

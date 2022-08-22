@@ -11,13 +11,15 @@ use Drupal\Core\Routing\RedirectDestinationInterface;
 use Drupal\data_policy\DataPolicyConsentManagerInterface;
 use Drupal\data_policy\Entity\DataPolicyInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
- * Class DataPolicyAgreement.
+ * Policy agreement form.
  *
  * @ingroup data_policy
  */
 class DataPolicyAgreement extends FormBase {
+  use StringTranslationTrait;
 
   /**
    * The Data Policy consent manager.
@@ -190,7 +192,7 @@ class DataPolicyAgreement extends FormBase {
         /** @var \Drupal\Core\StringTranslation\TranslatableMarkup $g */
         if (strpos($id, 'data_policy') !== FALSE) {
           $name = Markup::create($error->getArguments()['@name']);
-          $form_state->setErrorByName($id, t('@name field is required.', ['@name' => $name]));
+          $form_state->setErrorByName($id, $this->t('@name field is required.', ['@name' => $name]));
           continue;
         }
 

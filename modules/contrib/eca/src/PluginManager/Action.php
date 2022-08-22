@@ -4,10 +4,14 @@ namespace Drupal\eca\PluginManager;
 
 use Drupal\Core\Action\ActionManager;
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\eca\Plugin\Action\ActionInterface;
 
 /**
  * Decorates the action manager to make ECA actions only available in ECA.
+ *
+ * Additionally uses list cache tags of the action config entity by default,
+ * because action config entities are used as pre-configured actions.
  */
 class Action extends ActionManager {
 
@@ -17,6 +21,13 @@ class Action extends ActionManager {
    * @var \Drupal\Core\Action\ActionManager
    */
   protected ActionManager $decoratedManager;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * Get the service instance of this class.
@@ -49,6 +60,29 @@ class Action extends ActionManager {
   }
 
   /**
+   * Set the entity type manager.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   */
+  public function setEntityTypeManager(EntityTypeManagerInterface $entity_type_manager): void {
+    $this->entityTypeManager = $entity_type_manager;
+  }
+
+  /**
+   * Get the entity type manager.
+   *
+   * @return \Drupal\Core\Entity\EntityTypeManagerInterface
+   *   The entity type manager.
+   */
+  protected function getEntityTypeManager(): EntityTypeManagerInterface {
+    if (!isset($this->entityTypeManager)) {
+      $this->entityTypeManager = \Drupal::entityTypeManager();
+    }
+    return $this->entityTypeManager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getModuleHandler() {
@@ -59,6 +93,11 @@ class Action extends ActionManager {
    * {@inheritdoc}
    */
   public function setCacheBackend(CacheBackendInterface $cache_backend, $cache_key, array $cache_tags = []) {
+    if (empty($cache_tags)) {
+      // By default, use the cache tags of the action entity type. This makes
+      // sure, that newly added pre-configured actions are available.
+      $cache_tags = $this->getEntityTypeManager()->getDefinition('action')->getListCacheTags();
+    }
     if (isset($this->decoratedManager)) {
       $this->decoratedManager->setCacheBackend($cache_backend, $cache_key, $cache_tags);
     }

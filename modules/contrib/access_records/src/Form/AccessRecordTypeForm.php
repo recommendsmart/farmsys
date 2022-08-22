@@ -57,6 +57,7 @@ class AccessRecordTypeForm extends BundleEntityFormBase {
     }
     else {
       $has_data = !empty($this->entityTypeManager->getStorage('access_record')->getQuery()
+        ->accessCheck(FALSE)
         ->condition('ar_type', $access_record_type->id())
         ->range(0, 1)
         ->execute());
@@ -234,6 +235,7 @@ class AccessRecordTypeForm extends BundleEntityFormBase {
     }
 
     $has_data = !empty($this->entityTypeManager->getStorage('access_record')->getQuery()
+      ->accessCheck(FALSE)
       ->condition('ar_type', $access_record_type->id())
       ->range(0, 1)
       ->execute());

@@ -4,10 +4,10 @@ namespace Drupal\field_fallback\Plugin\FieldFallbackConverter;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\field\FieldConfigInterface;
 use Drupal\field_fallback\Plugin\FieldFallbackConverterBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -70,10 +70,12 @@ class ParagraphsSummaryFieldFallbackConverter extends FieldFallbackConverterBase
   public function convert(FieldItemListInterface $field) {
     $configuration = $this->getConfiguration();
     return [
-      // We don't trim the text here since that should be done in the field
-      // formatter.
-      'value' => \Drupal::service('paragraphs_summary_token.text_summary_builder')->build($field, NULL, $configuration['format']),
-      'format' => $configuration['format'] ?? filter_default_format(),
+      [
+        // We don't trim the text here since that should be done in the field
+        // formatter.
+        'value' => \Drupal::service('paragraphs_summary_token.text_summary_builder')->build($field, NULL, $configuration['format']),
+        'format' => $configuration['format'] ?? filter_default_format(),
+      ],
     ];
   }
 
@@ -103,7 +105,7 @@ class ParagraphsSummaryFieldFallbackConverter extends FieldFallbackConverterBase
 
     $form['format'] = [
       '#type' => 'select',
-      '#title' => t('Text format'),
+      '#title' => $this->t('Text format'),
       '#options' => $options,
       '#default_value' => $default_format,
       '#access' => count($options) >= 1,
@@ -134,7 +136,7 @@ class ParagraphsSummaryFieldFallbackConverter extends FieldFallbackConverterBase
   /**
    * {@inheritdoc}
    */
-  public function isApplicable(FieldConfigInterface $target_field, FieldConfigInterface $source_field): bool {
+  public function isApplicable(FieldDefinitionInterface $target_field, FieldDefinitionInterface $source_field): bool {
     return $source_field->getSetting('target_type') === 'paragraph' && $this->moduleHandler->moduleExists('paragraphs_summary_token');
   }
 

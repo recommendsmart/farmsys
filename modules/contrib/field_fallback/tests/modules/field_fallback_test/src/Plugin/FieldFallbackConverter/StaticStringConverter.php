@@ -42,7 +42,7 @@ class StaticStringConverter extends FieldFallbackConverterBase {
 
     $form['static_string_value'] = [
       '#type' => 'textfield',
-      '#title' => t('Static string value'),
+      '#title' => $this->t('Static string value'),
       '#default_value' => $configuration['static_string_value'] ?? '',
       '#required' => TRUE,
     ];

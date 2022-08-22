@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Logger\LoggerChannel;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\eca\PluginManager\Action;
+use Drupal\eca\Service\Actions;
 use Drupal\eca\Service\Conditions;
 use Drupal\eca\PluginManager\Condition;
 use Drupal\eca\PluginManager\Event;
@@ -47,6 +48,13 @@ trait EcaTrait {
    * @var \Drupal\Core\Action\ActionManager|null
    */
   protected ?ActionManager $actionPluginManager;
+
+  /**
+   * ECA action service.
+   *
+   * @var \Drupal\eca\Service\Actions|null
+   */
+  protected ?Actions $actionServices;
 
   /**
    * ECA condition service.
@@ -150,7 +158,20 @@ trait EcaTrait {
   }
 
   /**
-   * Initializes the condition plugin manager.
+   * Initializes the action service.
+   *
+   * @return \Drupal\eca\Service\Actions
+   *   The condition services.
+   */
+  protected function actionServices(): Actions {
+    if (!isset($this->actionServices)) {
+      $this->actionServices = \Drupal::service('eca.service.action');
+    }
+    return $this->actionServices;
+  }
+
+  /**
+   * Initializes the condition service.
    *
    * @return \Drupal\eca\Service\Conditions
    *   The condition services.

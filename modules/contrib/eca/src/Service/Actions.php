@@ -77,19 +77,39 @@ class Actions {
           // We replace all save actions by one generic "Entity: save" action.
           continue;
         }
-        try {
-          $actions[] = $this->actionManager->createInstance($plugin_id);
-        }
-        catch (\Exception $e) {
-          $this->logger->error('The action plugin %pluginid can not be initialized. ECA is ignoring this action. The issue with this action: %msg', [
-            '%pluginid' => $plugin_id,
-            '%msg' => $e->getMessage(),
-          ]);
+        if ($action = $this->createInstance($plugin_id)) {
+          $actions[] = $action;
         }
       }
       $this->sortPlugins($actions);
     }
     return $actions;
+  }
+
+  /**
+   * Get an action plugin by id.
+   *
+   * @param string $plugin_id
+   *   The id of the action plugin to be returned.
+   * @param array $configuration
+   *   The optional configuration array.
+   *
+   * @return \Drupal\Core\Action\ActionInterface|null
+   *   The action plugin.
+   */
+  public function createInstance(string $plugin_id, array $configuration = []): ?CoreActionInterface {
+    try {
+      /** @var \Drupal\Core\Action\ActionInterface $action */
+      $action = $this->actionManager->createInstance($plugin_id, $configuration);
+    }
+    catch (\Exception $e) {
+      $action = NULL;
+      $this->logger->error('The action plugin %pluginid can not be initialized. ECA is ignoring this action. The issue with this action: %msg', [
+        '%pluginid' => $plugin_id,
+        '%msg' => $e->getMessage(),
+      ]);
+    }
+    return $action;
   }
 
   /**
@@ -140,7 +160,7 @@ class Actions {
         $form['replace_tokens'] = [
           '#type' => 'checkbox',
           '#title' => $this->t('Replace tokens'),
-          '#description' => $this->t('When enabled, tokens will be replaced <em>before</em> executing the action. <strong>Please note:</strong> Actions might already take care of replacing tokens on their own. Therefore use this option only with care and when it makes sense.'),
+          '#description' => $this->t('When enabled, tokens will be replaced <em>before</em> executing the action. <strong>Please note:</strong> Actions might already take care of replacing tokens on their own. Therefore, use this option only with care and when it makes sense.'),
           '#default_value' => $actionConfig['replace_tokens'] ?? FALSE,
           '#weight' => 5,
         ];

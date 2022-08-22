@@ -224,6 +224,37 @@ class FieldFallbackConfigFormTest extends WebDriverTestBase {
   }
 
   /**
+   * Test the config form with a base field.
+   */
+  public function testConfigFormWithBaseField() {
+    // Add a new field.
+    $this->createTextField('field_title_fallback', 'Primary');
+
+    // Configure the title as fallback value.
+    $this->drupalGet('admin/structure/types/manage/page/fields/node.page.field_title_fallback');
+    $field_fallback_field = $this->getSession()->getPage()->findField('third_party_settings[field_fallback][field]');
+    $field_fallback_field->selectOption('title');
+    $field_fallback_converter = $this->assertSession()->waitForField('third_party_settings[field_fallback][converter]');
+    $field_fallback_converter->selectOption('default');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->pressButton('Save');
+
+    // Check if the values are correctly saved in the config.
+    $fallback_field = $this->config('field.field.node.page.field_title_fallback')
+      ->get('third_party_settings.field_fallback');
+    $this->assertEquals([
+      'field' => 'title',
+      'converter' => 'default',
+    ], $fallback_field);
+
+    // Check that the value of the field field_title_fallback matches the node
+    // title.
+    $node = $this->drupalCreateNode();
+    $this->drupalGet($node->toUrl());
+    $this->assertSession()->elementTextContains('css', '.field--name-field-title-fallback', $node->label());
+  }
+
+  /**
    * Helper method that creates a text field.
    *
    * @param string $machine_name

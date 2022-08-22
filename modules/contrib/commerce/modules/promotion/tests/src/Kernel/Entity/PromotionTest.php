@@ -188,8 +188,18 @@ class PromotionTest extends OrderKernelTestBase {
     $promotion->save();
     $this->assertEquals(0, $promotion->getOwnerId());
 
+    $promotion = Promotion::create([
+      'status' => FALSE,
+    ]);
     $this->assertFalse($promotion->requiresCoupon());
     $promotion->set('require_coupon', TRUE);
+    $this->assertTrue($promotion->requiresCoupon());
+    $promotion->set('require_coupon', FALSE);
+    $this->assertFalse($promotion->requiresCoupon());
+    // As soon as a promotion requires a coupon, applying a coupon is required
+    // in order for the promotion to apply.
+    $promotion->addCoupon($coupon1);
+    $promotion->save();
     $this->assertTrue($promotion->requiresCoupon());
   }
 
