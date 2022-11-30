@@ -160,8 +160,8 @@ class SocialBulkGroupInvitation extends BulkGroupInvitation {
     $this->pluginManager = $plugin_manager;
     $this->configFactory = $config_factory;
     $this->token = $token;
-    $this->groupInvitationLoader = $group_membership_loader;
-    $this->groupMembershipLoader = $invitation_loader;
+    $this->groupMembershipLoader = $group_membership_loader;
+    $this->groupInvitationLoader = $invitation_loader;
     $this->fileUrlGenerator = $file_url_generator;
   }
 
@@ -554,7 +554,7 @@ class SocialBulkGroupInvitation extends BulkGroupInvitation {
   /**
    * Returns access to the invite page.
    *
-   * @param \Drupal\group\Entity\GroupInterface|mixed[] $group
+   * @param \Drupal\group\Entity\GroupInterface $group
    *   The group entity.
    *
    * @return \Drupal\Core\Access\AccessResultInterface
