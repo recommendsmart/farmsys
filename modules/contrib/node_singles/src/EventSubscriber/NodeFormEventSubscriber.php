@@ -5,6 +5,7 @@ namespace Drupal\node_singles\EventSubscriber;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node_singles\Service\NodeSinglesInterface;
+use Drupal\node_singles\Service\NodeSinglesSettingsInterface;
 
 /**
  * Alters the node edit form.
@@ -28,16 +29,30 @@ class NodeFormEventSubscriber {
   protected $singles;
 
   /**
+   * The settings service.
+   *
+   * @var \Drupal\node_singles\Service\NodeSinglesSettingsInterface
+   */
+  protected $settings;
+
+  /**
    * Constructs the event subscriber.
    *
-   * @param \Drupal\Core\Routing\RouteMatchInterface $current_route_match
+   * @param \Drupal\Core\Routing\RouteMatchInterface $currentRouteMatch
    *   The route match.
    * @param \Drupal\node_singles\Service\NodeSinglesInterface $singles
    *   The node singles service.
+   * @param \Drupal\node_singles\Service\NodeSinglesSettingsInterface $settings
+   *   The settings service.
    */
-  public function __construct(RouteMatchInterface $current_route_match, NodeSinglesInterface $singles) {
-    $this->currentRouteMatch = $current_route_match;
+  public function __construct(
+    RouteMatchInterface $currentRouteMatch,
+    NodeSinglesInterface $singles,
+    NodeSinglesSettingsInterface $settings
+  ) {
+    $this->currentRouteMatch = $currentRouteMatch;
     $this->singles = $singles;
+    $this->settings = $settings;
   }
 
   /**
@@ -54,9 +69,10 @@ class NodeFormEventSubscriber {
     }
 
     // Remove duplicate name from the page title.
-    $form['#title'] = $this->t('Edit %type single', [
+    $form['#title'] = $this->t('Edit %type @singularLabel', [
       '%type' => node_get_type_label($node),
-    ]);
+      '@singularLabel' => $this->settings->getSingularLabel(),
+    ], ['context' => 'Single node edit form title']);
 
     // Hide authoring information since it's irrelevant.
     if (isset($form['meta']['author'])) {

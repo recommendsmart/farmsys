@@ -4,6 +4,7 @@ namespace Drupal\node_singles\Form;
 
 use Drupal\Core\Entity\EntityDeleteForm;
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * An alternative version of the standard entity delete form.
@@ -14,13 +15,32 @@ use Drupal\Core\Form\FormStateInterface;
 class SingleNodeTypeDeleteConfirm extends EntityDeleteForm {
 
   /**
+   * The settings service.
+   *
+   * @var \Drupal\node_singles\Service\NodeSinglesSettingsInterface
+   */
+  protected $settings;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    $instance = parent::create($container);
+    $instance->settings = $container->get('node_singles.settings');
+
+    return $instance;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildForm($form, $form_state);
 
     if ($this->entity->getThirdPartySetting('node_singles', 'is_single', FALSE)) {
-      $caption = '<p>' . $this->t('Deleting this single node type will also delete the associated node and its data. Are you sure?') . '</p>';
+      $caption = '<p>' . $this->t('Deleting this node type will also delete the associated @singleLabel and its data. Are you sure?', [
+        '@singleLabel' => $this->settings->getSingularLabel(),
+      ]) . '</p>';
     }
     else {
       $numNodes = $this->entityTypeManager->getStorage('node')->getQuery()

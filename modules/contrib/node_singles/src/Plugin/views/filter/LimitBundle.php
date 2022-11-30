@@ -6,11 +6,14 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\filter\Bundle;
 use Drupal\views\ViewExecutable;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Base class for filters that limit the bundles to a fixed list.
  */
 abstract class LimitBundle extends Bundle {
+
+  use StringTranslationTrait;
 
   /**
    * {@inheritdoc}
@@ -50,7 +53,7 @@ abstract class LimitBundle extends Bundle {
     }
 
     if ($this->operator !== 'in') {
-      return t('inverted');
+      return $this->t('inverted');
     }
 
     return NULL;

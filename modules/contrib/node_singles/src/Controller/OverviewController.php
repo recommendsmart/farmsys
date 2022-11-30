@@ -29,12 +29,20 @@ class OverviewController implements ContainerInjectionInterface {
   protected $singles;
 
   /**
+   * The settings service.
+   *
+   * @var \Drupal\node_singles\Service\NodeSinglesSettingsInterface
+   */
+  protected $settings;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     $instance = new static();
     $instance->entityTypeManager = $container->get('entity_type.manager');
     $instance->singles = $container->get('node_singles');
+    $instance->settings = $container->get('node_singles.settings');
 
     return $instance;
   }
@@ -50,7 +58,9 @@ class OverviewController implements ContainerInjectionInterface {
         $this->t('Description'),
         $this->t('Operations'),
       ],
-      '#empty' => $this->t('No singles found.'),
+      '#empty' => $this->t('No @pluralLabel found.', [
+        '@pluralLabel' => $this->settings->getPluralLabel(),
+      ], ['context' => 'Node singles overview page']),
       '#sticky' => TRUE,
     ];
 
@@ -82,6 +92,13 @@ class OverviewController implements ContainerInjectionInterface {
     }
 
     return $output;
+  }
+
+  /**
+   * Returns the page title.
+   */
+  public function title() {
+    return $this->settings->getCollectionLabel();
   }
 
 }

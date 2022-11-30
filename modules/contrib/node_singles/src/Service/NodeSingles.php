@@ -7,7 +7,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\State\StateInterface;
-use Drupal\node\Entity\NodeType;
 use Drupal\node\NodeInterface;
 use Drupal\node\NodeTypeInterface;
 
@@ -140,8 +139,8 @@ class NodeSingles implements NodeSinglesInterface {
     $types = $this->getAllSingles();
 
     return isset($types[$bundle])
-            ? $this->getSingle($types[$bundle], $langcode)
-            : NULL;
+      ? $this->getSingle($types[$bundle], $langcode)
+      : NULL;
   }
 
   /**
@@ -163,7 +162,8 @@ class NodeSingles implements NodeSinglesInterface {
 
     $list = [];
     /** @var \Drupal\node\Entity\NodeTypeInterface $type */
-    foreach (NodeType::loadMultiple() as $type) {
+    $nodeTypes = $this->entityTypeManager->getStorage('node_type')->loadMultiple();
+    foreach ($nodeTypes as $type) {
       if ($this->isSingle($type)) {
         $list[$type->get('type')] = $type;
       }

@@ -3,3 +3,8 @@ node_singles.overview:
   title: Singles
   base_route: system.admin_content
   weight: 10
+
+node_singles.settings:
+  route_name: node_singles.settings
+  title: Settings
+  base_route: node_singles.settings

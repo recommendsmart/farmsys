@@ -1,5 +1,5 @@
-eca.import:
-  route_name: eca.import
-  title: 'Import'
+eca.add:
+  route_name: eca.add
+  title: 'Add new model'
   appears_on:
     - entity.eca.collection

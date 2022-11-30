@@ -64,3 +64,11 @@ eca.import:
     _form: '\Drupal\eca_ui\Form\Import'
   requirements:
     _permission: 'administer eca'
+
+eca.add:
+  path: '/admin/config/workflow/eca/add'
+  defaults:
+    _title: 'Create new model'
+    _controller: '\Drupal\eca_ui\Controller\EcaController::add'
+  requirements:
+    _permission: 'administer eca'

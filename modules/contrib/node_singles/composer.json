@@ -1,5 +1,5 @@
 {
-    "name": "wieni/node_singles",
+    "name": "drupal/node_singles",
     "description": "Singles are node types used for one-off pages that have unique content requirements",
     "license": "GPL-2.0-or-later",
     "type": "drupal-module",

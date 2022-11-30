@@ -34,6 +34,12 @@ class HookHandler extends BaseHookHandler {
    *   The form state.
    */
   public function alter(array &$form, FormStateInterface $form_state): void {
+    if (isset($form['#form_id']) && ($form['#form_id'] === 'system_modules_uninstall_confirm_form')) {
+      // When this module is being uninstalled via UI, it will lead to a fatal.
+      // To avoid this, the module uninstall confirm form is not supported.
+      // @see https://www.drupal.org/project/eca/issues/3305797
+      return;
+    }
     $this->triggerEvent->dispatchFromPlugin('form:form_build', $form, $form_state);
     // Add the handlers on class-level, to avoid expensive and possibly faulty
     // serialization of nested object references during form submissions.
@@ -56,8 +62,17 @@ class HookHandler extends BaseHookHandler {
   protected function addSubmitHandler(array &$elements): void {
     foreach (Element::children($elements) as $key) {
       if (is_array($elements[$key])) {
-        if (isset($elements[$key]['#submit'])) {
-          $elements[$key]['#submit'][] = [static::class, 'submit'];
+        // Only add our submit handler, when at least one other submit handler
+        // is present for the element. The form submitter service calls
+        // form-level submit handlers when no submit handler is specified, i.e.
+        // either no #submit array is given at all, or the given array is empty.
+        // @see \Drupal\Core\Form\FormSubmitter::executeSubmitHandlers()
+        if (!empty($elements[$key]['#submit'])) {
+          $submit_handler = [static::class, 'submit'];
+          // Make sure our submit handler is added only once.
+          if (!in_array($submit_handler, $elements[$key]['#submit'], TRUE)) {
+            $elements[$key]['#submit'][] = $submit_handler;
+          }
         }
         $this->addSubmitHandler($elements[$key]);
       }

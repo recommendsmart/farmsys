@@ -12,7 +12,9 @@ use Drupal\eca\Plugin\ECA\EcaPluginBase;
 use Drupal\eca\Plugin\ECA\Modeller\ModellerBase;
 use Drupal\eca\Plugin\ECA\Modeller\ModellerInterface;
 use Drupal\eca\Service\Modellers;
+use Drupal\eca_ui\Service\TokenBrowserService;
 use Mtownsend\XmlToArray\XmlToArray;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -57,6 +59,22 @@ abstract class ModellerBpmnBase extends ModellerBase {
    * @var \DOMXPath
    */
   protected \DOMXPath $xpath;
+
+  /**
+   * ECA token browser service.
+   *
+   * @var \Drupal\eca_ui\Service\TokenBrowserService
+   */
+  protected TokenBrowserService $tokenBrowserService;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): EcaPluginBase {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->tokenBrowserService = $container->get('eca_ui.service.token_browser');
+    return $instance;
+  }
 
   /**
    * Prepares the data for further updates processes.
@@ -760,7 +778,7 @@ abstract class ModellerBpmnBase extends ModellerBase {
           case 'checkboxes':
           case 'radios':
           case 'select':
-            $fields[] = $this->optionsField($key, $label, $weight, $description, $definition['#options'], (string) $value);
+            $fields[] = $this->optionsField($key, $label, $weight, $description, $definition['#options'], (string) $value, $definition['#required'] ?? FALSE);
             continue 2;
 
         }
@@ -816,17 +834,22 @@ abstract class ModellerBpmnBase extends ModellerBase {
    *   Key/value list of available options.
    * @param string $value
    *   The default value for the field.
+   * @param bool $required
+   *   The setting, if this field is required to be filled by the user.
    *
    * @return array
    *   Prepared option field.
    */
-  protected function optionsField(string $name, string $label, int $weight, ?string $description, array $options, string $value): array {
+  protected function optionsField(string $name, string $label, int $weight, ?string $description, array $options, string $value, bool $required = FALSE): array {
     $choices = [];
     foreach ($options as $optionValue => $optionName) {
       $choices[] = [
         'name' => (string) $optionName,
         'value' => (string) $optionValue,
       ];
+      if ($required && $value === '') {
+        $value = (string) $optionValue;
+      }
     }
     $field = [
       'name' => $name,
@@ -867,7 +890,7 @@ abstract class ModellerBpmnBase extends ModellerBase {
       'label' => $label,
       'weight' => $weight,
       'type' => 'Dropdown',
-      'value' => $value,
+      'value' => $value ? 'yes' : 'no',
       'extras' => [
         'choices' => [
           [

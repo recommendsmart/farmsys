@@ -11,6 +11,7 @@ use Drupal\consumers\Entity\Consumer;
 use Drupal\simple_oauth\Entity\Oauth2Token;
 use Drupal\simple_oauth\ExpiredCollector;
 use Drupal\Tests\UnitTestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * @coversDefaultClass \Drupal\simple_oauth\ExpiredCollector
@@ -18,11 +19,13 @@ use Drupal\Tests\UnitTestCase;
  */
 class EntityCollectorTest extends UnitTestCase {
 
+  use ProphecyTrait;
+
   /**
    * @covers ::collect
    */
   public function testCollect() {
-    list($expired_collector, $query) = $this->buildProphecies();
+    [$expired_collector, $query] = $this->buildProphecies();
     $query->condition('expire', 42, '<')->shouldBeCalledTimes(1);
     $this->assertEquals([1, 52], array_map(function ($entity) {
       return $entity->id();
@@ -33,7 +36,7 @@ class EntityCollectorTest extends UnitTestCase {
    * @covers ::collectForClient
    */
   public function testCollectForClient() {
-    list($expired_collector, $query) = $this->buildProphecies();
+    [$expired_collector, $query] = $this->buildProphecies();
     $client = $this->prophesize(Consumer::class);
     $client->id()->willReturn(35);
     $query->condition('client', 35)->shouldBeCalledTimes(1);
@@ -47,7 +50,7 @@ class EntityCollectorTest extends UnitTestCase {
    * @covers ::collectForAccount
    */
   public function testCollectForAccount() {
-    list($expired_collector, $token_query,,, $client_storage) = $this->buildProphecies();
+    [$expired_collector, $token_query,,, $client_storage] = $this->buildProphecies();
     $account = $this->prophesize(AccountInterface::class);
     $account->id()->willReturn(22);
     $token_query->condition('auth_user_id', 22)->shouldBeCalledTimes(1);
@@ -66,7 +69,7 @@ class EntityCollectorTest extends UnitTestCase {
    * @covers ::collect
    */
   public function testDeleteMultipleTokens() {
-    list($expired_collector,, $storage) = $this->buildProphecies();
+    [$expired_collector,, $storage] = $this->buildProphecies();
     $storage->delete(['foo'])->shouldBeCalledTimes(1);
     $expired_collector->deleteMultipleTokens(['foo']);
   }

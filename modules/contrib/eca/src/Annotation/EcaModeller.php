@@ -18,4 +18,11 @@ class EcaModeller extends Plugin {
    */
   public string $label;
 
+  /**
+   * Description of the modeller.
+   *
+   * @var string
+   */
+  public string $description;
+
 }

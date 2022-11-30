@@ -8,8 +8,11 @@ use Drupal\Core\PageCache\RequestPolicyInterface;
 use Drupal\simple_oauth\Authentication\Provider\SimpleOauthAuthenticationProvider;
 use Drupal\simple_oauth\PageCache\DisallowSimpleOauthRequests;
 use Drupal\simple_oauth\PageCache\SimpleOauthRequestPolicyInterface;
-use Drupal\simple_oauth\Server\ResourceServerInterface;
+use Drupal\simple_oauth\Server\ResourceServerFactoryInterface;
 use Drupal\Tests\UnitTestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Symfony\Bridge\PsrHttpMessage\HttpFoundationFactoryInterface;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -17,6 +20,8 @@ use Symfony\Component\HttpFoundation\Request;
  * @group simple_oauth
  */
 class SimpleOauthAuthenticationTest extends UnitTestCase {
+
+  use ProphecyTrait;
 
   /**
    * The authentication provider.
@@ -37,13 +42,17 @@ class SimpleOauthAuthenticationTest extends UnitTestCase {
   protected function setUp(): void {
     parent::setUp();
 
-    $resource_server = $this->prophesize(ResourceServerInterface::class);
+    $resource_server_factory = $this->prophesize(ResourceServerFactoryInterface::class);
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
     $this->oauthPageCacheRequestPolicy = new DisallowSimpleOauthRequests();
+    $http_message_factory = $this->prophesize(HttpMessageFactoryInterface::class);
+    $http_foundation_factory = $this->prophesize(HttpFoundationFactoryInterface::class);
     $this->provider = new SimpleOauthAuthenticationProvider(
-      $resource_server->reveal(),
+      $resource_server_factory->reveal(),
       $entity_type_manager->reveal(),
-      $this->oauthPageCacheRequestPolicy
+      $this->oauthPageCacheRequestPolicy,
+      $http_message_factory->reveal(),
+      $http_foundation_factory->reveal()
     );
   }
 

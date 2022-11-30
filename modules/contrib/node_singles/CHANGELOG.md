@@ -6,12 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.3] - 2022-02-07
 ### Fixed
-- Revert "_Fix menu link not being visible if the user doesn't have the 'access content overview' permission_". This 
-  cannot be fixed since the menu link tree is stored in the database and there's no easy way to alter it at runtime.
+- Revert "_Fix menu link not being visible if the user doesn't have the
+  'access content overview' permission_". This cannot be fixed since the
+  menu link tree is stored in the database and there's no easy way to alter
+  it at runtime.
 
 ## [3.0.2] - 2022-01-31
 ### Fixed
-- Fix menu link not being visible if the user doesn't have the 'access content overview' permission
+- Fix menu link not being visible if the user doesn't have the
+  'access content overview' permission
 - Remove single node add menu links added by modules like admin_toolbar_tools
 - Hide some single node permissions since they aren't relevant
 
@@ -24,7 +27,8 @@ Check [`UPGRADING.md`](UPGRADING.md) for instructions.
 
 ### Changed
 - Rename module from `wmsingles` to `node_singles`
-- Move module development to Drupal.org, changing the namespace from `wieni` to `drupal`
+- Move module development to Drupal.org, changing the namespace from
+  `wieni` to `drupal`
 
 ## [2.5.7] - 2022-01-20
 ### Added

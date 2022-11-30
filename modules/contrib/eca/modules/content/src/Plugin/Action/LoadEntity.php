@@ -3,6 +3,7 @@
 namespace Drupal\eca_content\Plugin\Action;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultReasonInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -52,8 +53,18 @@ class LoadEntity extends ConfigurableActionBase {
    */
   public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
     $access_result = AccessResult::forbidden();
+    $reason = NULL;
     if ($entity = $this->doLoadEntity($object)) {
       $access_result = $entity->access('view', $account, TRUE);
+      if (!$access_result->isAllowed()) {
+        $reason = 'No permission to view the entity.';
+      }
+    }
+    else {
+      $reason = 'No entity available.';
+    }
+    if ($reason !== NULL && $access_result instanceof AccessResultReasonInterface) {
+      $access_result->setReason($reason);
     }
     return $return_as_object ? $access_result : $access_result->isAllowed();
   }
@@ -93,6 +104,7 @@ class LoadEntity extends ConfigurableActionBase {
       '#type' => 'textfield',
       '#title' => $this->t('Name of token'),
       '#default_value' => $this->configuration['token_name'],
+      '#description' => $this->t('Provide the name of a token that holds the loaded entity.'),
       '#weight' => -90,
     ];
     return $this->entityLoader()->buildConfigurationForm($this->configuration, $form, $form_state);

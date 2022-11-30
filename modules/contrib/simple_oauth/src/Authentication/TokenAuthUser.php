@@ -304,27 +304,6 @@ class TokenAuthUser implements TokenAuthUserInterface {
   /**
    * {@inheritdoc}
    */
-  public function urlInfo($rel = 'canonical', array $options = []) {
-    return $this->subject->urlInfo($rel, $options);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function url($rel = 'canonical', $options = []) {
-    return $this->subject->url($rel, $options);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function link($text = NULL, $rel = 'canonical', array $options = []) {
-    return $this->subject->link($text, $rel, $options);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function hasLinkTemplate($key) {
     return $this->subject->hasLinkTemplate($key);
   }

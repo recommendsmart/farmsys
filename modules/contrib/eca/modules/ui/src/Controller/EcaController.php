@@ -8,6 +8,7 @@ use Drupal\Core\Ajax\RedirectCommand;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\eca\Service\Modellers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -71,6 +72,52 @@ class EcaController extends ControllerBase {
       $container->get('eca.service.modeller'),
       $container->get('entity_type.manager')
     );
+  }
+
+  /**
+   * Displays add new model links for available modellers.
+   *
+   * Redirects to /admin/config/workflow/eca/add/[type] if only one modeller is
+   * available.
+   *
+   * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+   *   A render array for a list of modellers that can add new models; however,
+   *   if there is only one modeller available, the function will return a
+   *   RedirectResponse to directly add that model type.
+   */
+  public function add() {
+    $modellers = [];
+    foreach ($this->modellerServices->getModellerDefinitions() as $modellerDefinition) {
+      if (($modeller = $this->modellerServices->getModeller($modellerDefinition['id'])) && $modeller->isEditable()) {
+        $url = Url::fromRoute($modellerDefinition['provider'] . '.add');
+        if ($url->access()) {
+          $label = $modellerDefinition['label'] ?? $modellerDefinition['id'];
+          $description = $modellerDefinition['description'] ?? 'Use ' . $label . ' to create the new model.';
+          $modellers[$modellerDefinition['id']] = [
+            'provider' => $modellerDefinition['provider'],
+            'label' => $label,
+            'description' => $description,
+            'add_link' => Link::fromTextAndUrl($label, $url),
+          ];
+        }
+      }
+    }
+    if (count($modellers) === 1) {
+      $modeller = array_shift($modellers);
+      return $this->redirect($modeller['provider'] . '.add');
+    }
+    return [
+      '#cache' => [
+        'tags' => [
+          'eca_modeller_plugins',
+        ],
+      ],
+      '#theme' => 'entity_add_list',
+      '#bundles' => $modellers,
+      '#add_bundle_message' => $this->t('There are no modellers available yet. Install at least one module that integrates a modeller. A list of available integrations can be found on the <a href=":url" target="_blank" rel="nofollow noreferrer">ECA project page</a>.', [
+        ':url' => 'https://www.drupal.org/project/eca#modellers',
+      ]),
+    ];
   }
 
   /**

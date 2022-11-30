@@ -12,6 +12,7 @@ use Drupal\KernelTests\KernelTestBase;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\user\Entity\User;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * Kernel tests for the "eca_route" submodule.
@@ -24,7 +25,7 @@ use Drupal\user\Entity\User;
  */
 class RouteTest extends KernelTestBase {
 
-  use \Prophecy\PhpUnit\ProphecyTrait;
+  use ProphecyTrait;
 
   /**
    * {@inheritdoc}

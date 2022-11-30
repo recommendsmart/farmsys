@@ -18,16 +18,16 @@ use Drupal\Core\Config\TypedConfigManager;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Extension\ModuleInstallerInterface;
 use Drupal\Core\Extension\ThemeHandler;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\ProxyClass\Extension\ModuleInstaller;
-use Drupal\Core\ProxyClass\Lock\DatabaseLockBackend;
+use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\config\StorageReplaceDataWrapper;
+use Drupal\eca\Entity\Eca;
 use Drupal\eca\Service\Modellers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -85,11 +85,11 @@ class Import extends FormBase {
   protected ContainerAwareEventDispatcher $eventDispatcher;
 
   /**
-   * Database lock backend.
+   * Lock backend.
    *
-   * @var \Drupal\Core\ProxyClass\Lock\DatabaseLockBackend
+   * @var \Drupal\Core\Lock\LockBackendInterface
    */
-  protected DatabaseLockBackend $lock;
+  protected LockBackendInterface $lock;
 
   /**
    * Typed config manager.
@@ -101,9 +101,9 @@ class Import extends FormBase {
   /**
    * Module installer.
    *
-   * @var \Drupal\Core\ProxyClass\Extension\ModuleInstaller
+   * @var \Drupal\Core\Extension\ModuleInstallerInterface
    */
-  protected ModuleInstaller $moduleInstaller;
+  protected ModuleInstallerInterface $moduleInstaller;
 
   /**
    * Theme handler.
@@ -315,20 +315,34 @@ class Import extends FormBase {
       }
     }
     else {
-      // Import all files from n extracted archive.
+      // Import all files from an extracted archive.
       $source_storage_dir = $model;
       $source_storage = new FileStorage($source_storage_dir);
       $active_storage = $this->configStorage;
       $replacement_storage = new StorageReplaceDataWrapper($active_storage);
+      $id = NULL;
       foreach ($source_storage->listAll() as $name) {
         $data = $source_storage->read($name);
-        $replacement_storage->replaceData($name, $data);
+        if (is_array($data)) {
+          if (mb_strpos($name, 'eca.eca.') === 0) {
+            $id = $data['id'];
+          }
+          $replacement_storage->replaceData($name, $data);
+        }
+        else {
+          $this->messenger()->addError($this->t('The contained config entity %name is invalid and got ignored.', [
+            '%name' => $name,
+          ]));
+        }
       }
       $source_storage = $replacement_storage;
 
       $storage_comparer = new StorageComparer($source_storage, $active_storage);
-      if (!$storage_comparer->createChangelist()->hasChanges()) {
-        $this->messenger()->addStatus(('There are no changes to import.'));
+      if ($id === NULL) {
+        $this->messenger()->addError('This file does not contain any ECA model.');
+      }
+      elseif (!$storage_comparer->createChangelist()->hasChanges()) {
+        $this->messenger()->addStatus('There are no changes to import.');
       }
       else {
         $config_importer = new ConfigImporter(
@@ -352,8 +366,21 @@ class Import extends FormBase {
             if ($config_importer->getErrors()) {
               $this->messenger()->addError(implode("\n", $config_importer->getErrors()));
             }
+            elseif ($eca = Eca::load($id)) {
+              if ($eca->isEditable()) {
+                $this->messenger()->addStatus($this->t('The configuration <a href="@link">@name</a> was imported successfully.', [
+                  '@name' => $eca->label(),
+                  '@link' => $eca->toUrl()->toString(),
+                ]));
+              }
+              else {
+                $this->messenger()->addStatus('The configuration %name was imported successfully.', [
+                  '%name' => $eca->label(),
+                ]);
+              }
+            }
             else {
-              $this->messenger()->addStatus('The configuration was imported successfully.');
+              $this->messenger()->addError('Unexpected error.');
             }
           }
           catch (ConfigException $e) {
@@ -362,8 +389,7 @@ class Import extends FormBase {
           }
         }
       }
-      $fs = new Filesystem();
-      $fs->remove($source_storage_dir);
+      $this->fileSystem->deleteRecursive($source_storage_dir);
     }
     $form_state->setRedirect('entity.eca.collection');
   }

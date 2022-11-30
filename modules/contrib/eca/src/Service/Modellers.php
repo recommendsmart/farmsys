@@ -334,8 +334,10 @@ class Modellers {
     foreach ($dependencies['config'] as $dependency) {
       if (!in_array($dependency, $allDependencies['config'], TRUE)) {
         $allDependencies['config'][] = $dependency;
-        $depConfig = $this->configFactory->get($dependency)->getStorage()->read($dependency)['dependencies'];
-        $this->getNestedDependencies($allDependencies, $depConfig);
+        $depConfig = $this->configFactory->get($dependency)->getStorage()->read($dependency);
+        if ($depConfig && isset($depConfig['dependencies'])) {
+          $this->getNestedDependencies($allDependencies, $depConfig['dependencies']);
+        }
       }
     }
   }

@@ -8,8 +8,8 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Url;
+use Drupal\simple_oauth\Service\Filesystem\FileSystemCheckerInterface;
 use Drupal\simple_oauth\Plugin\ScopeProviderManagerInterface;
-use Drupal\simple_oauth\Service\Filesystem\FileSystemChecker;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -22,9 +22,9 @@ class Oauth2TokenSettingsForm extends ConfigFormBase {
   /**
    * The file system checker.
    *
-   * @var \Drupal\simple_oauth\Service\Filesystem\FileSystemChecker
+   * @var \Drupal\simple_oauth\Service\Filesystem\FileSystemCheckerInterface
    */
-  protected FileSystemChecker $fileSystemChecker;
+  protected FileSystemCheckerInterface $fileSystemChecker;
 
   /**
    * The entity type manager.
@@ -45,7 +45,7 @@ class Oauth2TokenSettingsForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
    *   The factory for configuration objects.
-   * @param \Drupal\simple_oauth\Service\Filesystem\FileSystemChecker $file_system_checker
+   * @param \Drupal\simple_oauth\Service\Filesystem\FileSystemCheckerInterface $file_system_checker
    *   The simple_oauth.filesystem service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger service.
@@ -56,7 +56,7 @@ class Oauth2TokenSettingsForm extends ConfigFormBase {
    */
   public function __construct(
     ConfigFactoryInterface $configFactory,
-    FileSystemChecker $file_system_checker,
+    FileSystemCheckerInterface $file_system_checker,
     MessengerInterface $messenger,
     EntityTypeManagerInterface $entity_type_manager,
     ScopeProviderManagerInterface $scope_provider_manager

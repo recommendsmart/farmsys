@@ -1,3 +1,30 @@
+# [1.14.0](https://github.com/nolanlawson/emoji-picker-element/compare/v1.13.1...v1.14.0) (2022-11-25)
+
+
+### Features
+
+* add ru_RU locale ([#296](https://github.com/nolanlawson/emoji-picker-element/issues/296)) ([70946d9](https://github.com/nolanlawson/emoji-picker-element/commit/70946d95a22e017e6e9b3ba7ccd45ff3d924fa45))
+
+
+
+## [1.13.1](https://github.com/nolanlawson/emoji-picker-element/compare/v1.13.0...v1.13.1) (2022-10-23)
+
+
+### Bug Fixes
+
+* used dark colors for scrollbar in dark mode ([#294](https://github.com/nolanlawson/emoji-picker-element/issues/294)) ([af959ae](https://github.com/nolanlawson/emoji-picker-element/commit/af959ae7fc1801f91b8291ea82009d9e7443cf44))
+
+
+
+# [1.13.0](https://github.com/nolanlawson/emoji-picker-element/compare/v1.12.1...v1.13.0) (2022-10-17)
+
+
+### Features
+
+* add italian translation file ([#291](https://github.com/nolanlawson/emoji-picker-element/issues/291)) ([0607ac3](https://github.com/nolanlawson/emoji-picker-element/commit/0607ac39b5f8573704179ad367f038091a6b83a5))
+
+
+
 ## [1.12.1](https://github.com/nolanlawson/emoji-picker-element/compare/v1.12.0...v1.12.1) (2022-06-24)
 
 

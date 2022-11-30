@@ -3,6 +3,7 @@
 namespace Drupal\eca\Entity\Objects;
 
 use Drupal\Component\Plugin\ConfigurableInterface;
+use Drupal\Core\Access\AccessResultReasonInterface;
 use Drupal\eca\Plugin\Action\ActionInterface;
 use Drupal\eca\Entity\Eca;
 use Drupal\Core\Action\ActionInterface as CoreActionInterface;
@@ -92,12 +93,17 @@ class EcaAction extends EcaObject implements ObjectWithPluginInterface {
       $this->eventDispatcher()->dispatch($before_event, EcaEvents::BEFORE_ACTION_EXECUTION);
 
       try {
-        $access_granted = $this->plugin->access($object);
+        /** @var \Drupal\Core\Access\AccessResultReasonInterface $access_result */
+        $access_result = $this->plugin->access($object, NULL, TRUE);
+        $access_granted = $access_result->isAllowed();
         if ($access_granted) {
           $this->plugin->execute($object);
         }
         else {
-          $this->logger()->warning('Access denied to %actionlabel (%actionid) from ECA %ecalabel (%ecaid) for event %event.', $context);
+          $context['%reason'] = $access_result instanceof AccessResultReasonInterface ?
+            $access_result->getReason() :
+            'unknown';
+          $this->logger()->warning('Access denied to %actionlabel (%actionid) from ECA %ecalabel (%ecaid) for event %event: %reason', $context);
         }
       }
       catch (\Exception $ex) {

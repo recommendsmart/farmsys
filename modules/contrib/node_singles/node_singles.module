@@ -7,6 +7,7 @@
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Drupal\node\Entity\NodeType;
 use Drupal\node_singles\Access\SingleNodeAccessControlHandler;
@@ -55,19 +56,32 @@ function node_singles_entity_operation_alter(array &$operations, EntityInterface
  * Implements @see hook_menu_links_discovered_alter().
  */
 function node_singles_menu_links_discovered_alter(array &$links): void {
-  // Remove single node add menu links added by modules like
-  // admin_toolbar_tools. The node access handler should deal
-  // with this, but it doesn't for user 1.
   $singles = \Drupal::getContainer()->get('node_singles')->getAllSingles();
+  $settings = \Drupal::getContainer()->get('node_singles.settings');
+
   foreach ($links as $name => $link) {
+    // Remove single node add menu links added by modules like
+    // admin_toolbar_tools. The node access handler should deal
+    // with this, but it doesn't for user 1.
     if (
-          isset($link['route_name'])
-          && $link['route_name'] === 'node.add'
-          && isset($singles[$link['route_parameters']['node_type']])
-      ) {
+      isset($link['route_name'])
+      && $link['route_name'] === 'node.add'
+      && isset($singles[$link['route_parameters']['node_type']])
+    ) {
       unset($links[$name]);
     }
+
+    // Change the label of the menu links.
+    $links['node_singles.content']['title'] = $settings->getCollectionLabel();
+    $links['node_singles.settings']['title'] = $settings->getCollectionLabel();
   }
+}
+
+/**
+ * Implements @see hook_local_tasks_alter().
+ */
+function node_singles_local_tasks_alter(array &$localTasks): void {
+  $localTasks['node_singles.overview']['title'] = \Drupal::getContainer()->get('node_singles.settings')->getCollectionLabel();
 }
 
 /**
@@ -143,21 +157,31 @@ function node_singles_form_user_admin_permissions_alter(&$form, FormStateInterfa
  * Implements @see hook_views_data_alter().
  */
 function node_singles_views_data_alter(array &$data): void {
+  $settings = \Drupal::getContainer()->get('node_singles.settings');
+
   $data['node']['node_singles'] = [
-    'title' => t('Single nodes'),
+    'title' => $settings->getCollectionLabel(),
     'filter' => [
-      'title' => t('Single nodes'),
-      'help' => t('Filter single nodes.'),
+      'title' => $settings->getCollectionLabel(),
+      'help' => t("Filter @singlesPluralLabel.", [
+        '@singlesPluralLabel' => $settings->getPluralLabel(),
+      ]),
       'field' => 'type',
       'id' => 'node_singles',
     ],
   ];
 
   $data['node']['node_non_singles'] = [
-    'title' => t('Non-single nodes'),
+    'title' => t("All nodes except @singlesPluralLabel", [
+      '@singlesPluralLabel' => Markup::create($settings->getPluralLabel()),
+    ]),
     'filter' => [
-      'title' => t('Non-single nodes'),
-      'help' => t('Filter non-single nodes.'),
+      'title' => t("All nodes except @singlesPluralLabel", [
+        '@singlesPluralLabel' => Markup::create($settings->getPluralLabel()),
+      ]),
+      'help' => t("Filter all nodes except @singlesPluralLabel.", [
+        '@singlesPluralLabel' => Markup::create($settings->getPluralLabel()),
+      ]),
       'field' => 'type',
       'id' => 'node_non_singles',
     ],

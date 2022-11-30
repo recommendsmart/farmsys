@@ -12,7 +12,7 @@ use Drupal\eca\Plugin\ECA\Condition\ConditionBase;
  * @EcaCondition(
  *   id = "eca_entity_field_is_accessible",
  *   label = @Translation("Entity: field is accessible"),
- *   description = @Translation("Checks whether the current user has operational access on an entity field."),
+ *   description = @Translation("Evaluates whether the current user has operational access on an entity field."),
  *   context_definitions = {
  *     "entity" = @ContextDefinition("entity", label = @Translation("Entity"))
  *   }
@@ -54,12 +54,15 @@ class EntityFieldIsAccessible extends ConditionBase {
     $form['field_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Field machine name'),
+      '#description' => $this->t('The machine name of the field to check.'),
       '#default_value' => $this->configuration['field_name'] ?? '',
       '#required' => TRUE,
       '#weight' => -20,
     ];
     $form['operation'] = [
+      '#type' => 'select',
       '#title' => $this->t('Operation'),
+      '#description' => $this->t('The operation, like view, edit or delete to check accessibility.'),
       '#options' => [
         'view' => $this->t('View'),
         'edit' => $this->t('Edit'),

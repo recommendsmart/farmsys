@@ -7,14 +7,22 @@ services:
       - '@language_manager'
       - '@config.factory'
 
+  node_singles.settings:
+    class: Drupal\node_singles\Service\NodeSinglesSettings
+    arguments:
+      - '@config.factory'
+
   node_singles.node_form.subscriber:
     class: Drupal\node_singles\EventSubscriber\NodeFormEventSubscriber
     arguments:
       - '@current_route_match'
       - '@node_singles'
+      - '@node_singles.settings'
 
   node_singles.node_type_form.subscriber:
     class: Drupal\node_singles\EventSubscriber\NodeTypeFormEventSubscriber
+    arguments:
+      - '@node_singles.settings'
 
   node_singles.node_type_update.subscriber:
     class: Drupal\node_singles\EventSubscriber\NodeTypeUpdateEventSubscriber
