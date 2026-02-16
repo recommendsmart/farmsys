@@ -1,4 +1,0 @@
-services:
-  plugin.manager.extra_field_type:
-    class: \Drupal\entity_extra_field\ExtraFieldTypePluginManager
-    parent: default_plugin_manager

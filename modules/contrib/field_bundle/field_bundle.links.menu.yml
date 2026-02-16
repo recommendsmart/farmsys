@@ -1,5 +1,0 @@
-entity.field_bundle_config.collection:
-  title: 'Field bundles'
-  parent: system.admin_structure
-  description: 'Configure field bundles.'
-  route_name: entity.field_bundle_config.collection

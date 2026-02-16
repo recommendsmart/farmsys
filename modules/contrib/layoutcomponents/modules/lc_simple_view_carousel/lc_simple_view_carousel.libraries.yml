@@ -1,7 +1,0 @@
-lc_simple_view_carousel:
-  version: VERSION
-  css:
-    layout:
-      css/lc_simple_view_carousel.css: {}
-  js:
-    js/lc_simple_view_carousel.js: {}

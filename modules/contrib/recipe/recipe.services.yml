@@ -1,5 +1,0 @@
-services:
-  recipe.breadcrumb:
-    class: Drupal\recipe\RecipeBreadcrumbBuilder
-    tags:
-      - { name: breadcrumb_builder, priority: 100 }

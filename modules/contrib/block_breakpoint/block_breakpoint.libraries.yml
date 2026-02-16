@@ -1,4 +1,0 @@
-block_breakpoint:
-  header: true
-  js:
-    js/block-breakpoint.js: {}

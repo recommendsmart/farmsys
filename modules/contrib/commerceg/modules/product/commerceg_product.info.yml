@@ -1,8 +1,0 @@
-name: Commerce Group Product
-type: module
-description: Enables Group functionality for Commerce Product entities.
-package: Commerce Group
-core_version_requirement: ^8.8 || ^9.0
-dependencies:
-  - commerceg:commerceg
-  - commerce:commerce_product

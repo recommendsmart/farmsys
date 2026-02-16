@@ -1,2 +1,0 @@
-entity_extra_field.derivative:
-  deriver: \Drupal\entity_extra_field_ui\Plugin\Derivative\MenuLinksTask

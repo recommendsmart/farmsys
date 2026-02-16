@@ -1,5 +1,0 @@
-file_de_duplicator.fix_duplicates:
-  route_name: file_de_duplicator.fix_duplicates
-  title: 'Fix Duplicates'
-  appears_on:
-    - view.files.page_1

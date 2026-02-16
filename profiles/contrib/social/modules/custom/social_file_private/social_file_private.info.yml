@@ -1,6 +1,0 @@
-name: 'Social File Private'
-description: 'Enforces the use of Private Files for content, posts and file uploads (highly recommended!). More info: https://www.drupal.org/docs/8/distributions/open-social/private-files'
-type: module
-core_version_requirement: ^9
-dependencies:
-  - drupal:file

@@ -1,7 +1,0 @@
-# Telephone type menu items definition
-entity.telephone_type.collection:
-  title: 'Telephone types'
-  route_name: entity.telephone_type.collection
-  description: 'Telephone types'
-  parent: system.admin_config_content
-  weight: 99

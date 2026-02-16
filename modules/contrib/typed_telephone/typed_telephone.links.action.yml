@@ -1,5 +1,0 @@
-entity.telephone_type.add_form:
-  route_name: entity.telephone_type.add_form
-  title: 'Add Telephone type'
-  appears_on:
-    - entity.telephone_type.collection

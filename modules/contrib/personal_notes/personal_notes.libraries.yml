@@ -1,6 +1,0 @@
-#	CSS file for Personal Notes theming
-personal_notes:
-  version: 1.x
-  css:
-    theme:
-      css/personal-notes.theme.css: {}

@@ -1,9 +1,0 @@
-langcode: en
-status: true
-dependencies:
-  module:
-    - media
-id: media.width_50_pct
-label: 'Width 50%'
-targetEntityType: media
-cache: true

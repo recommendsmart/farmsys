@@ -1,6 +1,0 @@
-name: 'Behat'
-
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on all pull request events
-  pull_request: { }

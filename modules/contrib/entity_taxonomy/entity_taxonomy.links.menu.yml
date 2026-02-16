@@ -1,5 +1,0 @@
-entity.entity_taxonomy_vocabulary.collection:
-  title: entity_taxonomy
-  parent: system.admin_structure
-  description: 'Manage tagging, categorization, and classification of your content.'
-  route_name: entity.entity_taxonomy_vocabulary.collection

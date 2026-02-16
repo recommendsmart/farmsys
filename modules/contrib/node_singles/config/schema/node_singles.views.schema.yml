@@ -1,3 +1,0 @@
-views.filter.node_singles:
-  type: views.filter.in_operator
-  label: 'Single nodes'

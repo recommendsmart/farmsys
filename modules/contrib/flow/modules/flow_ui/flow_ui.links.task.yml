@@ -1,3 +1,0 @@
-flow_ui.flow:
-  deriver: 'Drupal\flow_ui\Plugin\Derivative\FlowUiLocalTasks'
-  weight: 100

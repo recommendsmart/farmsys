@@ -1,6 +1,0 @@
-services:
-  content_as_config.commands:
-    class: \Drupal\content_as_config\Commands\ContentAsConfigCommands
-    arguments: ['@service_container']
-    tags:
-      - { name: drush.command }

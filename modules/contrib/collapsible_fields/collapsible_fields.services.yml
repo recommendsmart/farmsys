@@ -1,3 +1,0 @@
-services:
-  collapsible_fields.settings_manager:
-    class: Drupal\collapsible_fields\SettingsManager

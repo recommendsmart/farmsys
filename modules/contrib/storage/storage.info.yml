@@ -1,9 +1,0 @@
-name: 'Storage Entities'
-type: module
-description: 'Lightweight, bundleable entities for storing structured data'
-core_version_requirement: '^9.4 || ^10'
-
-# Information added by Drupal.org packaging script on 2022-11-25
-version: '1.2.3'
-project: 'storage'
-datestamp: 1669363304

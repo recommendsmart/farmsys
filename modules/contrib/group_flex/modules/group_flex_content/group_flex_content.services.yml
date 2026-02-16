@@ -1,4 +1,0 @@
-services:
-  group_flex_content.type_saver:
-    class: 'Drupal\group_flex_content\GroupContentTypeSaver'
-    arguments: ['@entity_type.manager']

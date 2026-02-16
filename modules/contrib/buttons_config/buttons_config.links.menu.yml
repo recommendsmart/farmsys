@@ -1,5 +1,0 @@
-buttons_config.config.form:
-  route_name: buttons_config.config.form
-  parent: system.admin_config_content
-  description: "Allows the user to change the text of the save button for every form."
-  title: "Buttons Configuration"

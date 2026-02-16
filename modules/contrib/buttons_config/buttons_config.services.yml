@@ -1,4 +1,0 @@
-services:
-  gsso.gsso:
-    class: Drupal\buttons_config\Form\ButtonsConfigForm
-    arguments: ["@entity_type.manager"]

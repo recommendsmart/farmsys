@@ -1,9 +1,0 @@
-langcode: en
-status: true
-dependencies:
-  module:
-    - media
-id: media.twentieth_page
-label: 'Twentieth page'
-targetEntityType: media
-cache: true

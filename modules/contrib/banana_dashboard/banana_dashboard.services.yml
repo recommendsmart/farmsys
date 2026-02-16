@@ -1,4 +1,0 @@
-services:
-  plugin.manager.banana_dashboard:
-    class: Drupal\banana_dashboard\BananaDashboardManager
-    arguments: ['@module_handler', '@cache.discovery']

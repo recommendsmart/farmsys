@@ -1,4 +1,0 @@
-services:
-  social_geolocation.default_address_formatter:
-    class: CommerceGuys\Addressing\Formatter\DefaultFormatter
-    arguments: ['@address.address_format_repository', '@address.country_repository', '@address.subdivision_repository']

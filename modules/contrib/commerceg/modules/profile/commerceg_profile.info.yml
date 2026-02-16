@@ -1,8 +1,0 @@
-name: Commerce Group Profile
-type: module
-description: Enables Group functionality for Profile entities.
-package: Commerce Group
-core_version_requirement: ^8.8 || ^9.0
-dependencies:
-  - commerceg:commerceg
-  - profile:profile

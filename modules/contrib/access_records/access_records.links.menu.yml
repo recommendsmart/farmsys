@@ -1,5 +1,0 @@
-entity.access_record_type.collection:
-  title: 'Access record types'
-  parent: system.admin_structure
-  description: 'Manage fields, display and form settings for access records.'
-  route_name: entity.access_record_type.collection

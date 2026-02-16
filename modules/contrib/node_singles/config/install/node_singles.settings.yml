@@ -1,8 +1,0 @@
-strict_translation: false
-label: Single
-label_collection: Singles
-label_singular: single node
-label_plural: single nodes
-label_count:
-  singular: '@count single node'
-  plural: "@count single nodes"

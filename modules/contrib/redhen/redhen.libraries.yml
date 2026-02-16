@@ -1,5 +1,0 @@
-drupal.redhen.toolbar:
-  version: VERSION
-  css:
-    component:
-      css/redhen.icons.admin.css: {}

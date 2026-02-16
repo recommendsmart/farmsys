@@ -1,5 +1,0 @@
-drupal.ingredient:
-  version: VERSION
-  css:
-    theme:
-      css/ingredient.admin.css: {}

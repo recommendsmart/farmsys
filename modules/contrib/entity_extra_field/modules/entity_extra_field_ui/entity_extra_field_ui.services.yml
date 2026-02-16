@@ -1,6 +1,0 @@
-services:
-  entity_exta_field_ui.route_subscriber:
-    class: Drupal\entity_extra_field_ui\Routing\RouteSubscriber
-    arguments: [ "@entity_type.manager" ]
-    tags:
-      - { name: event_subscriber }

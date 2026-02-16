@@ -1,6 +1,0 @@
-services:
-  designs_template.twig.extension:
-    class: Drupal\designs_template\Template\TwigExtension
-    arguments: ['@renderer', '@plugin.manager.design']
-    tags:
-      - { name: twig.extension }

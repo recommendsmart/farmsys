@@ -1,5 +1,0 @@
-lc_simple_iframe:
-  version: VERSION
-  css:
-    layout:
-      css/lc_simple_iframe.css: {}

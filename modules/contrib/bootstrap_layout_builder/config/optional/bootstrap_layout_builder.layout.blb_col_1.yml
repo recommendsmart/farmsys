@@ -1,7 +1,0 @@
-uuid: 37e81ca1-3e6e-4d55-941e-4340f43b75d1
-langcode: en
-status: true
-dependencies: {  }
-id: blb_col_1
-label: 'Bootstrap 1 Col'
-number_of_columns: '1'

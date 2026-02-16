@@ -1,9 +1,0 @@
-langcode: en
-status: true
-dependencies:
-  module:
-    - entity_taxonomy
-id: entity_taxonomy_term.full
-label: 'entity_taxonomy term page'
-targetEntityType: entity_taxonomy_term
-cache: true

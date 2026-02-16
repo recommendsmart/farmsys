@@ -1,9 +1,0 @@
-services:
-  block_breakpoint.manager:
-    class: Drupal\block_breakpoint\BlockBreakpointManager
-    arguments: ['@config.factory', '@entity_type.manager', '@breakpoint.manager']
-  block_breakpoint.render_block_component_subscriber:
-    class: Drupal\block_breakpoint\EventSubscriber\BlockComponentRenderArray
-    arguments: []
-    tags:
-      - { name: event_subscriber }

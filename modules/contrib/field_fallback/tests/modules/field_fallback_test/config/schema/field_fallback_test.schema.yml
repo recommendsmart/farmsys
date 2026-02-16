@@ -1,7 +1,0 @@
-field_fallback.configuration.static_string:
-  type: field_fallback.configuration
-  label: 'Field fallback configuration for static string'
-  mapping:
-    static_string_value:
-      type: string
-      label: 'Static sting value'

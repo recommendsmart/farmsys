@@ -1,7 +1,0 @@
-lc_simple_video:
-  version: VERSION
-  css:
-    layout:
-      css/lc_simple_video.css: {}
-  js:
-    js/lc_simple_video.js: {}

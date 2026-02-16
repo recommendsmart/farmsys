@@ -1,6 +1,0 @@
-personal_notes.users_tab:
-  route_name: personalnote.create.form
-  title: 'Add Note'
-  base_route: entity.user.canonical
-  class: '\Drupal\personal_notes\Plugin\Menu\UserNotesTab'
-  weight: 14
