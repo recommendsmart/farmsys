@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - focal_point
+    - image_effects
+name: hero_2800x467
+label: 'Hero 2800x467'
+effects:
+  78f55bf0-24d0-4e56-b1f2-f40ccc46af04:
+    uuid: 78f55bf0-24d0-4e56-b1f2-f40ccc46af04
+    id: image_effects_auto_orient
+    weight: 1
+    data:
+      scan_exif: true
+  3955f63b-cbf4-4980-82f4-3b9d9e4241f4:
+    uuid: 3955f63b-cbf4-4980-82f4-3b9d9e4241f4
+    id: focal_point_scale_and_crop
+    weight: 2
+    data:
+      width: 280
+      height: 467
+      crop_type: focal_point

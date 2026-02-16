@@ -1,0 +1,17 @@
+access element overview:
+  title: 'Access element overview'
+  description: 'Users with this permission can access the element overview page.'
+  restrict access: true
+
+administer element types:
+  title: 'Administer element types'
+  description: 'Allows users to configure element types and their fields.'
+  restrict access: true
+
+administer element entities:
+  title: 'Administer element items'
+  description: 'Allows users to edit, create and delete any element items.'
+  restrict access: true
+
+permission_callbacks:
+  - \Drupal\element\Permissions\ElementPermissions::elementTypePermissions

@@ -1,0 +1,80 @@
+<?php
+
+/**
+ * @file
+ * Contains redhen_dedupe.module.
+ */
+
+/**
+ * Get duplicate contacts.
+ *
+ * @return array
+ *   Array of objects containing first, last, and ids.
+ */
+function redhen_dedupe_get_duplicates($base_fields = [], $fields = [], $active = TRUE) {
+  $query = $query = \Drupal::database()->select('redhen_contact', 'rc');
+  $query->addTag('redhen_dedupe');
+  $query->addExpression('COUNT(*)', 'count');
+
+  // PostGres doesn't support GROUP_CONCAT and aliases can't be used in
+  // conditional clauses so we need to repeat the aggregate function.
+  if (\Drupal::service('database')->driver() == 'pgsql') {
+    $query->addExpression('array_to_string(array_agg(id), \',\')', 'ids');
+    $query->having('COUNT(*) > 1');
+
+  }
+  else {
+    $query->addExpression('GROUP_CONCAT(id SEPARATOR \',\')', 'ids');
+    $query->having('COUNT(*) > 1');
+  }
+
+  if ($active) {
+    $query->condition('status', '1');
+  }
+
+  foreach ($base_fields as $base_field) {
+    $query->addField('rc', $base_field);
+    $query->groupBy($base_field);
+  }
+  // To prevent adding the same field twice, we loop through all fields:
+  $join_fields = [];
+  foreach ($fields as $field) {
+    $field_pieces = explode(':', $field);
+    $field = array_shift($field_pieces);
+    $join_fields[$field] = $field;
+  }
+  foreach ($join_fields as $field) {
+    $query->leftJoin('redhen_contact__' . $field, $field, $field . '.entity_id = rc.id');
+  }
+  $bundles = \Drupal::service('entity_type.bundle.info')->getBundleInfo('redhen_contact');
+  $info = [];
+  foreach (array_keys($bundles) as $bundle) {
+    $info['base_field'] = \Drupal::service('entity_field.manager')->getBaseFieldDefinitions('redhen_contact', $bundle);
+    $info['field'] = array_diff_key(\Drupal::service('entity_field.manager')->getFieldDefinitions('redhen_contact', $bundle), $info['base_field']);
+  }
+
+  foreach ($fields as $field) {
+    $field_config = $info['field'][$field];
+    $columns = $field_config->getFieldStorageDefinition()->getColumns();
+    $field = $field_config->get('field_name');
+    reset($columns);
+    $column = key($columns);
+    $query->addField($field, $field . '_' . $column);
+    $query->groupBy($field . '_' . $column);
+  }
+  $query->orderBy('count', 'DESC');
+
+  return $query->execute()->fetchAll();
+}
+
+/**
+ * Implements hook_theme().
+ */
+function redhen_dedupe_theme($existing, $type, $theme, $path) {
+  return [
+    'redhen_dedupe_form_table' => [
+      'render element' => 'elements',
+      'file' => 'redhen_dedupe.theme.inc',
+    ],
+  ];
+}

@@ -1,0 +1,45 @@
+view access_record:
+  title: 'View all access records'
+  restrict access: true
+view own access_record:
+  title: 'View own access records'
+  restrict access: true
+create access_record:
+  title: 'Create any access record'
+  restrict access: true
+update access_record:
+  title: 'Update any access record'
+  restrict access: true
+update own access_record:
+  title: 'Update own access record'
+  restrict access: true
+delete access_record:
+  title: 'Delete any access record'
+  restrict access: true
+delete own access_record:
+  title: 'Delete own access record'
+  restrict access: true
+administer access_record:
+  title: 'Administer access records'
+  description: 'Create, edit and delete all access records.'
+  restrict access: true
+administer access_record_type:
+  title: 'Administer access record types'
+  description: 'Create, edit and delete all configurations of access record types.'
+  restrict access: true
+access access_record overview:
+  title: 'Access access record overview'
+  description: 'Users with this permission can access the access record overview page.'
+  restrict access: true
+view access_record revisions:
+  title: 'View access record revisions'
+  description: 'To view a revision, you also need permission to view the access record item.'
+  restrict access: true
+revert access_record revisions:
+  title: 'Revert access record revisions'
+  restrict access: true
+delete access_record revisions:
+  title: 'Delete access record revisions'
+  restrict access: true
+permission_callbacks:
+  - \Drupal\access_records\AccessRecordPermissions::getAccessRecordPermissions

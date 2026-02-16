@@ -1,0 +1,10 @@
+entity.storage.add_form:
+  route_name: entity.storage.add_page
+  title: 'Add a Storage entity'
+  appears_on:
+    - entity.storage.collection
+entity.storage_type.add_form:
+  route_name: entity.storage_type.add_form
+  title: 'Add Storage type'
+  appears_on:
+    - entity.storage_type.collection

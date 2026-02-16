@@ -1,0 +1,13 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - entity_version_test
+name: Second bundle
+type: second_bundle
+description: 'Provides an example content type to test the entity versions.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: true

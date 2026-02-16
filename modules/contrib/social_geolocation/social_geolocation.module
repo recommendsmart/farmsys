@@ -1,0 +1,423 @@
+<?php
+
+/**
+ * @file
+ * Contains hook implementations for the Social Geolocation module.
+ *
+ * @todo Add update hook to convert settings to new keys.
+ */
+
+use Drupal\address\AddressInterface;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Link;
+use Drupal\group\Entity\GroupInterface;
+use Drupal\node\NodeInterface;
+use Drupal\profile\Entity\ProfileInterface;
+use Drupal\user\Entity\User;
+
+/**
+ * Implements hook_help().
+ */
+function social_geolocation_help($route_name, RouteMatchInterface $route_match): ?string {
+  switch ($route_name) {
+    case 'help.page.social_geolocation':
+      $text = file_get_contents(__DIR__ . '/README.md');
+      if (!\Drupal::moduleHandler()->moduleExists('markdown')) {
+        return '<pre>' . Html::escape($text) . '</pre>';
+      }
+      else {
+        // Use the Markdown filter to render the README.
+        $filter_manager = \Drupal::service('plugin.manager.filter');
+        $settings = \Drupal::configFactory()->get('markdown.settings')->getRawData();
+        $config = ['settings' => $settings];
+        $filter = $filter_manager->createInstance('markdown', $config);
+        return $filter->process($text, 'en');
+      }
+  }
+  return NULL;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Enhance the Views exposed filter blocks forms on the people overview.
+ */
+function social_geolocation_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id): void {
+  $filter_forms = [
+    'views-exposed-form-user-admin-people-page-1',
+  ];
+
+  if (!in_array($form['#id'], $filter_forms, TRUE)) {
+    return;
+  }
+
+  social_geolocation_attach_views_location_filter($form, 'fieldset');
+
+  // Clean up profile geolocation field filters added by default.
+  $form['field_profile_geolocation_proximity']['#type'] = 'hidden';
+  unset($form['center']);
+
+  // It's possible that location_details wasn't created because there is no
+  // geocoder. In that case the proximity filters should still be invisible but
+  // we don't tweak the fieldset.
+  if (isset($form['location_details'])) {
+    $form['location_details']['geolocation_geocoder_address']['#size'] = 30;
+
+    unset(
+      $form['location_details']['proximity']['#description'],
+      $form['location_details']['geolocation_geocoder_address']['#description']
+    );
+  }
+}
+
+/**
+ * Alters the form to attach the proximity filter.
+ *
+ * @param array $form
+ *   The form to alter.
+ * @param string $container_type
+ *   What Form API element should be used for the container of the proximity
+ *   filter, either 'details' or 'fieldset'.
+ */
+function social_geolocation_attach_views_location_filter(array &$form, string $container_type = 'details'): void {
+  $geocoder_plugin = _social_geolocation_get_geocoder();
+
+  if (empty($geocoder_plugin)) {
+    return;
+  }
+
+  $unit_of_measurement = \Drupal::config('social_geolocation.settings')->get('unit_of_measurement');
+
+  $form['#validate'][] = '_social_geolocation_form_views_exposed_form_validate';
+
+  // Set up a container for our location filtering fields.
+  $form['location_details'] = [
+    '#title' => t('Location range'),
+    '#type' => $container_type,
+    '#weight' => 50,
+  ];
+  $form['location_details']['proximity'] = [
+    '#type' => 'number',
+    '#title' => t('Distance (@unitOfMeasurement)', ['@unitOfMeasurement' => $unit_of_measurement]),
+    '#description' => t('Recommended range from 10 to 1000.'),
+    '#min' => 0,
+    '#max' => 10000,
+    '#weight' => 10,
+  ];
+
+  $identifier = 'proximity';
+
+  // Add the geocoder field in our container.
+  $geocoder_plugin->formAttachGeocoder($form['location_details'], $identifier);
+
+  // Change the title to how it should be displayed in Open Social.
+  $form['location_details']['geolocation_geocoder_address']['#title'] = t('Location');
+  $form['location_details']['geolocation_geocoder_address']['#description'] = '';
+  $form['location_details']['geolocation_geocoder_address']['#placeholder'] = t('City, Country');
+
+  // Add the required libraries and javascript settings.
+  $form['#attached']['library'][] = 'core/drupal.ajax';
+  $form['#attached']['library'][] = 'geolocation/geolocation.views.filter.geocoder';
+  $form['#attached']['library'][] = 'social_geolocation/social_geolocation.location';
+  $form['#attached']['drupalSettings']['geolocation']['geocoder'] = [
+    'viewsFilterGeocoder' => [
+      $identifier => [
+        'type' => 'proximity',
+      ],
+    ],
+  ];
+}
+
+/**
+ * Validate function for Geolocation exposed form filter.
+ */
+function _social_geolocation_form_views_exposed_form_validate(&$form, FormStateInterface $form_state): void {
+  // Address is a string filled into the exposed views filter.
+  $address = $form_state->getValue('geolocation_geocoder_address');
+
+  if (empty($address)) {
+    return;
+  }
+
+  $address_geocoded = _social_geolocation_geocode_address($address);
+  if (!empty($address_geocoded)) {
+    // Set values for proximity.
+    // Default is 20.
+    $proximity = $form_state->getValue('proximity');
+    if (!empty($form_state->getValue('proximity'))) {
+      $form_state->setValue(['field_profile_geolocation_proximity'], $proximity);
+    }
+
+    $form_state->setValue(
+      ['lat'], $address_geocoded['lat']
+    );
+
+    $form_state->setValue(
+      ['lng'], $address_geocoded['lng']
+    );
+  }
+  else {
+    $element = ['geolocation_geocoder_address'];
+
+    if ($form['location_details'] !== NULL) {
+      $element = $form['location_details']['geolocation_geocoder_address'];
+    }
+
+    $form_state->setError($element, t('Sorry, we tried to find your address, but couldn’t find it. Double-check your spelling and try again. If you still get an error, please try again later.'));
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function social_geolocation_group_presave(GroupInterface $group): void {
+  _social_geolocation_entity_presave($group, 'group');
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function social_geolocation_node_presave(NodeInterface $node): void {
+  if ($node->getType() == 'event') {
+    _social_geolocation_entity_presave($node, 'event');
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function social_geolocation_profile_presave(ProfileInterface $profile): void {
+  _social_geolocation_entity_presave($profile, 'profile');
+}
+
+/**
+ * Set value to geolocation field based on address input.
+ *
+ * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
+ *   The entity that is being saved.
+ * @param string $type
+ *   The type of the entity being saved.
+ */
+function _social_geolocation_entity_presave(FieldableEntityInterface $entity, string $type): void {
+  $enabled = \Drupal::config('social_geolocation.settings')->get('enabled');
+
+  if (!$enabled) {
+    return;
+  }
+
+  $field_address = "field_{$type}_address";
+  $field_geolocation = "field_{$type}_geolocation";
+
+  // We require both an address field to geocode and a geolocation field to
+  // store the result in.
+  if (!$entity->hasField($field_address) || !$entity->hasField($field_geolocation)) {
+    return;
+  }
+
+  $empty_address = $entity->get($field_address)->isEmpty();
+  $empty_geolocation = $entity->get($field_geolocation)->isEmpty();
+  $is_updating = !empty($entity->original);
+
+  // If the entity has no address and no stored geolocation then there's also
+  // nothing to do. Otherwise the geolocation field needs to be updated.
+  if ($empty_address && $empty_geolocation) {
+    return;
+  }
+
+  // If the address hasn't been changed and there's already a geolocation stored
+  // then the geolocation doesn't need to be updated.
+  if (!$empty_geolocation && $is_updating &&
+    $entity->original->get($field_address)->getValue() === $entity->get($field_address)->getValue()) {
+    return;
+  }
+
+  // If we had a geolocation value but no longer have an address then we clear
+  // the geolocation value.
+  if ($empty_address && !$empty_geolocation) {
+    $entity->set($field_geolocation, NULL);
+    return;
+  }
+
+  $new_coordinates = NULL;
+
+  // Format address as a string consumable by the geocoding API.
+  /** @var \Drupal\address\AddressInterface $address */
+  $address = $entity->get($field_address)->first();
+  $address = _social_geolocation_address_to_string($address);
+
+  // Convert formatted string to a set of coordinates for the geolocation field.
+  $location = _social_geolocation_geocode_address($address);
+
+  // Check whether we should show a help message on failed geolocation.
+  $site_manager_assist = \Drupal::config('social_geolocation.settings')->get('site_manager_assistance');
+
+  if (!empty($location)) {
+    $new_coordinates = [
+      'lat' => $location['lat'],
+      'lng' => $location['lng'],
+      'lat_sin' => sin(deg2rad($location['lat'])),
+      'lat_cos' => cos(deg2rad($location['lat'])),
+      'lng_rad' => deg2rad($location['lng']),
+    ];
+  }
+  elseif ($site_manager_assist) {
+    $contact = 'site manager';
+
+    // If the private message module is enabled then we create a link to contact
+    // the site manager by private message.
+    if (\Drupal::moduleHandler()->moduleExists('social_private_message')) {
+      $site_manager = \Drupal::config('social_geolocation.settings')->get('site_manager_contact');
+
+      // We can only link to a site manager if we have one configured and
+      // it's a valid user id.
+      if ($site_manager !== NULL && User::load($site_manager) !== NULL) {
+        $contact = Link::createFromRoute($contact, 'private_message.private_message_create', [], [
+          'query' => ['recipient' => $site_manager],
+        ])->toString();
+      }
+    }
+
+    \Drupal::messenger()->addWarning(
+      t("Unfortunately we can't locate the address you entered. Please update it or contact a @contact if you would like the event to show up in a search by location.", [
+        '@contact' => $contact,
+      ])
+    );
+  }
+
+  $entity->set($field_geolocation, $new_coordinates);
+}
+
+/**
+ * Retrieves the configured Geocoder plugin.
+ *
+ * @return \Drupal\geolocation\GeocoderInterface|false
+ *   Returns the configured geocoder or false if none is configured or the
+ *   configured geocoder could not be loaded.
+ */
+function _social_geolocation_get_geocoder() {
+  $geocoder_plugin = &drupal_static(__FUNCTION__);
+
+  if (!isset($geocoder_plugin)) {
+    $geocoder_plugin_id = \Drupal::config('social_geolocation.settings')
+      ->get('geolocation_provider');
+
+    $geocoder_plugin = \Drupal::service('plugin.manager.geolocation.geocoder')
+      ->getGeocoder(
+        $geocoder_plugin_id,
+        // The configuration object passed to the plugins is not actually used
+        // by the geocoders implemented in the Geolocation module. Configuration
+        // happens through configuration objects that are loaded directly from
+        // the config factory (e.g. see
+        // Drupal\geolocation_google_maps\Plugin\geolocation\Geocoder\GoogleGeocodingAPI::geocode()).
+        []
+      );
+  }
+
+  return $geocoder_plugin;
+}
+
+/**
+ * Convert address to geolocation values.
+ *
+ * @param string $address
+ *   The address that can be given to the Geocoder::geocode method.
+ *
+ * @return array
+ *   An array with a status field and lat/lng values if a geolocation was found.
+ */
+function _social_geolocation_geocode_address(string $address): array {
+  // If there's no address to geocode or we have no geocoder service
+  // then there's nothing to do.
+  if (empty($address)) {
+    return [];
+  }
+
+  $geocoder = _social_geolocation_get_geocoder();
+
+  if (empty($geocoder)) {
+    return [];
+  }
+
+  $result = $geocoder->geocode($address);
+
+  if (empty($result)) {
+    return [];
+  }
+
+  return $result['location'];
+}
+
+/**
+ * Converts an address field value to a string for a geocoding API.
+ *
+ * Uses the formatter provided by the CommerceGuys/Addressing library which
+ * takes into account the locale of the selected address. This should result in
+ * a proper lef-to-right string that can be consumed by at least Nominatim and
+ * the Google Geocoding API.
+ *
+ * @param \Drupal\address\AddressInterface $address
+ *   The address field.
+ *
+ * @return string
+ *   The string that can be sent to a geocoding API.
+ */
+function _social_geolocation_address_to_string(AddressInterface $address) : string {
+  /** @var \CommerceGuys\Addressing\Formatter\FormatterInterface $formatter */
+  $formatter = \Drupal::service('social_geolocation.default_address_formatter');
+
+  // Fix any edge cases in address formatting for the API we're using.
+  $address_changes = _social_geolocation_reformat_address_for_api($address);
+
+  // Format the address as a plain-text block.
+  // Using the format that's correct for the locale of the address to convert
+  // will properly format all parts of the address.
+  $formatted_address = $formatter->format($address, ['html' => FALSE]);
+
+  // Revert any changes that were made to comply with what the API expects so
+  // the address values are stored in the way the user entered them.
+  foreach ($address_changes as $field => $value) {
+    $address->set($field, $value);
+  }
+
+  // Convert newlines to comma separation for use in API queries.
+  return str_replace("\n", ', ', $formatted_address);
+}
+
+/**
+ * Fixes edge cases in address values before they're formatted.
+ *
+ * @param \Drupal\address\AddressInterface $address
+ *   The address field.
+ *
+ * @return array
+ *   An associative array with keys for the fields that were changed and values
+ *   of the original values for that field. Can be used to restore the Address
+ *   to its original state for storage in the database. Returns an empty array
+ *   if no changes were made.
+ */
+function _social_geolocation_reformat_address_for_api(AddressInterface $address) : array {
+  $geocoder = _social_geolocation_get_geocoder();
+  if ($geocoder !== FALSE && $geocoder->getPluginId() === 'nominatim') {
+    switch ($address->getCountryCode()) {
+      // Nominatim doesn't handle postal codes for Canada well.
+      // See Issue #3086891.
+      // To resolve this we remove the postal code before lookup.
+      case 'CA':
+        $postal_code = $address->get('postal_code')->getValue();
+        $address->set('postal_code', '');
+        return ['postal_code' => $postal_code];
+
+      // Nominatim doesn't handle spaces in the postalcode for the Netherlands.
+      // To resolve this any spaces are removed.
+      case 'NL':
+        $postal_code = $address->get('postal_code')->getValue();
+        $address->set('postal_code', preg_replace('/\s/', '', $postal_code));
+        return ['postal_code' => $postal_code];
+    }
+  }
+
+  return [];
+}

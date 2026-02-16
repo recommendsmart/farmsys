@@ -1,0 +1,7 @@
+{
+  "name": "drupal/field_bundle",
+  "type": "drupal-module",
+  "description": "A Drupal module that provides an un-opinionated entity type for creating arbitrary bundles of fields.",
+  "homepage": "http://drupal.org/project/field_bundle",
+  "license": "GPL-2.0-or-later"
+}

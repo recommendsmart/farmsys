@@ -1,0 +1,19 @@
+{#
+/**
+ * @file
+ * Personal Notes block template.
+ *
+ * Available variables:
+ * - notes: An array containing note titles and text.
+ *
+ */
+#}
+
+<dl id="personalnotes-notes-list">
+  {% for note in notes %}
+    <dd class="personalnotes-note-title">{{ note.title }}</dd>
+    <dt class="personalnotes-note-created">{{ note.created }}</dt>
+    <dt class="personalnotes-note-note">{{ note.note }}</dt>
+    <hr class="sep">
+  {% endfor %}
+</dl>

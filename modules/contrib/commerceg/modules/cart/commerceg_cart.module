@@ -1,0 +1,90 @@
+<?php
+
+/**
+ * @file
+ * Provides hooks and functionality for the Commerce Group Cart module.
+ */
+
+use Drupal\commerceg\MachineName\Routing\Route;
+use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
+
+/**
+ * Implements hook_commerce_cart_access().
+ *
+ * @see \Drupal\commerce_cart_advanced\Access\CartAccessControlHandler
+ */
+function commerceg_cart_commerce_cart_access(
+  EntityInterface $entity,
+  $operation,
+  AccountInterface $account
+) {
+  return \Drupal::service('commerceg_cart.hook.entity_access')
+    ->commerceCartAccess($entity, $operation, $account);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ *
+ * @see \Drupal\commerceg_cart\Hook\EntitySave::commerceOrderInsert()
+ */
+function commerceg_cart_commerce_order_insert(EntityInterface $entity) {
+  if (!\Drupal::service('module_handler')->moduleExists('commerceg_context')) {
+    return;
+  }
+  \Drupal::service('commerceg_cart.hook.context_entity_save')
+    ->commerceOrderInsert($entity);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function commerceg_cart_form_alter(
+  array &$form,
+  FormStateInterface $form_state,
+  $form_id
+) {
+  if (!\Drupal::service('module_handler')->moduleExists('commerceg_context')) {
+    return;
+  }
+  \Drupal::service('commerceg_cart.hook.context_form_alter')
+    ->formAlter(
+      $form,
+      $form_state,
+      $form_id
+    );
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ *
+ * @see \Drupal\commerceg_cart\Hook\QueryAlter::commerceLoadDataAlter()
+ */
+function commerceg_cart_query_commerce_cart_load_data_alter(
+  AlterableInterface $query
+) {
+  if (!\Drupal::service('module_handler')->moduleExists('commerceg_context')) {
+    return;
+  }
+  \Drupal::service('commerceg_cart.hook.context_query_alter')
+    ->commerceCartLoadData($query);
+}
+
+/**
+ * Implements hook_entity_operation().
+ *
+ * @I Display the Carts operation only for groups with plugins installed
+ *    type     : bug
+ *    priority : low
+ *    labels   : order
+ */
+function commerceg_cart_entity_operation(EntityInterface $entity) {
+  return \Drupal::service('commerceg.hook.entity_operation')->groupOperation(
+    $entity,
+    'access commerceg_order overview',
+    Route::GROUP_CARTS,
+    t('Carts')
+  );
+}

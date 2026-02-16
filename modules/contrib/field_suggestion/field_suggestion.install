@@ -1,0 +1,123 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the field_suggestion module.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Create entity type.
+ */
+function field_suggestion_update_8001(&$sandbox) {
+  /** @var \Drupal\Core\Extension\ModuleInstallerInterface $installer */
+  $installer = \Drupal::service('module_installer');
+
+  $installer->install(['dynamic_entity_reference']);
+
+  \Drupal::entityTypeManager()->clearCachedDefinitions();
+
+  foreach (['field_suggestion_type', 'field_suggestion'] as $entity_type) {
+    \Drupal::entityDefinitionUpdateManager()->installEntityType(
+      \Drupal::entityTypeManager()->getDefinition($entity_type)
+    );
+  }
+}
+
+/**
+ * Create bundles.
+ */
+function field_suggestion_update_8002(&$sandbox) {
+  if (!isset($sandbox['total'])) {
+    $sandbox['fields'] = [];
+
+    $config = \Drupal::config('field_suggestion.settings');
+
+    foreach ((array) $config->get('fields') as $entity_type => $field_names) {
+      foreach ($field_names as $field_name) {
+        $sandbox['fields'][] = [$entity_type, $field_name];
+      }
+    }
+
+    if (($sandbox['total'] = count($sandbox['fields'])) === 0) {
+      return;
+    }
+
+    $sandbox['processed'] = 0;
+    $sandbox['bundles'] = [];
+  }
+
+  [$entity_type, $field_name] = $sandbox['fields'][$sandbox['processed']++];
+
+  /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $manager */
+  $manager = \Drupal::service('entity_field.manager');
+
+  $field = $manager->getBaseFieldDefinitions($entity_type)[$field_name];
+
+  if (!in_array($field_type = $field->getType(), $sandbox['bundles'])) {
+    /** @var \Drupal\field_suggestion\Service\FieldSuggestionHelperInterface $helper */
+    $helper = \Drupal::service('field_suggestion.helper');
+
+    $helper->bundle($field_type);
+
+    $sandbox['bundles'][] = $field_type;
+  }
+
+  $sandbox['#finished'] = $sandbox['processed'] / $sandbox['total'];
+}
+
+/**
+ * Add a field to set the allowed number of usages.
+ */
+function field_suggestion_update_9201(&$sandbox) {
+  $manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type = $manager->getEntityType('field_suggestion');
+
+  $entity_type->set(
+    'entity_keys',
+    $entity_type->getKeys() + array_fill_keys(['status', 'published'], 'once')
+  );
+
+  $manager->updateEntityType($entity_type);
+
+  $field_storage_definition = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Allowed number of usages'))
+    ->setDescription(t('How many times this suggestion can be re-used.'))
+    ->setRequired(TRUE)
+    ->setRevisionable(FALSE)
+    ->setTranslatable(FALSE)
+    ->setDefaultValue(FALSE)
+    ->setInitialValue(FALSE)
+    ->setSettings([
+      'on_label' => 'Once',
+      'off_label' => 'Unlimited',
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'options_buttons',
+      'weight' => 1,
+    ]);
+
+  $manager->installFieldStorageDefinition(
+    'once',
+    'field_suggestion',
+    'field_suggestion',
+    $field_storage_definition
+  );
+}
+
+/**
+ * Add a field to mark a suggestion as pinned or ignored.
+ */
+function field_suggestion_update_9202(&$sandbox) {
+  $field_storage_definition = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Ignore'))
+    ->setReadOnly(TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition(
+    'ignore',
+    'field_suggestion',
+    'field_suggestion',
+    $field_storage_definition
+  );
+}

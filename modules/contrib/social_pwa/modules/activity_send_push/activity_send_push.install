@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the activity_send_push module.
+ */
+
+use Drupal\message\Entity\MessageTemplate;
+
+/**
+ * Implements hook_uninstall().
+ */
+function activity_send_push_uninstall() {
+  // At uninstall remove it from every message template.
+  $message_templates = array_keys(MessageTemplate::loadMultiple());
+
+  $key = 'third_party_settings.activity_logger.activity_destinations';
+
+  foreach ($message_templates as $message_template) {
+    /* @var \Drupal\Core\Config\Config $config */
+    $config = \Drupal::configFactory()->getEditable('message.template.' . $message_template);
+    $activity_destinations = $config->get($key);
+
+    // Remove the push destination from the message template.
+    unset($activity_destinations['push']);
+
+    $config->set($key, $activity_destinations)->save();
+  }
+
+}

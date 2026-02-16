@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ * Allows configuring fallback fields.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\field\FieldConfigInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function field_fallback_help(string $route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.field_fallback':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Field fallback allows you to configure a field as fallback. When no value was provided, the value of the fallback field will be used. This module works with all types of fields.') . '</p>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter() for 'field_config_edit_form'.
+ */
+function field_fallback_form_field_config_edit_form_alter(array &$form, FormStateInterface $form_state, string $form_id) {
+  \Drupal::service('field_fallback.field_config_form')->alterForm($form, $form_state);
+}
+
+/**
+ * Implements hook_entity_type_delete() for 'field_config'.
+ */
+function field_fallback_field_config_delete(FieldConfigInterface $deleted_field_config) {
+  \Drupal::service('field_fallback.service')->cleanupConfigFields($deleted_field_config);
+}
+
+/**
+ * Implements hook_entity_load().
+ */
+function field_fallback_entity_load(array $entities, string $entity_type_id) {
+  \Drupal::service('field_fallback.service')->assignFallbackFieldValuesToEntities($entities);
+}
+
+/**
+ * Implements hook_entity_prepare_form().
+ */
+function field_fallback_entity_prepare_form(EntityInterface $entity, string $operation, FormStateInterface $form_state) {
+  \Drupal::service('field_fallback.service')->removeFallbackFieldValuesFromEntity($entity);
+}

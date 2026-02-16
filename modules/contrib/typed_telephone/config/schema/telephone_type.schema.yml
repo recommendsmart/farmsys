@@ -1,0 +1,34 @@
+typed_telephone.telephone_type.*:
+  type: config_entity
+  label: 'Telephone type config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+
+field.widget.settings.typed_telephone_default_widget:
+  type: mapping
+  label: 'Typed telephone default widget widget settings'
+  mapping:
+    size:
+      type: integer
+      label: 'Size'
+    placeholder:
+      type: textfield
+      label: 'Placeholder'
+
+field.formatter.settings.typed_telephone_default_formatter:
+  type: mapping
+  label: 'Default license plate formatter settings'
+  mapping:
+    concatenated:
+      type: boolean
+      label: 'Whether to concatenate the two fields into one single span tag'
+    glue:
+      type: string
+      label: 'The string between type and number'

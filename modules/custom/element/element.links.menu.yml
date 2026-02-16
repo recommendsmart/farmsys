@@ -1,0 +1,23 @@
+# Element overview
+entity.element.collection:
+  title: 'Element'
+  route_name: entity.element.collection
+  description: 'Overview of element.'
+  parent: system.admin_content
+  weight: 100
+
+# Element type menu items definition
+entity.element_type.collection:
+  title: 'Element types'
+  route_name: entity.element_type.collection
+  description: 'List element types (bundles).'
+  parent: system.admin_structure
+  weight: 99
+
+# Add element menu items definition
+entity.element.add_page:
+  title: 'Add element'
+  route_name: entity.element.add_page
+  description: 'Add an element.'
+  parent: entity.element.collection
+  weight: 50

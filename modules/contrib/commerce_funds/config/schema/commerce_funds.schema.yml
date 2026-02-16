@@ -1,0 +1,186 @@
+commerce_funds.settings:
+  type: config_object
+  label: 'Commerce funds settings'
+  translatable: true
+  mapping:
+    fees:
+      label: 'Fees'
+      type: sequence
+      sequence:
+        type: string
+    withdrawal_methods:
+        label: 'Withdrawal methods'
+        type: sequence
+        sequence:
+          type: string
+    transferwise:
+      label: 'Transferwise configuration'
+      type: mapping
+      mapping:
+        use_transferwise:
+          label: 'Use transferwise ?'
+          type: boolean
+        token:
+          label: 'Token'
+          type: string
+    exchange_rates:
+      label: 'Exchange rates'
+      type: sequence
+      sequence:
+        type: string
+    mail_transfer_issuer:
+      label: 'Transfer (issuer)'
+      type: mapping
+      mapping:
+        subject:
+          label: 'Subject'
+          type: text
+        body:
+          label: 'Body'
+          type: text_format
+        activated:
+          label: 'Email activated'
+          type: boolean
+    mail_transfer_recipient:
+      label: 'Transfer (recipient)'
+      type: mapping
+      mapping:
+        subject:
+          label: 'Subject'
+          type: text
+        body:
+          label: 'Body'
+          type: text_format
+        activated:
+          label: 'Email activated'
+          type: boolean
+    mail_escrow_created_issuer:
+      label: 'Escrow created (issuer)'
+      type: mapping
+      mapping:
+        subject:
+          label: 'Subject'
+          type: text
+        body:
+          label: 'Body'
+          type: text_format
+        activated:
+          label: 'Email activated'
+          type: boolean
+    mail_escrow_created_recipient:
+      label: 'Escrow created (recipient)'
+      type: mapping
+      mapping:
+        subject:
+          label: 'Subject'
+          type: text
+        body:
+          label: 'Body'
+          type: text_format
+        activated:
+          label: 'Email activated'
+          type: boolean
+    mail_escrow_canceled_by_issuer_issuer:
+      label: 'Escrow canceled by issuer (issuer)'
+      type: mapping
+      mapping:
+        subject:
+          label: 'Subject'
+          type: text
+        body:
+          label: 'Body'
+          type: text_format
+        activated:
+          label: 'Email activated'
+          type: boolean
+    mail_escrow_canceled_by_issuer_recipient:
+      label: 'Escrow canceled by issuer (recipient)'
+      type: mapping
+      mapping:
+        subject:
+          label: 'Subject'
+          type: text
+        body:
+          label: 'Body'
+          type: text_format
+        activated:
+          label: 'Email activated'
+          type: boolean
+    mail_escrow_canceled_by_recipient_issuer:
+      label: 'Escrow canceled by recipient (issuer)'
+      type: mapping
+      mapping:
+        subject:
+          label: 'Subject'
+          type: text
+        body:
+          label: 'Body'
+          type: text_format
+        activated:
+          label: 'Email activated'
+          type: boolean
+    mail_escrow_canceled_by_recipient_recipient:
+      label: 'Escrow canceled by recipient (recipient)'
+      type: mapping
+      mapping:
+        subject:
+          label: 'Subject'
+          type: text
+        body:
+          label: 'Body'
+          type: text_format
+        activated:
+          label: 'Email activated'
+          type: boolean
+    mail_escrow_released_issuer:
+      label: 'Escrow released (issuer)'
+      type: mapping
+      mapping:
+        subject:
+          label: 'Subject'
+          type: text
+        body:
+          label: 'Body'
+          type: text_format
+        activated:
+          label: 'Email activated'
+          type: boolean
+    mail_escrow_released_recipient:
+      label: 'Escrow released (recipient)'
+      type: mapping
+      mapping:
+        subject:
+          label: 'Subject'
+          type: text
+        body:
+          label: 'Body'
+          type: text_format
+        activated:
+          label: 'Email activated'
+          type: boolean
+    mail_withdrawal_declined:
+      label: 'Withdrawal request declined'
+      type: mapping
+      mapping:
+        subject:
+          label: 'Subject'
+          type: text
+        body:
+          label: 'Body'
+          type: text_format
+        activated:
+          label: 'Email activated'
+          type: boolean
+    mail_withdrawal_approved:
+      label: 'Withdrawal request approved'
+      type: mapping
+      mapping:
+        subject:
+          label: 'Subject'
+          type: text
+        body:
+          label: 'Body'
+          type: text_format
+        activated:
+          label: 'Email activated'
+          type: boolean

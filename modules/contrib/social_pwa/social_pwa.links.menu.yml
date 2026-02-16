@@ -1,0 +1,5 @@
+social_pwa.admin_settings:
+  title: 'Progressive Web App Settings'
+  description: 'Configure the Manifest.json output.'
+  parent: social_core.admin.config.social
+  route_name: social_pwa.settings

@@ -1,0 +1,7 @@
+label:
+  js:
+    js/label.js: {}
+  dependencies:
+    - core/jquery.once
+    - core/drupal.autocomplete
+    - core/drupal.machine-name

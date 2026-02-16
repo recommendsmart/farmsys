@@ -1,0 +1,13 @@
+name: Book PDF
+type: module
+description: Print an entire Book to a PDF file.
+package: Book
+core: 8.x
+core_version_requirement: ^8 || ^9
+dependencies:
+  - drupal:book
+
+# Information added by Drupal.org packaging script on 2020-10-13
+version: '1.0.0-alpha3'
+project: 'book_pdf'
+datestamp: 1602594685

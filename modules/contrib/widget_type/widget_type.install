@@ -1,0 +1,179 @@
+<?php
+
+/**
+ * @file
+ * Module install file.
+ */
+
+use Drupal\Core\Config\FileStorage;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+
+/**
+ * Implements hook_uninstall().
+ */
+function widget_type_uninstall($is_syncing) {
+  \Drupal::state()->delete('widget_type.hide_video_thumbnail');
+}
+
+/**
+ * Install field to hold external dependencies.
+ */
+function widget_type_update_8101(&$sandbox) {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $deps_field = BaseFieldDefinition::create('map')
+    ->setName('remote_widget_dependencies')
+    ->setLabel(t('Remote Widget Dependencies'))
+    ->setDescription(t('The list of dependencies of the widget.'))
+    ->setDefaultValue([])
+    ->setDisplayConfigurable('form', FALSE)
+    ->setDisplayConfigurable('view', FALSE)
+    ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+    ->setTranslatable(FALSE)
+    ->setReadOnly(TRUE);
+  $definition_update_manager->installFieldStorageDefinition(
+    'remote_widget_dependencies',
+    'widget_type',
+    'widget_type',
+    $deps_field
+  );
+  $files_field = $definition_update_manager->getFieldStorageDefinition('remote_widget_files', 'widget_type');
+  assert($files_field instanceof BaseFieldDefinition);
+  $files_field->setDisplayOptions('view', [
+    'label' => 'above',
+    'type' => 'string',
+    'weight' => -2,
+  ]);
+  $definition_update_manager->updateFieldStorageDefinition($files_field);
+}
+
+/**
+ * Set the initial (new) configuration for the module.
+ */
+function widget_type_update_8102(&$sandbox) {
+  $factory = \Drupal::configFactory();
+  $config = $factory->getEditable('widget_type.settings');
+  if (!empty($config->get('download_assets.allowed_list')) || !empty($config->get('download_assets.disallowed_list'))) {
+    return;
+  }
+  $config->set('download_assets', [
+    'allowed_list' => [],
+    'disallowed_list' => [],
+  ])->save();
+}
+
+/**
+ * Install field to hold form schema.
+ */
+function widget_type_update_8103(&$sandbox) {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $form_schema_field = BaseFieldDefinition::create('map')
+    ->setLabel(t('Remote Widget Form Schema'))
+    ->setDescription(t('The key/value form schema from the widget server.'))
+    ->setDefaultValue([]);
+  $definition_update_manager->installFieldStorageDefinition(
+    'remote_widget_form_schema',
+    'widget_type',
+    'widget_type',
+    $form_schema_field
+  );
+}
+
+/**
+ * Install field to hold registry source reference.
+ */
+function widget_type_update_8104(&$sandbox) {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $registry_source_field = BaseFieldDefinition::create('entity_reference')
+    ->setRevisionable(TRUE)
+    ->setLabel(t('Widget Registry Source'))
+    ->setDescription(t('The widget registry source this widget type originated from.'))
+    ->setSetting('target_type', 'widget_registry_source')
+    ->setTranslatable(TRUE)
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayOptions('view', [
+      'label' => 'above',
+      'type' => 'entity_reference_label',
+      'weight' => 15,
+    ])
+    ->setDisplayConfigurable('view', TRUE);
+  $definition_update_manager->installFieldStorageDefinition(
+    'widget_registry_source',
+    'widget_type',
+    'widget_type',
+    $registry_source_field
+  );
+}
+
+/**
+ * Install field to hold preview data.
+ */
+function widget_type_update_8105(&$sandbox) {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $fields = [];
+  $fields['preview_link'] = BaseFieldDefinition::create('uri')
+    ->setLabel(t('Preview Link'))
+    ->setRevisionable(TRUE)
+    ->setTranslatable(FALSE)
+    ->setDescription(t('The link of the preview.'))
+    ->setDisplayOptions('view', ['region' => 'hidden'])
+    ->setDisplayConfigurable('view', TRUE);
+
+  $fields['preview_image'] = BaseFieldDefinition::create('image')
+    ->setLabel(t('Preview Image'))
+    ->setDescription(t('The thumbnail of the widget type.'))
+    ->setRevisionable(TRUE)
+    ->setTranslatable(FALSE)
+    ->setDisplayOptions('view', [
+      'type' => 'image',
+      'weight' => 5,
+      'label' => 'hidden',
+    ])
+    ->setDisplayConfigurable('view', TRUE);
+  foreach ($fields as $name => $definition) {
+    $definition_update_manager->installFieldStorageDefinition(
+      $name,
+      'widget_type',
+      'widget_type',
+      $definition
+    );
+  }
+}
+
+/**
+ * Install image style for new fancy selector.
+ */
+function widget_type_update_8106(&$sandbox) {
+  $path = implode(DIRECTORY_SEPARATOR, [
+    \Drupal::root(),
+    \Drupal::service('extension.list.module')->getPath('widget_type'),
+    \Drupal\Core\Config\InstallStorage::CONFIG_INSTALL_DIRECTORY,
+  ]);
+  $source = new FileStorage($path);
+  $active_storage = \Drupal::service('config.storage');
+  $name = 'image.style.widget_type_small_16_9';
+  $data = $source->read($name);
+  $active_storage->write($name, $data);
+}
+
+/**
+ * Install field to store the remote widget type status.
+ */
+function widget_type_update_8107(&$sandbox) {
+  $field_definition = BaseFieldDefinition::create('string')
+    ->setLabel(t('Remote Widget status'))
+    ->setDescription(t('The list of files of the widget.'))
+    ->setDisplayOptions('view', [
+      'label' => 'above',
+      'type' => 'string',
+      'weight' => -2,
+    ])
+    ->setDisplayConfigurable('view', FALSE)
+    ->setReadOnly(TRUE);
+  \Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition(
+    'remote_widget_status',
+    'widget_type',
+    'widget_type',
+    $field_definition
+  );
+}

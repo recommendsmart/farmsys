@@ -1,0 +1,6 @@
+services:
+  content_as_config.route_subscriber:
+    class: Drupal\content_as_config\Routing\RouteSubscriber
+    arguments: ['@module_handler']
+    tags:
+      - { name: event_subscriber }

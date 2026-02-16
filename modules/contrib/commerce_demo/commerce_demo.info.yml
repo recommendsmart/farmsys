@@ -1,0 +1,28 @@
+name: Commerce Demo
+type: module
+description: 'Provides a demo store for Commerce.'
+package: Commerce (contrib)
+core_version_requirement: ^8.8 || ^9
+dependencies:
+  - color_field:color_field
+  - commerce:commerce
+  - commerce:commerce_cart
+  - commerce:commerce_checkout
+  - commerce:commerce_payment
+  - commerce:commerce_payment_example
+  - commerce:commerce_product
+  - commerce:commerce_promotion
+  - commerce:commerce_tax
+  - commerce_shipping:commerce_shipping
+  - commerce_pricelist:commerce_pricelist
+  - search_api:search_api
+  - search_api:search_api_db
+  - drupal:image
+  - drupal:taxonomy
+  - drupal:path
+  - drupal:path_alias
+
+# Information added by Drupal.org packaging script on 2020-09-17
+version: '8.x-2.0'
+project: 'commerce_demo'
+datestamp: 1600374274

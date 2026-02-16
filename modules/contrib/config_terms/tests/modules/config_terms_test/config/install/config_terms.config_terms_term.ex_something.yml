@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies: {  }
+id: ex_something
+vid: example_type
+label: Something
+parents:
+  - '0'
+weight: 0
+description: ''

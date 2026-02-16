@@ -1,0 +1,164 @@
+<?php
+
+/**
+ * @file
+ * Reassign deleted user content to another user.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AnonymousUserSession;
+use Drupal\user\UserInterface;
+
+/**
+ * Implements hook_help().
+ */
+function reassign_user_content_help($route_name, RouteMatchInterface $route_match) {
+  if ($route_name == 'help.page.reassign_user_content') {
+    $output = '';
+    $output .= '<p>' . t('The Reassign User Content module allows you to reassign content of user you are about to delete to another user.') . '</p>';
+    return $output;
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function reassign_user_content_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (in_array($form_id, [
+    'user_multiple_cancel_confirm',
+    'user_cancel_form',
+  ])) {
+    $form['user_to_assign'] = [
+      '#type'        => 'entity_autocomplete',
+      '#title'       => t('Choose user to assign content'),
+      '#target_type' => 'user',
+      '#states'      => [
+        'visible'  => [
+          [':input[name="user_cancel_method"]' => ['value' => 'user_cancel_reassign_content']],
+        ],
+        'required' => [
+          [':input[name="user_cancel_method"]' => ['value' => 'user_cancel_reassign_content']],
+        ],
+      ],
+    ];
+
+    $form['#validate'][] = '_cancel_user_form_validate';
+  }
+}
+
+/**
+ * User cancel Validate.
+ *
+ * @param array $form
+ *   Form array.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   Form state.
+ */
+function _cancel_user_form_validate(array $form, FormStateInterface $form_state) {
+  $to_assign_uid = $form_state->getValue('user_to_assign');
+  // In case the user to assign is in the list of users to delete.
+  if ($form['#form_id'] == 'user_multiple_cancel_confirm' &&
+    in_array($to_assign_uid, $form_state->getValue('accounts'))
+  ) {
+    $form_state->setErrorByName('user_to_assign', t('Choose different user than the ones you want to delete.'));
+  }
+  else {
+    if (
+      $form_state->getValue('user_cancel_method') == 'user_cancel_reassign_content' &&
+      $form_state->getValue('user_to_assign') == $form_state->getValue('uid')
+    ) {
+      $form_state->setErrorByName('user_to_assign', t('Choose different user than the deleted one to assign content.'));
+    }
+  }
+}
+
+/**
+ * Implements hook_user_cancel_methods_alter().
+ */
+function reassign_user_content_user_cancel_methods_alter(&$methods) {
+  $methods['user_cancel_reassign_content'] = [
+    'title'       => t('Delete the account and make its content belong to another user. This action cannot be undone.'),
+    'description' => t('Your account will be removed and all account information deleted. All of your content will be assigned to the another user.'),
+  ];
+}
+
+/**
+ * Implements hook_user_cancel().
+ */
+function reassign_user_content_user_cancel($edit, UserInterface $account, $method) {
+  $user_to_assign_content = $edit['user_to_assign'] ?? NULL;
+  if ($method == 'user_cancel_reassign_content') {
+    // Anonymize nodes (current revisions).
+    module_load_include('inc', 'node', 'node.admin');
+    $nodes = \Drupal::entityQuery('node')
+      ->accessCheck(FALSE)
+      ->condition('uid', $account->id())
+      ->execute();
+    node_mass_update($nodes, ['uid' => $user_to_assign_content], NULL, TRUE);
+    // Anonymize old revisions.
+    \Drupal::database()->update('node_field_revision')
+      ->fields(['uid' => $user_to_assign_content])
+      ->condition('uid', $account->id())
+      ->execute();
+  }
+}
+
+/**
+ * Implements hook_batch_alter().
+ *
+ * Alter _user_cancel batch operation
+ * because _user_cancel support only the methods added by UserCancelForm.
+ *
+ * @see _user_cancel()
+ */
+function reassign_user_content_batch_alter(&$batch) {
+  if (isset($batch['sets'][1]['operations'][0][0]) &&
+    $batch['sets'][1]['operations'][0][0] == '_user_cancel' &&
+    isset($batch['sets'][1]['operations'][0][1][2]) &&
+    $batch['sets'][1]['operations'][0][1][2] == 'user_cancel_reassign_content'
+  ) {
+    // Change the batch operation callback.
+    $batch['sets'][1]['operations'][0][0] = '_reassign_user_content';
+  }
+}
+
+/**
+ * Implements callback_batch_operation().
+ *
+ * Similar to _user_cancel().
+ *
+ * @param array $edit
+ *   An array of submitted form values.
+ * @param \Drupal\user\UserInterface $account
+ *   The user ID of the user account to cancel.
+ * @param string $method
+ *   The account cancellation method to use.
+ *
+ * @see _user_cancel()
+ */
+function _reassign_user_content(array $edit, UserInterface $account, string $method) {
+  $logger = \Drupal::logger('user');
+
+  if ($method == 'user_cancel_reassign_content') {
+    // Send account canceled notification if option was checked.
+    if (!empty($edit['user_cancel_notify'])) {
+      _user_mail_notify('status_canceled', $account);
+    }
+    $account->delete();
+    \Drupal::messenger()
+      ->addStatus(t('Account %name has been deleted.', ['%name' => $account->getDisplayName()]));
+    $logger->notice('Deleted user: %name %email.', [
+      '%name'  => $account->getAccountName(),
+      '%email' => '<' . $account->getEmail() . '>',
+    ]);
+  }
+
+  // After cancelling account, ensure that user is logged out. We can't destroy
+  // their session though, as we might have information in it, and we can't
+  // regenerate it because batch API uses the session ID, we will regenerate it
+  // in _user_cancel_session_regenerate().
+  if ($account->id() == \Drupal::currentUser()->id()) {
+    \Drupal::currentUser()->setAccount(new AnonymousUserSession());
+  }
+}

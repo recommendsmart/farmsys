@@ -1,0 +1,6 @@
+services:
+  file_de_duplicator.commands:
+    class: \Drupal\file_de_duplicator\Commands\DeDuplicator
+    arguments: ['@file_de_duplicator.duplicate_finder']
+    tags:
+      - { name: drush.command }

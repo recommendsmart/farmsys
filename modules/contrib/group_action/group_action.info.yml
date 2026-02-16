@@ -1,0 +1,12 @@
+name: 'Group Actions'
+type: module
+description: 'Provides actions for Group'
+core_version_requirement: '^9 || ^10'
+package: 'Group'
+dependencies:
+  - group:group
+
+# Information added by Drupal.org packaging script on 2022-09-16
+version: '1.0.1'
+project: 'group_action'
+datestamp: 1663323674

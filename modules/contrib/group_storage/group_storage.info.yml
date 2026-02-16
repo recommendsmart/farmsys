@@ -1,0 +1,13 @@
+name: 'Group Storage'
+description: 'Enables Group functionality for the Storage Entities module'
+package: 'Group'
+type: 'module'
+core_version_requirement: ^9
+dependencies:
+  - 'group:group'
+  - 'storage:storage'
+
+# Information added by Drupal.org packaging script on 2022-01-06
+version: '1.0.0-alpha1'
+project: 'group_storage'
+datestamp: 1641509774

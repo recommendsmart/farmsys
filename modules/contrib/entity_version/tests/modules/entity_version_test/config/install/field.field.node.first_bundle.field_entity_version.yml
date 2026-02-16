@@ -1,0 +1,24 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_entity_version
+    - node.type.first_bundle
+  module:
+    - entity_version
+id: node.first_bundle.field_entity_version
+field_name: field_entity_version
+entity_type: node
+bundle: first_bundle
+label: Version
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    major: 0
+    minor: 0
+    patch: 0
+default_value_callback: ''
+settings: {  }
+field_type: entity_version

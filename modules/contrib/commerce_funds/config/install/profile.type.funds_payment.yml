@@ -1,0 +1,11 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - commerce_funds
+id: funds_payment
+label: Funds payment
+registration: false
+multiple: false
+weight: 0

@@ -1,0 +1,5 @@
+group_content.commerceg_order_relate_page:
+  route_name: 'entity.group_content.commerceg_order_relate_page'
+  title: 'Add existing order'
+  appears_on:
+    - 'view.commerceg_group_orders.page_1'

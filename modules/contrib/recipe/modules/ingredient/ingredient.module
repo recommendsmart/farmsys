@@ -1,0 +1,139 @@
+<?php
+
+/**
+ * @file
+ * Contains basic functions for the Ingredient module.
+ */
+
+use Drupal\Core\Render\Element;
+use Drupal\ingredient\Entity\Ingredient;
+
+/**
+ * Implements hook_theme().
+ */
+function ingredient_theme($existing, $type, $theme, $path) {
+  return [
+    'ingredient' => [
+      'render element' => 'elements',
+    ],
+    'ingredient_formatter' => [
+      'variables' => [
+        'ingredient' => NULL,
+        'url' => NULL,
+        'name' => NULL,
+        'quantity' => 0,
+        'unit_name' => '',
+        'unit_abbreviation' => '',
+        'unit_display' => 0,
+        'note' => '',
+      ],
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for ingredient templates.
+ *
+ * Default template: ingredient.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the ingredient and any fields
+ *     attached to the ingredient. Properties used:
+ *     - #fields: A \Drupal\ingredient\IngredientInterface object.
+ *     - #view_mode: The current view mode for this ingredient, e.g.'full' or
+ *       'teaser'.
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_ingredient(array &$variables) {
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
+  $variables['ingredient'] = $variables['elements']['#ingredient'];
+  /** @var \Drupal\ingredient\IngredientInterface $ingredient */
+  $ingredient = $variables['ingredient'];
+
+  $variables['url'] = $ingredient->toUrl()->toString();
+  // We use name here because that is what appears in the UI.
+  $variables['name'] = $variables['elements']['name'];
+  unset($variables['elements']['name']);
+  $variables['page'] = $variables['view_mode'] == 'full' && ingredient_is_page($ingredient);
+
+  // Helpful $content variable for templates.
+  $variables['content'] = [];
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+}
+
+/**
+ * Returns whether the current page is the page of the passed-in ingredient.
+ *
+ * @param \Drupal\ingredient\Entity\Ingredient $ingredient
+ *   A ingredient entity.
+ *
+ * @return int|false
+ *   The ingredient's ID if displaying an ingredient's page, FALSE otherwise.
+ */
+function ingredient_is_page(Ingredient $ingredient) {
+  if (\Drupal::routeMatch()->getRouteName() == 'entity.ingredient.canonical' && $page_id = \Drupal::routeMatch()->getRawParameter('ingredient')) {
+    return $page_id == $ingredient->id();
+  }
+  return FALSE;
+}
+
+/**
+ * Converts an ingredient's quantity from decimal to fraction.
+ *
+ * @param float $ingredient_quantity
+ *   The ingredient quantity formatted as a decimal.
+ * @param string $fraction_format
+ *   A string representing the fraction format, used by sprintf().
+ * @param bool $edit_mode
+ *   Whether or not the ingredient is being edited.
+ *
+ * @return string
+ *   The ingredient quantity formatted as a fraction.
+ *
+ * @deprecated This function was deprecated in version 8.x-2.0 and will be
+ *   removed in version 3.0.0.  Use
+ *   \Drupal\ingredient\Utility\IngredientQuantityUtility::getQuantityFromDecimal()
+ *   instead.
+ */
+function ingredient_quantity_from_decimal($ingredient_quantity, $fraction_format = '{%d} %d&frasl;%d', $edit_mode = FALSE) {
+  return \Drupal::service('ingredient.quantity')->getQuantityFromDecimal($ingredient_quantity, $fraction_format, $edit_mode);
+}
+
+/**
+ * Converts an ingredient's quantity from fraction to decimal.
+
+ * @param string $ingredient_quantity
+ *   The ingredient quantity formatted as a fraction.
+ *
+ * @return float
+ *   The ingredient quantity formatted as a decimal.
+ *
+ * @deprecated This function was deprecated in version 8.x-2.0 and will be
+ *   removed in version 3.0.0.  Use
+ *   \Drupal\ingredient\Utility\IngredientQuantityUtility::getQuantityFromFraction()
+ *   instead.
+ */
+function ingredient_quantity_from_fraction($ingredient_quantity) {
+  return \Drupal::service('ingredient.quantity')->getQuantityFromFraction($ingredient_quantity);
+}
+
+/**
+ * Returns a best-guess matched unit key for a unit of measure.
+ *
+ * @param string $subject
+ *   The unit of measure for which the function will search.
+ *
+ * @return string|false
+ *   The unit's key from configuration or FALSE if there was no match.
+ *
+ * @deprecated This function was deprecated in version 8.x-2.0 and will be
+ *   removed in version 3.0.0.  Use
+ *   \Drupal\ingredient\Utility\IngredientUnitFuzzymatch::getUnitFuzzymatch()
+ *   instead.
+ */
+function ingredient_unit_fuzzymatch($subject) {
+  return \Drupal::service('ingredient.fuzzymatch')->getUnitFuzzymatch($subject);
+}

@@ -1,0 +1,13 @@
+name: 'Group Membership Request'
+type: module
+description: 'Allows users to request access to Groups'
+package: Group
+core_version_requirement: ^8.8 || ^9
+dependencies:
+  - group:group
+  - state_machine:state_machine
+
+# Information added by Drupal.org packaging script on 2021-03-17
+version: '1.0.0-rc8'
+project: 'grequest'
+datestamp: 1616024764

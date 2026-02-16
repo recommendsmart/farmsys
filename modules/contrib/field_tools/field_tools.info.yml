@@ -1,0 +1,13 @@
+name: 'Field Tools'
+description: 'Provides tools for working with fields, such as cloning to other entities and bundles.'
+package: Development
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9
+dependencies:
+  - drupal:field_ui
+
+# Information added by Drupal.org packaging script on 2022-02-19
+version: '8.x-1.0-alpha9'
+project: 'field_tools'
+datestamp: 1645310214

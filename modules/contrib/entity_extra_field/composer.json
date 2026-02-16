@@ -1,0 +1,13 @@
+{
+    "name": "drupal/entity_extra_field",
+    "description": "Expose various extra fields on any entity display.",
+    "type": "drupal-module",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "Travis Tomka",
+            "email": "underoathosx@gmail.com"
+        }
+    ],
+    "require": {}
+}

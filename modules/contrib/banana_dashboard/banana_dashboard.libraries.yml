@@ -1,0 +1,4 @@
+banana_dashboard:
+  css:
+    theme:
+      css/banana_dashboard.css: {}

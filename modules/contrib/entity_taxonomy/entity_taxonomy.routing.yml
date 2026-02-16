@@ -1,0 +1,39 @@
+entity.entity_taxonomy_term.add_form:
+  path: '/admin/structure/entity_taxonomy/manage/{entity_taxonomy_vocabulary}/add'
+  defaults:
+    _controller: '\Drupal\entity_taxonomy\Controller\EntityTaxonomyController::addForm'
+    _title: 'Add term'
+  requirements:
+    _entity_create_access: 'entity_taxonomy_term:{entity_taxonomy_vocabulary}'
+
+entity.entity_taxonomy_term.edit_form:
+  path: '/entity_taxonomy/term/{entity_taxonomy_term}/edit'
+  defaults:
+    _entity_form: 'entity_taxonomy_term.default'
+    _title: 'Edit term'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _entity_access: 'entity_taxonomy_term.update'
+    entity_taxonomy_term: \d+
+
+entity.entity_taxonomy_term.delete_form:
+  path: '/entity_taxonomy/term/{entity_taxonomy_term}/delete'
+  defaults:
+    _entity_form: 'entity_taxonomy_term.delete'
+    _title: 'Delete term'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _entity_access: 'entity_taxonomy_term.delete'
+    entity_taxonomy_term: \d+
+
+entity.entity_taxonomy_term.canonical:
+  path: '/entity_taxonomy/term/{entity_taxonomy_term}'
+  defaults:
+    _entity_view: 'entity_taxonomy_term.full'
+    _title: 'entity_taxonomy term'
+    _title_callback: '\Drupal\entity_taxonomy\Controller\EntityTaxonomyController::termTitle'
+  requirements:
+    _entity_access: 'entity_taxonomy_term.view'
+    entity_taxonomy_term: \d+

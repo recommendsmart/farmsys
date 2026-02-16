@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - storage
+id: storage_publish_action
+label: 'Publish storage data'
+type: storage
+plugin: entity:publish_action:storage
+configuration: {  }

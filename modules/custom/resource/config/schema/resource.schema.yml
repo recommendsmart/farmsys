@@ -1,0 +1,50 @@
+# Schema for the configuration files of the resource module.
+resource.settings:
+  type: config_object
+  label: 'Resource settings'
+  mapping:
+    resource_use_admin_theme:
+      type: boolean
+      label: 'Use admin theme when editing or creating resource entity'
+
+resource.type.*:
+  type: config_entity
+  label: 'Resource type'
+  mapping:
+    id:
+      type: string
+      label: 'Machine-readable name'
+    label:
+      type: label
+      label: 'Type'
+    description:
+      type: text
+      label: 'Description'
+    name_pattern:
+      type: string
+      label: 'Pattern for auto-generating the resource name, using tokens.'
+    name_edit:
+      type: boolean
+      label: 'Boolean: resource name is user editable.'
+    active:
+      type: boolean
+      label: 'Boolean: automatically mark resources of this type as active.'
+    new_revision:
+      type: boolean
+      label: 'Whether a new revision should be created by default'
+
+condition.plugin.resource_type:
+  type: condition.plugin
+  mapping:
+    bundles:
+      type: sequence
+      sequence:
+        type: string
+
+action.configuration.resource_delete_action:
+  type: action_configuration_default
+  label: 'Delete resource configuration'
+
+action.configuration.resource_active_action:
+  type: action_configuration_default
+  label: 'Mark resource as active configuration'

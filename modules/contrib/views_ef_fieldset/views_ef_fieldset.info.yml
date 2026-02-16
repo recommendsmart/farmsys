@@ -1,0 +1,13 @@
+name: Views Exposed Form Fieldset
+description: Provide an option to render the "exposed form widgets" in a fieldset.
+core: 8.x
+core_version_requirement: ^8 || ^9
+type: module
+package: Views
+dependencies:
+ - drupal:views
+
+# Information added by Drupal.org packaging script on 2020-11-05
+version: '8.x-1.5'
+project: 'views_ef_fieldset'
+datestamp: 1604567513

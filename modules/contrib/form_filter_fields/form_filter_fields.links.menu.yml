@@ -1,0 +1,7 @@
+form_filter_fields.settings:
+  title: 'Form Filter Fields Settings'
+  description: 'Manage the fields that are dependent on other fields for content type forms.'
+  parent: system.admin_config_system
+  route_name: form_filter_fields.settings
+  path: '/admin/config/system/form_filter_fields'
+  weight: -20

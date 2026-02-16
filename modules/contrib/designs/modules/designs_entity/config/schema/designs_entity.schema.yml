@@ -1,0 +1,8 @@
+core.entity_view_display.*.*.*.third_party.designs_entity:
+  type: designs_entity.third_party_settings
+
+core.entity_form_display.*.*.*.third_party.designs_entity:
+  type: designs_entity.third_party_settings
+
+designs_entity.third_party_settings:
+  type: design_object

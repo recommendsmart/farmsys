@@ -1,0 +1,33 @@
+widget:
+  version: 1.x
+  css:
+    theme:
+      css/entity-reference-tree.css: {}
+      
+jstree:
+  version: 3.3.7  
+  js:
+    js/jstree/jstree.min.js: { minified: true }
+
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+    
+jstree_default_theme:
+  version: 3.3.7
+  css:
+    theme:
+      css/jstree/themes/default/style.min.css: { minified: true }
+    
+jstree_default-dark_theme:
+  version: 3.3.7
+  css:
+    theme:
+      css/jstree/themes/default-dark/style.min.css: { minified: true }
+      
+entity_tree:
+  js:
+    js/entity_reference_tree.js: {}
+  
+  dependencies:
+    - entity_reference_tree/jstree

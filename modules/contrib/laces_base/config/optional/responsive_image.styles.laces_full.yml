@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - image.style.laces_lg
+    - image.style.laces_md
+    - image.style.laces_sm
+    - image.style.laces_xl
+    - image.style.laces_xs
+    - image.style.laces_xxl
+    - image.style.max_325x325
+  module:
+    - laces_base
+id: laces_full
+label: 'Laces Full'
+image_style_mappings:
+  -
+    breakpoint_id: laces_base.viewport_sizing
+    multiplier: 1x
+    image_mapping_type: sizes
+    image_mapping:
+      sizes: 100vw
+      sizes_image_styles:
+        - laces_lg
+        - laces_md
+        - laces_sm
+        - laces_xl
+        - laces_xs
+        - laces_xxl
+breakpoint_group: laces_base
+fallback_image_style: max_325x325

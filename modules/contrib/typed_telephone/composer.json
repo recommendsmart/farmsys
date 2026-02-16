@@ -1,0 +1,13 @@
+{
+    "name": "drupal/typed_telephone",
+    "type": "drupal-module",
+    "description": "Typed Telephone provides a type descriptor along with a standard telephone field.",
+    "keywords": [
+    ],
+    "homepage": "https://www.drupal.org/project/typed_telephone",
+    "minimum-stability": "dev",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/typed_telephone",
+        "source": "http://cgit.drupalcode.org/typed_telephone"
+    }
+}

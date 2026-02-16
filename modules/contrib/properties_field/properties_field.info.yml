@@ -1,0 +1,10 @@
+name: Properties Field
+description: Provides a Properties field that allows to store any properties/specifications of an object.
+
+type: module
+core_version_requirement: ^8.8 || ^9
+
+# Information added by Drupal.org packaging script on 2021-09-06
+version: '1.0.0'
+project: 'properties_field'
+datestamp: 1630960588

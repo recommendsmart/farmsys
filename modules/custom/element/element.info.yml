@@ -1,0 +1,8 @@
+name: 'Element'
+type: module
+description: 'Re-usable content element.'
+core: 8.x
+package: 'AGERP'
+
+# Information added by Drupal.org packaging script on
+version: '8.x-1.0-beta2'

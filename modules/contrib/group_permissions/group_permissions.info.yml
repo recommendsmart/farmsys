@@ -1,0 +1,13 @@
+name: 'Group permissions'
+type: module
+description: 'Group permissions module allows to override permissions per group'
+core_version_requirement: ^8.8 || ^9
+package: 'Group'
+
+dependencies:
+  - group:group
+
+# Information added by Drupal.org packaging script on 2021-02-17
+version: '1.0.0-alpha4'
+project: 'group_permissions'
+datestamp: 1613602230

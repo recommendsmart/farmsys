@@ -1,0 +1,23 @@
+.slick-prev:before {
+  content: "<";
+  color: black;
+  font-size: 18px;
+  background: #616161;
+  border-radius: 50px;
+  padding: 3px 8px;
+  font-weight: bold;
+}
+
+.slick-next:before {
+  content: ">";
+  color: black;
+  font-size: 18px;
+  background: #616161;
+  border-radius: 50px;
+  padding: 3px 8px;
+  font-weight: bold;
+}
+
+.slick-dots li button {
+  background: #00000087;
+}

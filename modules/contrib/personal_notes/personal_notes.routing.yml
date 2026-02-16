@@ -1,0 +1,21 @@
+# Personal Notes forms
+
+personalnote.create.form:
+  path: '/user/{user}/add-note'
+  defaults:
+    _title: 'Add a Note'
+    _form: '\Drupal\personal_notes\Form\PersonalNotesAddForm'
+  requirements:
+    _permission: 'add and delete personal notes'
+  options:
+    parameters:
+      user:
+        type: entity:user
+
+personalnote.delete.form:
+  path: '/personal_notes/persnotesDlet'
+  defaults:
+    _title: 'PN Delete Note(s) Form'
+    _form: '\Drupal\personal_notes\Form\PersonalNotesDeleteForm'
+  requirements:
+    _permission: 'add and delete personal notes'

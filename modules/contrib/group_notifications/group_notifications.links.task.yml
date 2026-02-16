@@ -1,0 +1,5 @@
+group_notifications.settings:
+  title: 'Notifications'
+  base_route: 'entity.group.collection'
+  route_name: 'group_notifications.settings'
+  weight: 15

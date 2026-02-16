@@ -1,0 +1,8 @@
+lrn.lrn_config:
+  path: '/admin/config/system/lrn-config'
+  defaults:
+    _form: 'Drupal\lrn\Form\LRNConfigForm'
+    _title: 'LRN configuration'
+  requirements:
+    _permission: 'administer site configuration'
+

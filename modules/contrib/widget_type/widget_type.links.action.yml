@@ -1,0 +1,5 @@
+entity.widget_registry_source.add_form:
+  route_name: 'entity.widget_registry_source.add_form'
+  title: 'Add widget registry source'
+  appears_on:
+    - entity.widget_registry_source.collection

@@ -1,0 +1,163 @@
+<?php
+
+/**
+ * @file
+ * Requirements and update functions for the social_course_advanced module.
+ */
+
+use Drupal\Core\Config\FileStorage;
+
+/**
+ * Add the field_flexible_group_visibility field to the course_advanced group.
+ */
+function social_course_advanced_update_8001(): void {
+  $config_path = drupal_get_path('module', 'social_course_advanced') . '/config/install';
+  $source = new FileStorage($config_path);
+  $config_storage = \Drupal::service('config.storage');
+
+  $config_names = [
+    'field.field.group.course_advanced.field_flexible_group_visibility',
+    'field.field.group.course_advanced.field_group_allowed_visibility',
+  ];
+
+  foreach ($config_names as $config_name) {
+    $data = $source->read($config_name);
+    if (is_array($data)) {
+      $config_storage->write($config_name, $data);
+    }
+  }
+}
+
+/**
+ * Add view group permission for the anonymous users.
+ */
+function social_course_advanced_update_8004(): void {
+  $config_name = 'group.role.course_advanced-anonymous';
+  $config = \Drupal::configFactory()->getEditable($config_name);
+  $permissions = $config->get('permissions');
+  $permissions[] = 'view group';
+
+  $config->set('permissions', $permissions)->save();
+}
+
+/**
+ * Configuration update: change form display.
+ */
+function social_course_advanced_update_8005(): string {
+  /** @var \Drupal\update_helper\Updater $updateHelper */
+  $updateHelper = \Drupal::service('update_helper.updater');
+
+  // Execute configuration update definitions with logging of success.
+  $updateHelper->executeUpdate('social_course_advanced', 'social_course_advanced_update_8001');
+
+  // Output logged messages to related channel of update execution.
+  return $updateHelper->logger()->output();
+}
+
+/**
+ * Set field_flexible_group_visibility as public by default.
+ */
+function social_course_advanced_update_8006(): void {
+  $group_storage = \Drupal::entityTypeManager()->getStorage('group');
+  $course_ids = $group_storage
+    ->getQuery()
+    ->condition('type', 'course_advanced')
+    ->execute();
+
+  foreach ($course_ids as $course_id) {
+    /** @var \Drupal\group\Entity\GroupInterface $course */
+    $course = $group_storage->load($course_id);
+    if ($course->hasField('field_flexible_group_visibility')) {
+      $course->set('field_flexible_group_visibility', 'public');
+      $course->save();
+    }
+  }
+}
+
+/**
+ * Set field_group_allowed_visibility as community by default.
+ */
+function social_course_advanced_update_8007(): void {
+  $group_storage = \Drupal::entityTypeManager()->getStorage('group');
+  $course_ids = $group_storage
+    ->getQuery()
+    ->condition('type', 'course_advanced')
+    ->execute();
+
+  foreach ($course_ids as $course_id) {
+    /** @var \Drupal\group\Entity\GroupInterface $course */
+    $course = $group_storage->load($course_id);
+    if ($course->hasField('field_group_allowed_visibility')) {
+      $course->set('field_group_allowed_visibility', ['community']);
+      $course->save();
+    }
+  }
+}
+
+/**
+ * Fix "Course Advanced" form display.
+ */
+function social_course_advanced_update_8008(): void {
+  $config = \Drupal::configFactory()->getEditable('core.entity_form_display.group.course_advanced.default');
+  $config->set('third_party_settings.field_group.group_date_and_time.parent_name', 'group_settings');
+  $config->save();
+}
+
+/**
+ * Remove redundant field group "Related courses" for "Course Advanced".
+ */
+function social_course_advanced_update_8901(): void {
+  if ($group = field_group_load_field_group('group_related_courses', 'group', 'course_advanced', 'form', 'default')) {
+    field_group_delete_field_group($group);
+  }
+}
+
+/**
+ * Add translations support for "Course Advanced" group type.
+ */
+function social_course_advanced_update_8902(): string {
+  /** @var \Drupal\update_helper\Updater $updateHelper */
+  $updateHelper = \Drupal::service('update_helper.updater');
+
+  // Execute configuration update definitions with logging of success.
+  $updateHelper->executeUpdate('social_course_advanced', 'social_course_advanced_update_8902');
+
+  // Output logged messages to related channel of update execution.
+  return $updateHelper->logger()->output();
+}
+
+/**
+ * Configuration update: add path alias field.
+ */
+function social_course_advanced_update_8903(): string {
+  /** @var \Drupal\update_helper\Updater $updateHelper */
+  $updateHelper = \Drupal::service('update_helper.updater');
+
+  // Execute configuration update definitions with logging of success.
+  $updateHelper->executeUpdate('social_course_advanced', 'social_course_advanced_update_8903');
+
+  // Output logged messages to related channel of update execution.
+  return $updateHelper->logger()->output();
+}
+
+/**
+ * Add a new view mode for group content for "Advanced Course" group type.
+ */
+function social_course_advanced_update_8904(): void {
+  // Install new configs.
+  $config_path = drupal_get_path('module', 'social_course_advanced') . '/config/install';
+  $source = new FileStorage($config_path);
+  $config_storage = \Drupal::service('config.storage');
+
+  $config_names = [
+    'core.entity_view_display.group_content.course_advanced-group_node-event.activity',
+    'core.entity_view_display.group_content.course_advanced-group_node-topic.activity',
+  ];
+
+  foreach ($config_names as $name) {
+    $data = $source->read($name);
+    if (is_array($data)) {
+      $config_storage->write($name, $data);
+    }
+  }
+}

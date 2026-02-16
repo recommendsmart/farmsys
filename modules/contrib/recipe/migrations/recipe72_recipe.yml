@@ -1,0 +1,19 @@
+id: recipe72_recipe
+label: Recipe data
+migration_tags:
+  - Drupal 7
+source:
+  plugin: recipe72_recipe
+process:
+  nid: tnid
+  langcode:
+    plugin: default_value
+    source: language
+    default_value: "und"
+  recipe_yield_amount: yield
+  recipe_yield_unit: yield_unit
+destination:
+  plugin: entity:node
+migration_dependencies:
+  required:
+    - d7_node

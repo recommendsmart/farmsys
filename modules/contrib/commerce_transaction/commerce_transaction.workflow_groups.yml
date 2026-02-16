@@ -1,0 +1,17 @@
+# Remote state workflow for the Transaction entity.
+## We do not provide a default workflow in this module because it is always
+## specific to the payment type/gateway. It therefore needs to be provided by the
+## integrating module. A `draft` state should be reserved for use when a
+## transactions is created in Drupal but not sent to the remote system yet.
+## There is a feature in some payment gateways (e.g. BlueSnap) that allows
+## sending a merchant transaction ID when requesting a transaction. In such
+## cases, transactions can be created in `draft` state before requesting the
+## transaction from the remote system so that there is an ID to be sent. If the
+## transaction is rejected due to, for example, wrong payment details or fraud
+## detection (in which case payments are not created in Drupal) draft
+## transactions can be regularly collected and removed. Or they may be used by
+## the merchant to have an insight of how frequently customers have payment
+## problems during checkout.
+commerce_transaction:
+  label: Payment transaction
+  entity_type: commerce_transaction

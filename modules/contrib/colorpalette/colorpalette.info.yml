@@ -1,0 +1,12 @@
+name: Color Palette
+description: Field input widget supporting launching of color palette with pre-approved color options.
+type: module
+package: Fields
+
+core: 8.x
+core_version_requirement: ^8 || ^9
+
+# Information added by Drupal.org packaging script on 2021-03-29
+version: '1.0.2'
+project: 'colorpalette'
+datestamp: 1617022433

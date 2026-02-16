@@ -1,0 +1,144 @@
+<?php
+
+/**
+ * @file
+ * Group flex module file.
+ */
+
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+use Drupal\Core\Entity\EntityFormInterface;
+use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupType;
+use Drupal\group_flex\Entity\Form\GroupForm;
+use Drupal\group_flex\Entity\Form\GroupTypeForm;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_entity_type_alter().
+ *
+ * This overrides the Group(Type) Form provided by the Group module.
+ */
+function group_flex_entity_type_alter(array &$entity_types) {
+  $groupTypeHandlerClasses = $entity_types['group_type']->getHandlerClasses();
+  $formHandlerClasses = $groupTypeHandlerClasses['form'];
+  // This needed because https://www.drupal.org/project/group/issues/2833054.
+  if (!isset($formHandlerClasses['default'])) {
+    $formHandlerClasses['default'] = $formHandlerClasses['edit'];
+  }
+  $formHandlerClasses['add'] = GroupTypeForm::class;
+  $formHandlerClasses['edit'] = GroupTypeForm::class;
+  $entity_types['group_type']->setHandlerClass('form', $formHandlerClasses);
+
+  $groupHandlerClasses = $entity_types['group']->getHandlerClasses();
+  $formHandlerClasses = $groupHandlerClasses['form'];
+  $formHandlerClasses['add'] = GroupForm::class;
+  $formHandlerClasses['edit'] = GroupForm::class;
+  $entity_types['group']->setHandlerClass('form', $formHandlerClasses);
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * Alters the step 2 form of a group creation. This is needed to support
+ * creatorMustCompleteMembership on the Group Type.
+ */
+function group_flex_form_group_content_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $wizard_id = 'group_creator';
+  if ($form_state->get('group_wizard') && $form_state->get('group_wizard_id') === $wizard_id) {
+    $store_id = $form_state->get('store_id');
+    $privateTempStore = Drupal::service('tempstore.private');
+    $store = $privateTempStore->get($wizard_id);
+
+    try {
+      $group_type = Drupal::entityTypeManager()->getStorage('group_type')->load($store_id);
+    }
+    catch (InvalidPluginDefinitionException | PluginNotFoundException $e) {
+      return;
+    }
+
+    if (!$group_type instanceof GroupType) {
+      return;
+    }
+
+    // See if the group type is configured to ask the creator to fill out their
+    // membership details. Also pass this info to the form state.
+    $creatorMustComplete = $group_type->creatorMustCompleteMembership();
+    if ($creatorMustComplete && $store->get("$store_id:step") === 2) {
+      $form['actions']['submit']['#submit'][] = '_group_flex_form_group_step2_form_submit';
+    }
+  }
+}
+
+/**
+ * Save the store values of the group type.
+ *
+ * @param array $form
+ *   The form array.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state object.
+ *
+ * @throws \Drupal\Core\Entity\EntityStorageException
+ * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+ */
+function _group_flex_form_group_step2_form_submit(array $form, FormStateInterface $form_state) {
+  $privateTempStore = Drupal::service('tempstore.private');
+  $store = $privateTempStore->get('group_creator_flex');
+  $store_id = $form_state->get('store_id');
+
+  $formObject = $form_state->getFormObject();
+  if (!$formObject instanceof EntityFormInterface) {
+    return;
+  }
+
+  $group_content_entity = $formObject->getEntity();
+  if (!$group_content_entity instanceof GroupContentInterface) {
+    return;
+  }
+  $group = $group_content_entity->getGroup();
+
+  $group_flex_settings = ['visibility', 'joining_methods'];
+  foreach ($group_flex_settings as $key) {
+    if ($value = $store->get("$store_id:$key")) {
+      /** @var \Drupal\group_flex\GroupFlexGroupSaver $group_flex_group_saver */
+      $group_flex_group_saver = Drupal::service('group_flex.group_saver');
+      switch ($key) {
+        case 'visibility':
+          $group_flex_group_saver->saveGroupVisibility($group, $value);
+          break;
+
+        case 'joining_methods':
+          // Because we can change the group visibility to private of existing
+          // group causing the joining method not to be disabled after this.
+          if ($value === NULL) {
+            $value = [];
+          }
+          // This is needed to support the use of radios.
+          if (is_string($value)) {
+            $value = [$value => $value];
+          }
+          $group_flex_group_saver->saveGroupJoiningMethods($group, $value);
+          break;
+      }
+      $store->delete("$store_id:$key");
+    }
+  }
+}
+
+/**
+ * Implements hook_group_flex_group_joining_method_info_alter().
+ */
+function group_flex_group_flex_group_joining_method_info_alter(array &$definitions) {
+  /** @var \Drupal\Core\Extension\ModuleHandler $moduleHandler */
+  $moduleHandler = Drupal::service('module_handler');
+
+  // When the grequest module is not installed remove this plugin.
+  if (isset($definitions['group_membership_request']) && !$moduleHandler->moduleExists('grequest')) {
+    unset($definitions['group_membership_request']);
+  }
+
+  // When the ginvite module is not installed remove this plugin.
+  if (isset($definitions['group_invitation']) && !$moduleHandler->moduleExists('ginvite')) {
+    unset($definitions['group_invitation']);
+  }
+}

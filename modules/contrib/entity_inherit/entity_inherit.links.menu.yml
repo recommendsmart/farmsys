@@ -1,0 +1,7 @@
+---
+entity_inherit.admin_settings_form:
+  title: 'Entity Inherit'
+  route_name: entity_inherit.admin_settings_form
+  description: 'Define which fields are used to determine entity hierarchy.'
+  parent: system.admin_config_system
+  weight: 99

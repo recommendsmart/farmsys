@@ -1,0 +1,13 @@
+id: recipe1x_ingredient
+label: Ingredients
+migration_tags:
+  - Drupal 6
+  - Drupal 7
+source:
+  plugin: recipe1x_ingredient
+process:
+  id: id
+  name: name
+destination:
+  plugin: entity:ingredient
+migration_dependencies: {  }

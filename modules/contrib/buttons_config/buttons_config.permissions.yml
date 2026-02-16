@@ -1,0 +1,4 @@
+"admin buttons config":
+  title: "Admin buttons config settings"
+  description: "Administrative access to buttons configuration"
+  restrict access: false

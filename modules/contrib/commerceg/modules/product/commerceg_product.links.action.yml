@@ -1,0 +1,11 @@
+group_content.commerceg_product_relate_page:
+  route_name: 'entity.group_content.commerceg_product_relate_page'
+  title: 'Add existing product'
+  appears_on:
+    - 'view.commerceg_group_products.page_1'
+
+group_content.commerceg_product_add_page:
+  route_name: 'entity.group_content.commerceg_product_add_page'
+  title: 'Add new product'
+  appears_on:
+    - 'view.commerceg_group_products.page_1'

@@ -1,0 +1,32 @@
+<?php
+
+/**
+ * @file
+ * The Description List Field module.
+ */
+
+declare(strict_types = 1);
+
+/**
+ * Implements hook_theme().
+ */
+function description_list_field_theme() {
+  return [
+    'description_list' => [
+      'variables' => [
+        'items' => [],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_field_info_alter().
+ */
+function description_list_field_field_info_alter(&$info) {
+  if (isset($info['description_list_field'])) {
+    // For the description list field we need to use our own processor. This is
+    // only used if TMGMT is installed.
+    $info['description_list_field']['tmgmt_field_processor'] = 'Drupal\description_list_field\TmgmtDescriptionListFieldProcessor';
+  }
+}

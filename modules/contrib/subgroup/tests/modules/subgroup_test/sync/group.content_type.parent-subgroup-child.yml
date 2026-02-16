@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.type.child
+    - group.type.parent
+  module:
+    - subgroup
+id: parent-subgroup-child
+label: 'Parent: Subgroup (Child)'
+description: 'Adds <em class="placeholder">Child</em> groups as subgroups.'
+group_type: parent
+content_plugin: 'subgroup:child'
+plugin_config:
+  group_cardinality: 1
+  entity_cardinality: 1
+  use_creation_wizard: false

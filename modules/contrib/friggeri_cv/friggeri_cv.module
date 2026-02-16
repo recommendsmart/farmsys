@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @file
+ * Provides a profile entity type.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function friggeri_cv_theme() {
+  return [
+    'html__firggeri_cv' => [
+      'template' => 'html--friggeri-cv',
+      'base hook' => 'html',
+    ],
+    'profile' => [
+      'variables' => [
+        'profile' => NULL,
+      ],
+    ],
+    'horizontal_tabs' => [
+      'render element' => 'element',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_multiple_field_remove_button_field_types_alter().
+ */
+function friggeri_cv_multiple_field_remove_button_field_types_alter(array &$fieldTypes) {
+  $fieldTypes = [
+    "friggeri_cv_profile_contact_box",
+    "friggeri_cv_profile_entity_box",
+  ];
+}
+
+/**
+ * Prepares variables for horizontal tabs templates.
+ *
+ * Default template: horizontal-tabs.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - element: An associative array containing the properties and children of
+ *     the details element. Properties used: #children.
+ */
+function template_preprocess_horizontal_tabs(array &$variables) {
+  $element = $variables['element'];
+  $variables['children'] = (!empty($element['#children'])) ? $element['#children'] : '';
+}

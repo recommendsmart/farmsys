@@ -1,0 +1,20 @@
+ajax:
+  version: VERSION
+  js:
+    js/field_suggestion.ajax.js: {}
+  css:
+    component:
+      css/field_suggestion.ajax.css: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupal.ajax
+
+base:
+  version: VERSION
+  js:
+    js/field_suggestion.base.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupal.form

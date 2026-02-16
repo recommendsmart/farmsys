@@ -1,0 +1,64 @@
+<?php
+
+/**
+ * @file
+ * Module implementation file.
+ */
+
+use Drupal\widget_type\Entity\WidgetType;
+use Drupal\widget_type\WidgetTypeInterface;
+
+/**
+ * Implements hook_library_info_build().
+ */
+function widget_type_library_info_build() {
+  // Defines one library per widget type ingested in the database.
+  $all_widget_types = WidgetType::loadMultiple();
+  $libs = array_reduce(
+    $all_widget_types,
+    static function (array $libraries, WidgetTypeInterface $widget_type): array {
+      $deps = $widget_type->getLibraryDependencies();
+      return array_reduce($deps, static function (array $carry, array $dep): array {
+        $src_url = $dep['src'];
+        $library_id = $dep['id'] ?? substr(md5($src_url), 0, 6);
+        $library_name = sprintf('widget_type.dep.%s', $library_id);
+        // Here we are assuming that all libraries are JS.
+        $library_definition = [
+          'js' => [$src_url => ['attributes' => ['defer' => TRUE]]],
+        ];
+        if (!empty($dep['type'])) {
+          $library_definition['type'] = $dep['type'];
+        }
+        return array_merge($carry, [
+          $library_name => $library_definition,
+        ]);
+      }, $libraries);
+    },
+    []
+  );
+  return array_reduce(
+    $all_widget_types,
+    static function (array $libraries, WidgetTypeInterface $widget_type): array {
+      $widget_id = sprintf('%s.%s', $widget_type->getRemoteId(), $widget_type->id());
+      $library_name = 'widget_type.' . $widget_id;
+      return array_merge($libraries, [
+        $library_name => $widget_type->buildLibraryInfo(),
+      ]);
+    },
+    $libs
+  );
+}
+
+/**
+ * Implements hook_theme().
+ */
+function widget_type_theme($existing, $type, $theme, $path) {
+  return [
+    'widget_type_selector' => [
+      'render element' => 'element',
+    ],
+    'form_element__radio__widget_type' => [
+      'render element' => 'element',
+    ],
+  ];
+}

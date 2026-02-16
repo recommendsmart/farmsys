@@ -1,0 +1,9 @@
+administer entity_taxonomy:
+  title: 'Administer vocabularies and terms'
+
+access entity_taxonomy overview:
+  title: 'Access the entity_taxonomy vocabulary overview page'
+  description: 'Get an overview of all entity_taxonomy vocabularies.'
+
+permission_callbacks:
+  - Drupal\entity_taxonomy\EntityTaxonomyPermissions::permissions

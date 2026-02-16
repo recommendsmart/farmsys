@@ -1,0 +1,13 @@
+{
+  "name": "drupal/config_terms",
+  "type": "drupal-module",
+  "description": "Allows the creation of Config Entity based taxonomy terms.",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://www.drupal.org/project/config_terms",
+  "minimum-stability": "dev",
+  "support": {
+      "issues": "https://www.drupal.org/project/issues/config_terms"
+  },
+  "require": { }
+}

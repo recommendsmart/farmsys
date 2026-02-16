@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * @file
+ * Hooks and functionality for the Commerce Group Profile module.
+ */
+
+use Drupal\profile\Entity\ProfileTypeInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ *
+ * Clear the cached group content enabler plugin definitions when a new profile
+ * type is created so that it can be recognized without having to rebuild
+ * caches.
+ */
+function commerceg_profile_profile_type_insert(
+  ProfileTypeInterface $profile_type
+) {
+  \Drupal::service('plugin.manager.group_content_enabler')
+    ->clearCachedDefinitions();
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ *
+ * Clear the cached group content enabler plugin definitions when an existing
+ * profile type is deleted so that it can be removed from the available plugins
+ * without having to rebuild caches.
+ */
+function commerceg_profile_profile_type_delete(
+  ProfileTypeInterface $profile_type
+) {
+  \Drupal::service('plugin.manager.group_content_enabler')
+    ->clearCachedDefinitions();
+}
+
+/**
+ * Implements hook_entity_operation().
+ *
+ * @I Display the Profiles operation only for groups with plugins installed
+ *    type     : bug
+ *    priority : low
+ *    labels   : order
+ */
+function commerceg_profile_entity_operation(EntityInterface $entity) {
+  return \Drupal::service('commerceg.hook.entity_operation')->groupOperation(
+    $entity,
+    'access commerceg_profile overview',
+    Route::GROUP_PROFILES,
+    t('Profiles')
+  );
+}

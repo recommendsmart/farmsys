@@ -1,0 +1,4 @@
+# Schema for configuration files of the group flex content module.
+group_content_enabler.config.content_visibility:
+  type: 'string'
+  label: 'Content visibility'

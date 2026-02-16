@@ -1,0 +1,16 @@
+{% apply spaceless %}
+{#
+#}
+
+{# Add the libraries for the design. #}
+{% for library in design.libraries %}
+  {{ attach_library(library) }}
+{% endfor %}
+
+{# Apply the design template. #}
+{% include design.path with vars %}
+
+{# Render any unused element content. #}
+{{ unused }}
+
+{% endapply %}

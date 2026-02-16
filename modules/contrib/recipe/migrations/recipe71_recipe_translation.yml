@@ -1,0 +1,38 @@
+id: recipe71_recipe_translation
+label: Recipe data
+migration_tags:
+  - Drupal 7
+source:
+  plugin: recipe71_recipe
+  translations: true
+  source_module: translation
+process:
+  nid: tnid
+  langcode:
+    plugin: default_value
+    source: language
+    default_value: "und"
+  recipe_cook_time: cooktime
+  recipe_description: description
+  recipe_ingredient:
+    plugin: sub_process
+    source: ingredients
+    process:
+      delta: weight
+      target_id: ingredient_id
+      unit_key: unit_key
+      quantity: quantity
+      note: note
+  recipe_instructions: instructions
+  recipe_notes: notes
+  recipe_prep_time: preptime
+  recipe_source: source
+destination:
+  plugin: entity:node
+  translations: true
+  destination_module: content_translation
+migration_dependencies:
+  required:
+    - d7_node
+    - language
+    - recipe1x_ingredient

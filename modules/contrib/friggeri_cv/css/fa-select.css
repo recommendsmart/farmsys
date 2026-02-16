@@ -1,0 +1,10 @@
+.fa-icon {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+i.fa {
+  margin-right: 15px;
+}

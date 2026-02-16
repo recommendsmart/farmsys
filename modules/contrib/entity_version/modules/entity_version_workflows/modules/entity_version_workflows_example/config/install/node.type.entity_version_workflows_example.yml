@@ -1,0 +1,13 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - entity_version_workflows_example
+name: Example
+type: entity_version_workflows_example
+description: 'Provides an example content type to test the entity versions workflow.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: true

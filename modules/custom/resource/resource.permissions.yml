@@ -1,0 +1,16 @@
+administer resource module:
+  title: 'Administer resource module'
+  description: 'Gives full access to everything in the resource module.'
+  restrict access: true
+
+administer resource types:
+  title: 'Administer resource types'
+  description: 'Maintain the types of content available and the fields that are associated with those types.'
+  restrict access: true
+
+administer logs:
+  title: 'Administer Resource entities'
+  description: 'Allow to access admin properties such as author uid or creation date.'
+
+permission_callbacks:
+  - \Drupal\resource\ResourcePermissions::resourceTypePermissions

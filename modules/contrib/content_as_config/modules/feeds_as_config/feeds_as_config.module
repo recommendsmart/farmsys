@@ -1,0 +1,11 @@
+<?php
+
+
+/**
+ * Implements hook_content_as_config_controllers().
+ */
+function feeds_as_config_content_as_config_controllers() {
+  return [
+    'feeds_feed' => '\Drupal\feeds_as_config\Controller\FeedsController',
+  ];
+}

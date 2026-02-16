@@ -1,0 +1,17 @@
+# Resource routing definition
+entity.resource.canonical:
+  route_name: entity.resource.canonical
+  base_route: entity.resource.canonical
+  title: 'View'
+
+entity.resource.edit_form:
+  route_name: entity.resource.edit_form
+  base_route: entity.resource.canonical
+  title: Edit
+
+entity.resource.delete_form:
+  route_name:  entity.resource.delete_form
+  base_route:  entity.resource.canonical
+  title: Delete
+  weight: 10
+

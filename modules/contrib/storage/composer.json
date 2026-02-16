@@ -1,0 +1,7 @@
+{
+  "name": "drupal/storage",
+  "type": "drupal-module",
+  "description": "A Drupal module that provides lightweight, bundleable entities for storing structured data",
+  "homepage": "http://drupal.org/project/storage",
+  "license": "GPL-2.0-or-later"
+}

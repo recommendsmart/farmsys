@@ -1,0 +1,19 @@
+orders_list:
+  version: 1.x
+  css:
+    theme:
+      css/OrdersList.css: {}
+
+orders_form:
+  version: 1.x
+  js:
+    js/OrdersForm.js: {}
+  css:
+    theme:
+      css/OrdersForm.css: {}
+
+orders_view:
+  version: 1.x
+  css:
+    theme:
+      css/OrdersView.css: {}

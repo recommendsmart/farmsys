@@ -1,0 +1,15 @@
+<section>
+    {{ picture }}
+</section>
+
+{% for box in profile.contact_box %}
+    <section>
+        <h5>{{ box.heading | raw }}</h5>
+        <div class="contact-box">
+            <i class="{{ box.font_awesome_icon }}"></i>
+            <div>
+                {{ box.contacts | raw }}
+            </div>
+        </div>
+    </section>
+{% endfor %}

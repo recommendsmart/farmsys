@@ -1,0 +1,168 @@
+<div class="message warning">
+  <p>The following documentation requires some knowledge of <strong>PHP</strong>, <strong><a href="https://www.drupal.org/docs/8/creating-custom-modules" rel="nofollow">how to create a Drupal module</a></strong> and the Drupal Core <a href="https://www.drupal.org/docs/8/api/plugin-api" rel="nofollow"><strong>Plugin API</strong></a>.</p>
+</div>
+
+<p>For this example, we will try to create a plugin to allow users to create freelinking links words on locale.drupal.org based on the user's language. We will call the module <strong>freelinking_drupal_localize</strong>.</p>
+
+<div class="message help">
+  <p>The goal is to return a direct link to localize.drupal.org's page for a translated string. This is <em>fictitious</em> example because we have to link by <strong>string id</strong> so no one would use this anyway.</p>
+</div>
+
+<ol>
+  <li>Scaffold the following new directories inside your module project structure: <mark>src/Plugin/freelinking</mark>.</li>
+  <li>Create a new PHP Class file inside this directory with the file name <mark><strong>DrupalLocalize.php</strong></mark>, class name <mark><strong>DrupalLocalize</strong></mark> and the namespace <mark>\Drupal\freelinking_drupal_localize\Plugin\freelinking</mark>.</li>
+</ol>
+
+<h3 id="freelinking-plugin-annotation">
+  <a class="toc-anchor" title="Permalink to this headline" href="#freelinking-plugin-annotation"></a>
+  Freelinking Plugin Annotation
+</h3>
+
+<p>The <strong>Freelinking</strong> plugin annotation has properties described in the table below. Add the plugin annotation following this example:</p>
+
+<pre>
+<code class="language-php">/**
+ * Freelinking localize.drupal.org lookup link plugin.
+ *
+ * @Freelinking(
+ *   id = "freelinking_drupal_localize",
+ *   title = @Translation("localize.drupal.org Link"),
+ *   weight = 0,
+ *   hidden = false,
+ *   settings = { }
+ */
+class DrupalLocalize extends FreelinkingPluginBase {
+</code>
+</pre>
+
+<table border="0" cellpadding="1" cellspacing="1">
+  <caption>Plugin annotation property table</caption>
+  <thead>
+    <tr>
+      <th scope="row">Property Name</th>
+      <th scope="col">Description</th>
+      <th scope="col">Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">id</th>
+      <td>The unique plugin ID to use.</td>
+      <td>freelinking_drupal_localize</td>
+    </tr>
+    <tr>
+      <th scope="row">title</th>
+      <td>A translatable title that will be displayed to users with administration privileges.</td>
+      <td>@Translation("Localize.drupal.org Link")</td>
+    </tr>
+    <tr>
+      <th scope="row">weight</th>
+      <td>An integer that is used to sort the plugins on the Text format page.</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th scope="row">hidden</th>
+      <td>A boolean value used to hide the plugin from the Text format page. This should not normally used and is an internal property.</td>
+      <td>false</td>
+    </tr>
+    <tr>
+      <th scope="row">settings</th>
+      <td>An associative array of default configuration.</td>
+      <td>{ }</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="explanation-of-methods-to-implement"><a class="toc-anchor" title="Permalink to this headline" href="#explanation-of-methods-to-implement"></a>Explanation of methods to implement</h3>
+
+<h4 id="getindicator"><a class="toc-anchor" title="Permalink to this headline" href="#getindicator"></a>getIndicator()</h4>
+
+<p>This method expects us to the Regular Expression pattern used to match the “indicator” that users will need to use the plugin. It is nice to provide a short hand as well.</p>
+
+<pre>
+<code class="language-php">  public function getIndicator() {
+    // Allows [[ldo:]] or [[localizedrupalorg]] or [[localizedo]] among other possibilities.
+    return '/^l(ocalize)?d(rupal)?o(org)?$/';
+  }
+</code>
+</pre>
+
+<h4 id="gettip"><a class="toc-anchor" title="Permalink to this headline" href="#gettip"></a>getTip()</h4>
+
+<p>This method expects us to return a translatable string to use as the link “tip”, which is displayed to users viewing the content when hovering over the anchor link.</p>
+
+<h4 id="buildlink"><a class="toc-anchor" title="Permalink to this headline" href="#buildlink"></a>buildLink()</h4>
+
+<p>The buildLink method is the main method of our plugin. It will return a render array to display as a link or a render array to display an error. The method argument <mark>$target </mark>is an associative array that describes the text. At this point, the Freelinking module has already determined that the text should be rendered using our plugin, and so no additional check is necessary.</p>
+
+<table border="0" cellpadding="1" cellspacing="1">
+  <caption>The target array has the following keys</caption>
+  <thead>
+    <tr>
+      <th scope="row">Key</th>
+      <th scope="col">Description</th>
+      <th scope="col">Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">text</th>
+      <td>The text that the user has input or the dest string. This is prefilled for you.</td>
+      <td>sets</td>
+    </tr>
+    <tr>
+      <th scope="row">indicator</th>
+      <td>The indicator string used.</td>
+      <td>ldo</td>
+    </tr>
+    <tr>
+      <th scope="row">dest</th>
+      <td>The target string which could be a node id, node title, etc.. In this case the <strong>string id</strong>.</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th scope="row">tooltip</th>
+      <td>Unused. getTip should be used instead.</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <th scope="row">language</th>
+      <td>The object to use for the Url object. This would allow the anchor link to be translatable.</td>
+      <td>See \Drupal\Core\Language\LanguageInterface</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre>
+<code class="language-php">  public function buildLink(array $target) {
+    return [
+      '#type' =&gt; 'link',
+      '#title' =&gt; $target['text] ? $target['text'] : $target['dest'],
+      '#url' =&gt; Url::fromUri(
+        'https://localize.drupal.org/translate/languages/es/translate',
+        [
+          'absolute' =&gt; TRUE,
+          'language' =&gt; $target['language'],
+          'query' =&gt; [
+            'sid' =&gt; $target['dest'],
+          ],
+        ]
+      ),
+      '#attributes' =&gt; [
+        'title' =&gt; $this-&gt;getTip(),
+      ],
+    ];
+  }
+</code>
+</pre>
+
+<p>Now when the plugin is activated on a Text Format users can type <mark>[[ldo:6|sets]]</mark> to create external anchor links similar to <mark>&lt;a href="https://localize.drupal.org/translate/languages/es/translate?sid=6"&gt;sets&lt;/a&gt;</mark>.</p>
+
+<p>What else can we do to improve this?</p>
+
+<ol>
+  <li>If our mythical external link provided an API to lookup string ids, we could inject the http_client service into our plugin and do a lookup. This is fairly expensive as each freelink using this indicator would do so on an uncached node.</li>
+  <li>We could provide a settings form to allow choosing which languages can be looked up.</li>
+</ol>
+
+<p>You should now be able to write your own freelinking plugins that expand and allow your users to create wiki-like markup to link to other sites or internal content.</p>

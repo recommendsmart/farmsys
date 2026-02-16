@@ -1,0 +1,58 @@
+<?php
+
+/**
+ * @file
+ * Contains hooks for grequest module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\group\Entity\GroupInterface;
+
+/**
+ * Implements hook_entity_type_build().
+ */
+function grequest_entity_type_build(array &$entity_types) {
+  $entity_types['group_content']
+    ->setFormClass('group-approve-membership', 'Drupal\grequest\Entity\Form\GroupMembershipApproveForm')
+    ->setLinkTemplate('group-approve-membership', '/group/{group}/content/{group_content}/approve-membership')
+    ->setFormClass('group-reject-membership', 'Drupal\grequest\Entity\Form\GroupMembershipRejectForm')
+    ->setLinkTemplate('group-reject-membership', '/group/{group}/content/{group_content}/reject-membership')
+    ->setFormClass('group-request-membership', 'Drupal\grequest\Entity\Form\GroupMembershipRequestForm');
+
+  $entity_types['group']->setLinkTemplate('group-request-membership', '/group/{group}/request-membership');
+}
+
+/**
+ * Implements hook_menu_local_actions_alter().
+ */
+function grequest_menu_local_tasks_alter(&$data, $route_name) {
+  $route_matcher = \Drupal::service('current_route_match');
+  $group = $route_matcher->getParameter('group');
+
+  if ($group instanceof GroupInterface && !$group->getGroupType()->hasContentPlugin('group_membership_request')) {
+    unset($data['tabs'][0]['views_view:view.group_pending_members.page_1']);
+  }
+}
+
+/**
+ * Implements hook_entity_delete().
+ */
+function grequest_group_content_delete(EntityInterface $group_content) {
+  if (is_null($group_content->getEntity())) {
+    return;
+  }
+
+  if ($group_content->getContentPlugin()->getPluginId() === 'group_membership') {
+    $membership_request = \Drupal::service('grequest.membership_request_manager')->getMembershipRequest($group_content->getEntity(), $group_content->getGroup());
+    if (!empty($membership_request)) {
+      $membership_request->delete();
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function grequest_entity_type_alter(array &$entity_types) {
+  $entity_types['group_content']->addConstraint('GroupMembershipRequest');
+}

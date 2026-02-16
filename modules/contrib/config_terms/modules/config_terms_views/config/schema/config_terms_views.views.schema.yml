@@ -1,0 +1,25 @@
+views.filter.config_terms_index:
+  type: views.filter.many_to_one
+  label: 'Config Terms Index'
+  mapping:
+    vid:
+      type: string
+      label: 'Vocabulary'
+    type:
+      type: string
+      label: 'Selection type'
+    hierarchy:
+      type: boolean
+      label: 'Show hierarchy in dropdown'
+    limit:
+      type: boolean
+      label: 'Limit to vocabulary'
+    error_message:
+      type: boolean
+      label: 'Display error message'
+    value:
+      type: sequence
+      label: 'Values'
+      sequence:
+        type: string
+        label: 'Value'

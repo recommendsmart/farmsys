@@ -1,0 +1,14 @@
+name: 'Orders'
+type: module
+description: 'The orders.'
+# core: 8.x
+package: 'AGERP'
+dependencies:
+
+# Information added on 2019-12-17
+version: '8.x'
+core: '8.x'
+project: 'orders'
+datestamp:
+js:
+  js/OrdersForm.js: {}

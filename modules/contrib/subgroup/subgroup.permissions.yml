@@ -1,0 +1,4 @@
+administer subgroup:
+  title: 'Administer subgroup settings'
+  description: 'Gain full control over all subgroup configuration.'
+  restrict access: TRUE

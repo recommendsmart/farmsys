@@ -1,0 +1,129 @@
+<?php
+
+/**
+ * @file
+ * Module file.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function taxonomy_term_locks_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // The taxonomy term lock service.
+  $taxonomy_term_locks = \Drupal::service('taxonomy_term_locks.term_lock');
+
+  // Get the vid, if null we will not perform any action.
+  $vid = $taxonomy_term_locks->getVidFromRoute();
+
+  // Check the form id, and perform actions on a taxonomy
+  // term delete edit/add form.
+  switch ($form_id) {
+
+    // If we are on delete term page, check that user can access this page.
+    case 'taxonomy_term_' . $vid . '_delete_form':
+      $taxonomy_term_locks->blockUnauthorizedAccess();
+      break;
+
+    // If we are on add/edit term page, add the lock logic.
+    case 'taxonomy_term_' . $vid . '_form':
+
+      // Check the user has access to this page.
+      $taxonomy_term_locks->blockUnauthorizedAccess();
+
+      // If the user has the permission to set locks, add the fields.
+      if ($taxonomy_term_locks->getSetTermPermission()) {
+
+        // Field set for the term lock.
+        $form['taxonomy_term_locks'] = [
+          '#type' => 'fieldset',
+          '#title' => t('Term lock'),
+        ];
+
+        // The term lock setting.
+        $form['taxonomy_term_locks']['term_lock'] = [
+          '#type' => 'checkbox',
+          '#title' => t('Locked'),
+          '#description' => t('If a term is locked it cannot be edited or deleted.'),
+          '#default_value' => $taxonomy_term_locks->checkLockFromRoute(),
+        ];
+
+        // Add extra submit, so that we can add/update term lock.
+        $form['actions']['submit']['#submit'][] = '_taxonomy_term_locks_form_submit';
+      }
+
+      break;
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function taxonomy_term_locks_form_taxonomy_overview_terms_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // The taxonomy term lock service.
+  $taxonomy_term_locks = \Drupal::service('taxonomy_term_locks.term_lock');
+
+  // If the user does not have the bypass term lock permission,
+  // then remove the operations for a term that has a lock.
+  if (!$taxonomy_term_locks->getBypassTermPermission()) {
+
+    // Get the terms from the form.
+    $terms = $form['terms'];
+
+    // Step through each of the terms and determine if we need
+    // to remove the operations.
+    foreach ($terms as $index => $term) {
+
+      // If the index has a tid in it, then perform the check.
+      if (str_contains($index, 'tid')) {
+
+        // Get the tid from the form.
+        $tid = $term['term']['tid']['#value'];
+
+        // If there is a lock on the term, remove the operations.
+        if ($taxonomy_term_locks->checkLock($tid)) {
+
+          // Set the operations to empty array, we need empty array
+          // since setting to null will result in the table looking
+          // off when every term has a lock.
+          $form['terms'][$index]['operations'] = [];
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Submit handler when term is added or updated.
+ *
+ * @param array $form
+ *   The form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state.
+ */
+function _taxonomy_term_locks_form_submit(array $form, FormStateInterface $form_state): void {
+
+  // Get the taxonomy term lock service.
+  $taxonomy_term_locks = \Drupal::service('taxonomy_term_locks.term_lock');
+
+  // Get the values from the form state.
+  $values = $form_state->getValues();
+
+  // If the lock is selected, check for a lock, and if
+  // there is no lock insert it.
+  // If the lock is not selected, check to see if there
+  // is a lock and if so delete it.
+  if ($values['term_lock']) {
+
+    // Insert the new lock.
+    $taxonomy_term_locks->insertLock($values['tid']);
+  }
+  else {
+
+    // Delete the lock.
+    $taxonomy_term_locks->deleteLock($values['tid']);
+  }
+}

@@ -1,0 +1,6 @@
+book_pdf.settings:
+  title: Book PDF settings
+  description: Configure the Book PDF module.
+  parent: system.admin_config_content
+  route_name: book_pdf.settings
+  weight: 10

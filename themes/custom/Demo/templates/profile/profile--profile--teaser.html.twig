@@ -1,0 +1,19 @@
+{% if content.field_profile_image %}
+  {% set profile_image = content.field_profile_image %}
+{% endif %}
+
+{% if content.field_profile_function %}
+  {% set function = content.field_profile_function %}
+{% endif %}
+
+{% if content.field_profile_organization %}
+  {% set organization = content.field_profile_organization %}
+{% endif %}
+
+{% include '@demo/03-molecules/teaser/teaser--profile.twig'
+
+  with {
+    image: profile_image
+  }
+
+%}

@@ -1,0 +1,6 @@
+# Resource type menu items definition
+entity.resource_type.collection:
+  title: 'Resource types'
+  route_name: entity.resource_type.collection
+  description: 'List of resource types'
+  parent: system.admin_structure

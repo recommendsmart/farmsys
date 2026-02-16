@@ -1,0 +1,11 @@
+'storage.storage_type.*':
+  type: config_entity
+  label: 'Storage Type'
+  mapping:
+    id:
+      type: text
+      label: 'Machine name'
+    label:
+      type: label
+      label: Name
+

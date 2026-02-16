@@ -1,0 +1,20 @@
+textarea_limit:
+  version: 2.x
+  js:
+    js/textarea_limit.js: { }
+  dependencies:
+    - core/jquery
+    - textarea_limit/jquery.limit
+  css:
+    component:
+      css/textarea_limit.css: { }
+
+jquery.limit:
+  remote: https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/jquery-limit/jquery.limit-1.3.js
+  version: 1.3
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/mit-license.php
+    gpl-compatible: true
+  js:
+    https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/jquery-limit/jquery.limit-1.3.js: { type: external, minified: true }

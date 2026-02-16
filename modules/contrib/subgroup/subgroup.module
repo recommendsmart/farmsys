@@ -1,0 +1,254 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for the Subgroup module.
+ */
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityStorageException;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\subgroup\GroupLeaf;
+use Drupal\subgroup\GroupTypeLeaf;
+use Drupal\subgroup\Entity\GroupSubgroupHandler;
+use Drupal\subgroup\Entity\GroupTypeSubgroupHandler;
+use Drupal\subgroup\Event\GroupLeafEvent;
+use Drupal\subgroup\Event\GroupTypeLeafEvent;
+use Drupal\subgroup\Event\LeafEvents;
+
+/**
+ * The name of the leaf depth bundle field.
+ */
+const SUBGROUP_DEPTH_FIELD = 'subgroup_depth';
+
+/**
+ * The name of the leaf left bound bundle field.
+ */
+const SUBGROUP_LEFT_FIELD = 'subgroup_left';
+
+/**
+ * The name of the leaf right bound bundle field.
+ */
+const SUBGROUP_RIGHT_FIELD = 'subgroup_right';
+
+/**
+ * The name of the leaf tree ID bundle field.
+ */
+const SUBGROUP_TREE_FIELD = 'subgroup_tree';
+
+/**
+ * The name of the leaf depth setting.
+ */
+const SUBGROUP_DEPTH_SETTING = 'depth';
+
+/**
+ * The name of the leaf left bound setting.
+ */
+const SUBGROUP_LEFT_SETTING = 'left';
+
+/**
+ * The name of the leaf right bound setting.
+ */
+const SUBGROUP_RIGHT_SETTING = 'right';
+
+/**
+ * The name of the leaf tree ID setting.
+ */
+const SUBGROUP_TREE_SETTING = 'tree';
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function subgroup_entity_type_alter(array &$entity_types) {
+  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
+  $entity_types['group']->setHandlerClass('subgroup', GroupSubgroupHandler::class);
+  $entity_types['group']->set('subgroup_wrapper', GroupLeaf::class);
+  $entity_types['group_type']->setHandlerClass('subgroup', GroupTypeSubgroupHandler::class);
+  $entity_types['group_type']->set('subgroup_wrapper', GroupTypeLeaf::class);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function subgroup_group_update(GroupInterface $group) {
+  /** @var \Drupal\group\Entity\GroupInterface $original */
+  $original = $group->original;
+
+  /** @var \Drupal\subgroup\Entity\SubgroupHandlerInterface $subgroup_handler */
+  $subgroup_handler = \Drupal::entityTypeManager()->getHandler('group', 'subgroup');
+  $original_is_leaf = $subgroup_handler->isLeaf($original);
+  $current_is_leaf = $subgroup_handler->isLeaf($group);
+
+  // Find out whether the group was added to or removed from a tree and dispatch
+  // the appropriate event.
+  if ($current_is_leaf !== $original_is_leaf) {
+    /** @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher $event_dispatcher */
+    $event_dispatcher = \Drupal::service('event_dispatcher');
+    $event = new GroupLeafEvent($group);
+    if ($current_is_leaf) {
+      $event_dispatcher->dispatch(LeafEvents::GROUP_LEAF_ADD, $event);
+    }
+    else {
+      $event_dispatcher->dispatch(LeafEvents::GROUP_LEAF_REMOVE, $event);
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function subgroup_group_type_insert(GroupTypeInterface $group_type) {
+  /** @var \Drupal\subgroup\Entity\SubgroupHandlerInterface $subgroup_handler */
+  $subgroup_handler = \Drupal::entityTypeManager()->getHandler('group_type', 'subgroup');
+
+  // If the newly added group type was created during a config import and has
+  // Subgroup metadata, we need to fire the import event so we can, for example,
+  // clear the plugin definitions cache.
+  if ($subgroup_handler->isLeaf($group_type) && $group_type->isSyncing()) {
+    /** @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher $event_dispatcher */
+    $event_dispatcher = \Drupal::service('event_dispatcher');
+    $event = new GroupTypeLeafEvent($group_type);
+    $event_dispatcher->dispatch(LeafEvents::GROUP_TYPE_LEAF_IMPORT, $event);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function subgroup_group_type_update(GroupTypeInterface $group_type) {
+  /** @var \Drupal\group\Entity\GroupTypeInterface $original */
+  $original = $group_type->original;
+
+  /** @var \Drupal\subgroup\Entity\SubgroupHandlerInterface $subgroup_handler */
+  $subgroup_handler = \Drupal::entityTypeManager()->getHandler('group_type', 'subgroup');
+  $original_is_leaf = $subgroup_handler->isLeaf($original);
+  $current_is_leaf = $subgroup_handler->isLeaf($group_type);
+
+  // Find out whether the group type was added to or removed from a tree and
+  // dispatch the appropriate event.
+  if ($current_is_leaf !== $original_is_leaf) {
+    /** @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher $event_dispatcher */
+    $event_dispatcher = \Drupal::service('event_dispatcher');
+    $event = new GroupTypeLeafEvent($group_type);
+    if ($group_type->isSyncing()) {
+      $event_dispatcher->dispatch(LeafEvents::GROUP_TYPE_LEAF_IMPORT, $event);
+    }
+    elseif ($current_is_leaf) {
+      $event_dispatcher->dispatch(LeafEvents::GROUP_TYPE_LEAF_ADD, $event);
+    }
+    else {
+      $event_dispatcher->dispatch(LeafEvents::GROUP_TYPE_LEAF_REMOVE, $event);
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_create_access().
+ */
+function subgroup_group_create_access(AccountInterface $account, array $context, $entity_bundle) {
+  /** @var \Drupal\group\Entity\GroupInterface $entity */
+  $group_type = \Drupal::entityTypeManager()->getStorage('group_type')->load($entity_bundle);
+
+  /** @var \Drupal\subgroup\Entity\SubgroupHandlerInterface $group_type_handler */
+  $group_type_handler = \Drupal::entityTypeManager()->getHandler('group_type', 'subgroup');
+
+  if ($group_type_handler->isLeaf($group_type) && !$group_type_handler->isRoot($group_type)) {
+    $access = AccessResult::forbidden('Cannot create a group globally if its group type is a non-root leaf of a tree.');
+    return $access->addCacheableDependency($group_type)->setCacheMaxAge(Cache::PERMANENT);
+  }
+
+  return AccessResult::neutral()->addCacheableDependency($group_type);
+}
+
+/**
+ * Implements hook_entity_access().
+ */
+function subgroup_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  $entity_type_id = $entity->getEntityTypeId();
+  if ($operation === 'delete' && in_array($entity_type_id, ['group', 'group_type'], TRUE)) {
+    /** @var \Drupal\subgroup\Entity\SubgroupHandlerInterface $handler */
+    $handler = \Drupal::entityTypeManager()->getHandler($entity_type_id, 'subgroup');
+    if ($handler->isLeaf($entity) && $handler->hasDescendants($entity)) {
+      $access = AccessResult::forbidden('Cannot delete a leaf that still has descendants.');
+      return $access->addCacheableDependency($entity)->setCacheMaxAge(Cache::PERMANENT);
+    }
+    else {
+      return AccessResult::neutral()->addCacheableDependency($entity);
+    }
+  }
+
+  return AccessResult::neutral();
+}
+
+/**
+ * Implements hook_entity_predelete().
+ */
+function subgroup_entity_predelete(EntityInterface $entity) {
+  $entity_type_id = $entity->getEntityTypeId();
+  if (in_array($entity_type_id, ['group', 'group_type'], TRUE)) {
+    /** @var \Drupal\subgroup\Entity\SubgroupHandlerInterface $handler */
+    $handler = \Drupal::entityTypeManager()->getHandler($entity_type_id, 'subgroup');
+    if ($handler->isLeaf($entity) && $handler->hasDescendants($entity)) {
+      throw new EntityStorageException('Cannot delete a leaf that still has descendants.');
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_delete().
+ */
+function subgroup_entity_delete(EntityInterface $entity) {
+  $entity_type_id = $entity->getEntityTypeId();
+  if (in_array($entity_type_id, ['group', 'group_type'], TRUE)) {
+    /** @var \Drupal\subgroup\Entity\SubgroupHandlerInterface $handler */
+    $handler = \Drupal::entityTypeManager()->getHandler($entity_type_id, 'subgroup');
+    if ($handler->isLeaf($entity)) {
+      $handler->removeLeaf($entity, FALSE);
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function subgroup_group_content_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  /** @var \Drupal\group\Entity\GroupContentInterface $entity */
+  if ($operation === 'delete' && $entity->getContentPlugin()->getBaseId() === 'subgroup') {
+    return AccessResult::forbidden('Cannot delete a subgroup group content entity directly.')->setCacheMaxAge(Cache::PERMANENT);
+  }
+  return AccessResult::neutral();
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function subgroup_group_content_insert(EntityInterface $entity) {
+  /** @var \Drupal\group\Entity\GroupContentInterface $entity */
+  if ($entity->getContentPlugin()->getBaseId() === 'subgroup') {
+    $parent = $entity->getGroup();
+    $child = $entity->getEntity();
+
+    /** @var \Drupal\subgroup\Entity\SubgroupHandlerInterface $handler */
+    $handler = \Drupal::entityTypeManager()->getHandler('group', 'subgroup');
+    if (!$handler->isLeaf($parent)) {
+      $handler->initTree($parent);
+    }
+    $handler->addLeaf($parent, $child);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_predelete().
+ */
+function subgroup_group_content_predelete(EntityInterface $entity) {
+  /** @var \Drupal\group\Entity\GroupContentInterface $entity */
+  if ($entity->getContentPlugin()->getBaseId() === 'subgroup') {
+    if ($entity->getEntity()) {
+      throw new EntityStorageException('Cannot delete a subgroup group content entity if its group still exists.');
+    }
+  }
+}

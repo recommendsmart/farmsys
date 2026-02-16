@@ -1,0 +1,11 @@
+membership_removed:
+  mail:
+    body: "[user:display-name],\r\n\r\nYou have been removed from group [group:title] at [site:name].\r\n--  [site:name] team"
+    subject: 'Group membership removal from [group:title] at [site:name]'
+  enabled: false
+membership_added:
+  mail:
+    body: "[user:display-name],\r\n\r\nYou have been added to group [group:title] at [site:name].\r\n--  [site:name] team"
+    subject: 'Group membership added to [group:title] at [site:name]'
+  enabled: false
+langcode: en

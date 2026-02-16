@@ -1,0 +1,27 @@
+# Schema for the Field fallback value module.
+
+field.field.*.*.*.third_party.field_fallback:
+  type: mapping
+  label: 'Field fallback settings'
+  mapping:
+    field:
+      type: string
+      label: 'Fallback field'
+    converter:
+      type: string
+      label: 'Converter'
+    configuration:
+      type: field_fallback.configuration.[%parent.converter]
+      label: 'Configuration'
+
+field_fallback.configuration:
+  type: mapping
+  label: 'Field Fallback Configuration'
+
+field_fallback.configuration.paragraphs_summary:
+  type: field_fallback.configuration
+  label: 'Field fallback configuration for Paragraphs Summary'
+  mapping:
+    trim_length:
+      type: integer
+      label: 'Trimmed length'

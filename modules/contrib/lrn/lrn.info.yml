@@ -1,0 +1,12 @@
+name: LRN
+description: Modify user name (login) at user creation
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9
+package: Custom
+
+
+# Information added by Drupal.org packaging script on 2021-09-08
+version: '1.0.1'
+project: 'lrn'
+datestamp: 1631093227

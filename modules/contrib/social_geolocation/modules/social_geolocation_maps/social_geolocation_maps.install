@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for social_geolocation_maps module.
+ */
+
+use Drupal\Core\Config\FileStorage;
+use Drupal\Core\Config\InstallStorage;
+use Symfony\Component\Yaml\Yaml;
+
+/**
+ * Add 'Social Geolocation Members' map block.
+ */
+function social_geolocation_maps_update_8001(&$sandbox): void {
+  $configs = [
+    'view' => [
+      'config_id' => 'social_geolocation_members',
+      'config_file' => 'views.view.social_geolocation_members',
+      'location' => InstallStorage::CONFIG_INSTALL_DIRECTORY,
+    ],
+    'block' => [
+      'config_id' => 'views_block__social_geolocation_members_members_map_block',
+      'config_file' => 'block.block.views_block__social_geolocation_members_members_map_block',
+      'location' => InstallStorage::CONFIG_OPTIONAL_DIRECTORY,
+    ],
+  ];
+  $base_path = drupal_get_path('module', 'social_geolocation_maps');
+
+  foreach ($configs as $type => $config) {
+    $storage = \Drupal::entityTypeManager()->getStorage($type);
+
+    // Only create if the social_geolocation_members view doesn't exist.
+    if (!$storage->load($config['config_id'])) {
+      $new_storage = new FileStorage($base_path . '/' . $config['location']);
+      $storage->create($new_storage->read($config['config_file']))
+        ->save();
+    }
+  }
+
+  // Display 'Social Geolocation Members' map block.
+  \Drupal::configFactory()->getEditable('social_geolocation_maps.settings')
+    ->set('members_map', TRUE)
+    ->save();
+}
+
+/**
+ * Removing pagination.
+ *
+ * From Social Geolocation - Leaflet - CommonMap with marker icons view.
+ */
+function social_geolocation_maps_update_8002(&$sandbox): void {
+  $config_file = drupal_get_path('module', 'social_geolocation_maps') . '/config/static/views.view.social_geolocation_leaflet_commonmap_with_marker_icons_8002.yml';
+
+  if (is_file($config_file)) {
+    $views_configuration = Yaml::parse(file_get_contents($config_file));
+    if (is_array($views_configuration)) {
+      $config = \Drupal::configFactory()
+        ->getEditable('views.view.social_geolocation_leaflet_commonmap_with_marker_icons');
+      $config->setData($views_configuration)->save(TRUE);
+    }
+  }
+}

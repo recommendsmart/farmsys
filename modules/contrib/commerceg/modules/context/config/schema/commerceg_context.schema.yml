@@ -1,0 +1,38 @@
+commerceg_context.settings:
+  type: config_object
+  label: 'Shopping context settings'
+  mapping:
+    status:
+      type: boolean
+      label: 'Whether shopping context functionality is enabled or not'
+    group_context:
+      type: mapping
+      label: 'Settings related to group shopping context'
+      mapping:
+        group_type:
+          type: string
+          label: 'The group type (bundle) of the shopping contexts'
+    personal_context:
+      type: mapping
+      label: 'Settings related to personal shopping context'
+      mapping:
+        status:
+          type: boolean
+          label: 'Whether personal shopping context is enabled or not'
+        disabled_mode:
+          type: mapping
+          label: 'The mode and related settings that define how creating carts
+                  will be handled when the personal shopping context is disabled.'
+          mapping:
+            # Two modes are currently supported:
+            # disable: The "Add to cart" and any other UI elements that allow
+            #          users creating carts will be visible but disabled.
+            # hide:    The "Add to cart" and any other UI elements that allow users
+            #          creating carts will be hidden.
+            mode:
+              type: string
+              label: 'The mode.'
+            add_to_cart_message:
+              type: string
+              label: 'The message that will be displayed on the "Add to cart"
+                      button when we are in one of the disabled modes.'

@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - group
+    - options
+id: group_content.content_visibility
+field_name: content_visibility
+entity_type: group_content
+type: list_string
+settings:
+  allowed_values: { }
+  allowed_values_function: 'group_flex_content_get_content_visibility_values'
+module: options
+locked: true
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: true
+custom_storage: false

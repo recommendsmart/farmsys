@@ -1,0 +1,7 @@
+name: Commerce Group Context
+type: module
+description: Provides functionality for offering a context-based shopping experience.
+package: Commerce Group
+core_version_requirement: ^8.8 || ^9.0
+dependencies:
+  - commerceg:commerceg

@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - subgroup
+third_party_settings:
+  subgroup:
+    depth: 1
+    left: 2
+    right: 3
+    tree: parent
+id: child
+label: Child
+description: ''
+creator_membership: true
+creator_wizard: false
+creator_roles: {  }

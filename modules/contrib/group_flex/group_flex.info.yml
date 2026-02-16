@@ -1,0 +1,13 @@
+name: 'Group Flex'
+description: 'Makes the creation of your groups and group types more flexible'
+package: Group
+type: module
+core_version_requirement: ^8.8 || ^9
+dependencies:
+  - group:group
+  - group_permissions:group_permissions
+
+# Information added by Drupal.org packaging script on 2021-05-19
+version: '1.0.0-beta5'
+project: 'group_flex'
+datestamp: 1621430306

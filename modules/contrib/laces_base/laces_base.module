@@ -1,0 +1,126 @@
+<?php
+/**
+ * Reads in new configuration.
+ *
+ * @param string $config_name
+ *   Configuration name.
+ * @param string $bp_path
+ *   Base path.
+ */
+function laces_base_read_in_new_config($config_name, $bp_path) {
+  /** @var \Drupal\Core\Config\StorageInterface $active_storage */
+  $active_storage = \Drupal::service('config.storage');
+  $active_storage->write($config_name, Yaml::parse(file_get_contents($bp_path . '/config/install/' . $config_name . '.yml')));
+}
+
+/**
+ * Updates a configuration from yml file.
+ *
+ * @param string $ymlFileName
+ *   Yml file name (without .yml suffix).
+ * @param array $sets
+ *   An array of what needs to be set.
+ *   - The key will be what we are setting (Can have . in string for array).
+ *   - The value is the key that will be used from the new config file (Can have
+ *     . in string for array).
+ *
+ *   For example if you are updating 'content' with 'content' from the new
+ *   config file, $sets would be ['content' => 'content'].
+ */
+function laces_base_update_configuration_from_yml($ymlFileName, array $sets) {
+  $laces_base_path = drupal_get_path('module', 'laces_base');
+  $yml = Yaml::parse(file_get_contents($laces_base_path . '/config/optional/' . $ymlFileName . '.yml'));
+  $config = \Drupal::configFactory()->getEditable($ymlFileName);
+  foreach ($sets as $key => $value) {
+    $parts = explode('.', $value);
+    if (count($parts) == 1) {
+      $config->set($key, $yml[$value]);
+    }
+    else {
+      $value = NestedArray::getValue($yml, $parts);
+      $config->set($key, $value);
+    }
+  }
+  $config->save(TRUE);
+}
+
+/**
+ * Update entity from yml.
+ *
+ * Some config like form display needs to be updated via config manager.
+ *
+ * @param string $ymlFileName
+ *   Yml file name.
+ * @param string $entityType
+ *   The entity type for this storage.
+ * @param mixed $id
+ *   The ID of the entity to load.
+ * @param array $setComponents
+ *   Array of components you want to add.
+ *   - The key will be what we are setting.
+ *   - The value is the key that will be used from the new config file (Can have
+ *     . in string for array).
+ */
+function laces_base_update_entity_from_yml($ymlFileName, $entityType, $id, array $setComponents) {
+  $laces_base_path = drupal_get_path('module', 'laces_base');
+  $yml = Yaml::parse(file_get_contents($laces_base_path . '/config/optional/' . $ymlFileName . '.yml'));
+
+  $entity = \Drupal::entityTypeManager()
+    ->getStorage($entityType)
+    ->load($id);
+  foreach ($setComponents as $key => $value) {
+    $parts = explode('.', $value);
+    if (count($parts) == 1) {
+      $entity->setComponent($key, $yml[$value]);
+    }
+    else {
+      $value = NestedArray::getValue($yml, $parts);
+      $entity->setComponent($key, $value);
+    }
+  }
+
+  $entity->save();
+}
+
+/**
+ * @file
+ * Primary module hooks for Laces Base module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+/**
+ * Implements hook_plugin_filter_TYPE__CONSUMER_alter().
+ */
+function laces_base_plugin_filter_layout__layout_builder_alter(array &$definitions, array $extra) {
+  // Remove layouts provide by layout discovery and layout builder. This module will create new
+  // layouts using bootstrap 4 and the layout_options module.
+  $duplicate_layout_discovery = [
+    'layout_onecol',
+  ];
+  $duplicate_layout_builder = [
+    'layout_onecol',
+    'layout_twocol_section',
+    'layout_threecol_section',
+    'layout_fourcol_section',
+  ];
+
+  foreach ($duplicate_layout_discovery as $duplicate_layout) {
+    /** @var \Drupal\Core\Layout\LayoutDefinition[] $definitions */
+    if (isset($definitions[$duplicate_layout])) {
+      if ($definitions[$duplicate_layout]->getProvider() === 'layout_discovery') {
+        unset($definitions[$duplicate_layout]);
+      }
+    }
+  }
+
+  foreach ($duplicate_layout_builder as $duplicate_layout) {
+    /** @var \Drupal\Core\Layout\LayoutDefinition[] $definitions */
+    if (isset($definitions[$duplicate_layout])) {
+      if ($definitions[$duplicate_layout]->getProvider() === 'layout_builder') {
+        unset($definitions[$duplicate_layout]);
+      }
+    }
+  }
+}

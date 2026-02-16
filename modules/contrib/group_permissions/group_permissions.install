@@ -1,0 +1,162 @@
+<?php
+
+/**
+ * @file
+ * Post update functions for group permissions.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+
+/**
+ * Enable revisions.
+ */
+function group_permissions_update_8001(&$sandbox) {
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
+
+  $entity_type_id = 'group_permission';
+
+  // Update entity type to add revisions settings.
+  $group_permission_type = $entity_definition_update_manager->getEntityType($entity_type_id);
+  $field_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions($entity_type_id);
+
+  $group_permission_type->set('revision_table', 'group_permission_revision');
+
+  $field_definitions['permissions']->setRevisionable(TRUE);
+  $field_definitions['gid']->setRevisionable(FALSE);
+
+  $field_definitions['revision_id'] = BaseFieldDefinition::create('integer')
+    ->setName('revision_id')
+    ->setTargetEntityTypeId($entity_type_id)
+    ->setTargetBundle(NULL)
+    ->setLabel(new TranslatableMarkup('Revision ID'))
+    ->setReadOnly(TRUE)
+    ->setSetting('unsigned', TRUE);
+
+  $field_definitions['revision_default'] = BaseFieldDefinition::create('boolean')
+    ->setName('revision_default')
+    ->setTargetEntityTypeId($entity_type_id)
+    ->setTargetBundle(NULL)
+    ->setLabel(new TranslatableMarkup('Default revision'))
+    ->setDescription(new TranslatableMarkup('A flag indicating whether this was a default revision when it was saved.'))
+    ->setStorageRequired(TRUE)
+    ->setInternal(TRUE)
+    ->setTranslatable(FALSE)
+    ->setRevisionable(TRUE);
+
+  $field_definitions['revision_created'] = BaseFieldDefinition::create('created')
+    ->setName('revision_created')
+    ->setTargetEntityTypeId($entity_type_id)
+    ->setTargetBundle(NULL)
+    ->setLabel(new TranslatableMarkup('Revision create time'))
+    ->setDescription(new TranslatableMarkup('The time that the current revision was created.'))
+    ->setRevisionable(TRUE);
+  $field_definitions['revision_user'] = BaseFieldDefinition::create('entity_reference')
+    ->setName('revision_user')
+    ->setTargetEntityTypeId($entity_type_id)
+    ->setTargetBundle(NULL)
+    ->setLabel(new TranslatableMarkup('Revision user'))
+    ->setDescription(new TranslatableMarkup('The user ID of the author of the current revision.'))
+    ->setSetting('target_type', 'user')
+    ->setRevisionable(TRUE);
+  $field_definitions['revision_log_message'] = BaseFieldDefinition::create('string_long')
+    ->setName('revision_log_message')
+    ->setTargetEntityTypeId($entity_type_id)
+    ->setTargetBundle(NULL)
+    ->setLabel(new TranslatableMarkup('Revision log message'))
+    ->setDescription(new TranslatableMarkup('Briefly describe the changes you have made.'))
+    ->setRevisionable(TRUE)
+    ->setDefaultValue('');
+
+  $keys = $group_permission_type->getKeys();
+  $keys['revision'] = 'revision_id';
+  $group_permission_type->set('entity_keys', $keys);
+
+  $revisions_metadata_keys = [
+    'revision_user' => 'revision_user',
+    'revision_created' => 'revision_created',
+    'revision_log_message' => 'revision_log_message',
+    'revision_default' => 'revision_default',
+  ];
+  $group_permission_type->set('revision_metadata_keys', $revisions_metadata_keys);
+
+  $entity_definition_update_manager->updateFieldableEntityType($group_permission_type, $field_definitions, $sandbox);
+}
+
+/**
+ * Add the status, created, changed, owner fields.
+ */
+function group_permissions_update_8002(&$sandbox) {
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $entity_type_id = 'group_permission';
+
+  $group_permission_type = $entity_definition_update_manager->getEntityType($entity_type_id);
+
+  // Add the 'published' entity key to the taxonomy_term entity type.
+  $keys = $group_permission_type->getKeys();
+  $keys['published'] = 'status';
+  $keys['owner'] = 'uid';
+  $group_permission_type->set('entity_keys', $keys);
+
+  $entity_definition_update_manager->updateEntityType($group_permission_type);
+
+  // Add the status field.
+  $status = BaseFieldDefinition::create('boolean')
+    ->setLabel(new TranslatableMarkup('Publishing status'))
+    ->setDescription(new TranslatableMarkup('A boolean indicating the published state.'))
+    ->setRevisionable(TRUE)
+    ->setTranslatable(TRUE)
+    ->setDefaultValue(TRUE)
+    ->setInitialValue(TRUE);
+
+  $entity_definition_update_manager->installFieldStorageDefinition($group_permission_type->getKey('published'), $entity_type_id, $entity_type_id, $status);
+
+  $created = BaseFieldDefinition::create('created')
+    ->setLabel(new TranslatableMarkup('Created on'))
+    ->setDescription(new TranslatableMarkup('The time that the group permissions were created.'))
+    ->setTranslatable(FALSE)
+    ->setRevisionable(FALSE);
+
+  $entity_definition_update_manager->installFieldStorageDefinition('created', $entity_type_id, $entity_type_id, $created);
+
+  $changed = BaseFieldDefinition::create('changed')
+    ->setLabel(new TranslatableMarkup('Changed on'))
+    ->setDescription(new TranslatableMarkup('The time that the group permissions were last edited.'))
+    ->setTranslatable(FALSE)
+    ->setRevisionable(FALSE);
+
+  $entity_definition_update_manager->installFieldStorageDefinition('changed', $entity_type_id, $entity_type_id, $changed);
+
+  $owner = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(new TranslatableMarkup('Creator'))
+    ->setSetting('target_type', 'user')
+    ->setSetting('handler', 'default')
+    ->setTranslatable(FALSE)
+    ->setInitialValue(1)
+    ->setDefaultValueCallback('Drupal\group_permissions\Entity\GroupPermission\GroupPermission::getDefaultEntityOwner')
+    ->setDescription(new TranslatableMarkup('The username of the group permissions creator.'));
+
+  $entity_definition_update_manager->installFieldStorageDefinition($group_permission_type->getKey('owner'), $entity_type_id, $entity_type_id, $owner);
+}
+
+/**
+ * Add links and handlers for revisions.
+ */
+function group_permissions_update_8003(&$sandbox = NULL) {
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $group_permission_type = $entity_definition_update_manager->getEntityType('group_permission');
+  $group_permission_type->setFormClass('edit_revision', 'Drupal\group_permissions\Form\GroupPermissionRevisionEditForm');
+  $group_permission_type->setHandlerClass('route_provider', ['html' => 'Drupal\group_permissions\GroupPermissionHtmlRouteProvider']);
+  $group_permission_type->setHandlerClass('storage_schema', 'Drupal\group_permissions\GroupPermissionStorageSchema');
+  $group_permission_type->setLinkTemplate('canonical', '/group/{group}/permissions');
+  $group_permission_type->setLinkTemplate('delete-form', '/group/{group}/permissions/delete');
+  $group_permission_type->setLinkTemplate('version-history', '/group/{group}/permissions/revisions');
+  $group_permission_type->setLinkTemplate('revision', '/group/{group}/permissions/revision/{group_permission_revision}');
+  $group_permission_type->setLinkTemplate('revision-revert', '/group/{group}/permissions/{group_permission}/revision/{group_permission_revision}/revert');
+  $group_permission_type->setLinkTemplate('revision-delete', '/group/{group}/permissions/{group_permission}/revision/{group_permission_revision}/delete');
+
+  $entity_definition_update_manager->updateEntityType($group_permission_type);
+}

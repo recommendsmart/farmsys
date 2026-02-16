@@ -1,0 +1,53 @@
+{{ attach_library('socialbase/teaser') }}
+
+<div class="card teaser">
+
+  {% include '@demo/02-atoms/image/image--teaser.twig' %}
+
+  <div class="teaser__body">
+    <div class="teaser__content">
+      <h4 class="teaser__title"><a href="{{ url }}">{{ title }}</a></h4>
+
+      {% block card_body %}
+
+        {% embed "node--teaser__field.html.twig" %}
+          {%- block field_icon -%} account_circle {%- endblock -%}
+          {%- block field_value %}
+            <div class="teaser__published">
+              <div class="teaser__published-date"> {{ date }} &bullet; </div>
+              <div class="teaser__published-author"> {{ author }} </div>
+            </div>
+          {%- endblock -%}
+        {% endembed %}
+
+        {% if topic_type %}
+          {% embed "node--teaser__field.html.twig" %}
+            {%- block field_icon -%} label {%- endblock -%}
+            {%- block field_value -%} {{ topic_type }} {%- endblock -%}
+          {% endembed %}
+        {% endif %}
+
+        {% if group_name %}
+          {% embed "node--teaser__field.html.twig" %}
+            {%- block field_icon -%} group {%- endblock -%}
+            {%- block field_value -%} {{ group_name }} {%- endblock -%}
+          {% endembed %}
+        {% endif %}
+
+      {% endblock %}
+
+    </div>
+
+    <div class="card__actionbar">
+
+      {% include '@demo/02-atoms/comment/comment-count.twig' %}
+
+      {% include '@demo/02-atoms/visibility/visibility.twig' %}
+
+      {% include '@demo/02-atoms/read-more/read-more.twig' %}
+
+    </div>
+
+  </div>
+
+</div>

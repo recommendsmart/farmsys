@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_colorpalette_filter_tags
+    - taxonomy.vocabulary.colorpalette_colors
+    - taxonomy.vocabulary.colorpalette_filter_tags
+id: taxonomy_term.colorpalette_colors.field_colorpalette_filter_tags
+field_name: field_colorpalette_filter_tags
+entity_type: taxonomy_term
+bundle: colorpalette_colors
+label: 'Filter Tags'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      colorpalette_filter_tags: colorpalette_filter_tags
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

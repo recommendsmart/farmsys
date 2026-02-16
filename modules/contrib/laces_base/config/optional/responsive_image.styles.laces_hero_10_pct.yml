@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - image.style.hero_2800x187
+    - image.style.hero_992x66
+  module:
+    - laces_base
+id: laces_hero_10_pct
+label: 'Laces Hero 10%'
+image_style_mappings:
+  -
+    breakpoint_id: laces_base.viewport_sizing
+    multiplier: 1x
+    image_mapping_type: sizes
+    image_mapping:
+      sizes: 100vw
+      sizes_image_styles:
+        - hero_2800x187
+        - hero_992x66
+breakpoint_group: laces_base
+fallback_image_style: hero_992x66

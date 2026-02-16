@@ -1,0 +1,12 @@
+drupal.entity_taxonomy:
+  version: VERSION
+  js:
+    entity_taxonomy.js: {}
+  css:
+    component:
+      css/entity_taxonomy.theme.css: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+    - core/drupal.tabledrag

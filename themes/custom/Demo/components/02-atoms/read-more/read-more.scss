@@ -1,0 +1,15 @@
+// Read more
+//
+// Markup: read-more.twig
+//
+// Weight: 1
+//
+// Style guide: atoms.read-more
+
+@import 'settings';
+
+.card__link {
+  color: $brand-primary;
+  text-transform: none;
+  text-decoration: underline;
+}

@@ -1,0 +1,7 @@
+set taxonomy term lock:
+  title: 'Set taxonomy term lock'
+  description: 'Ability to set/unset the term lock.'
+bypass taxonomy term lock:
+  title: 'Bypass taxonomy term lock'
+  description: 'This permission will allow ability to edit/delete term if even lock is on.'
+  restrict access: true

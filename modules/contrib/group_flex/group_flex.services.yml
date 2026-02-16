@@ -1,0 +1,19 @@
+services:
+  group_flex.group_type:
+    class: 'Drupal\group_flex\GroupFlexGroupType'
+    arguments: [ '@entity_type.manager', '@plugin.manager.group_joining_method']
+  group_flex.group_type_saver:
+    class: 'Drupal\group_flex\GroupFlexGroupTypeSaver'
+    arguments: ['@entity_type.manager', '@plugin.manager.group_visibility', '@plugin.manager.group_joining_method']
+  group_flex.group:
+    class: 'Drupal\group_flex\GroupFlexGroup'
+    arguments: [ '@entity_type.manager', '@group_permission.group_permissions_manager', '@group_flex.group_type']
+  group_flex.group_saver:
+    class: Drupal\group_flex\GroupFlexGroupSaver
+    arguments: ['@entity_type.manager', '@group_permission.group_permissions_manager', '@plugin.manager.group_visibility', '@plugin.manager.group_joining_method', '@group_flex.group']
+  plugin.manager.group_joining_method:
+    class: Drupal\group_flex\Plugin\GroupJoiningMethodManager
+    parent: default_plugin_manager
+  plugin.manager.group_visibility:
+    class: Drupal\group_flex\Plugin\GroupVisibilityManager
+    parent: default_plugin_manager

@@ -1,0 +1,21 @@
+name: 'Social Course'
+description: 'Provides course feature.'
+type: module
+core_version_requirement: ^9
+dependencies:
+  - drupal:file
+  - drupal:image
+  - drupal:text
+  - inline_entity_form:inline_entity_form
+  - paragraphs:paragraphs
+  - video_embed_field:video_embed_field
+  - weight:weight
+  - views_infinite_scroll:views_infinite_scroll
+package: Social
+# project: 'social_course'
+hidden: true
+
+# Information added by Drupal.org packaging script on 2022-07-04
+version: '4.1.0'
+project: 'social_course'
+datestamp: 1656953087

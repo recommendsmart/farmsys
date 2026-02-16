@@ -1,0 +1,23 @@
+entity_list.filters_list:
+  path: '/admin/entity_list/filters/list'
+  defaults:
+    _controller: '\Drupal\entity_list\Controller\EntityListFilterController::listEntityListFilter'
+    _title: 'Place filters'
+  requirements:
+    _permission: 'administer entity list'
+
+entity_list.filters_add:
+  path: '/admin/entity_list/filters/add'
+  defaults:
+    _controller: '\Drupal\entity_list\Controller\EntityListFilterController::addFilter'
+    _title: 'Add Filter'
+  requirements:
+    _permission: 'administer entity list'
+
+entity_list.filters_remove:
+  path: '/admin/entity_list/filters/remove'
+  defaults:
+    _controller: '\Drupal\entity_list\Controller\EntityListFilterController::removeFilter'
+    _title: 'Remove Filter'
+  requirements:
+    _permission: 'administer entity list'

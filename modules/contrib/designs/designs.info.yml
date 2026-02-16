@@ -1,0 +1,11 @@
+name: 'Designs: Core'
+description: Allows theme templates to be replaced with designs.
+package: Designs
+type: module
+configure: designs.admin_settings
+core_version_requirement: ^9
+
+# Information added by Drupal.org packaging script on 2022-04-12
+version: '1.0.8'
+project: 'designs'
+datestamp: 1649726613

@@ -1,0 +1,21 @@
+{
+  "name": "drupal/ordered_list",
+  "description": "Provides an ordered list form element and field widget. In contrast to other list elements/widgets, the ordered list preserves the order of the selected items.",
+  "type": "drupal-module",
+  "keywords": ["Drupal", "Fields"],
+  "homepage": "http://drupal.org/project/ordered_list",
+  "require": {
+    "drupal/core": "^8 || ^9"
+  },
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Alex Zhulin",
+      "email": "alex.zhulin@ffwagency.com"
+    }
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/ordered_list",
+    "source": "https://git.drupalcode.org/project/ordered_list"
+  }
+}

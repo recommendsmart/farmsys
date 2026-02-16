@@ -1,0 +1,18 @@
+book_pdf.send:
+  path: '/book-pdf/{book}/send'
+  defaults:
+    _controller: '\Drupal\book_pdf\Controller\BookPdfController::sendPdf'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      book:
+        type: entity:node
+
+book_pdf.settings:
+  path: '/admin/config/content/book-pdf'
+  defaults:
+    _title: 'Book PDF settings'
+    _form: 'Drupal\book_pdf\Form\SettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

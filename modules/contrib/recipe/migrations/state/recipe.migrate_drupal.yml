@@ -1,0 +1,18 @@
+finished:
+  6:
+    recipe:
+      - recipe
+      - ingredient
+    recipe_mastercook4: recipe
+    recipe_pdf35: recipe
+    recipe_plaintext: recipe
+    recipe_recipeML: recipe
+  7:
+    recipe:
+      - recipe
+      - ingredient
+    recipe_html: recipe
+    recipe_mastercook4: recipe
+    recipe_plaintext: recipe
+    recipe_recipeML: recipe
+

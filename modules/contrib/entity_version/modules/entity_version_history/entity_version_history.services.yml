@@ -1,0 +1,6 @@
+services:
+  entity_version_history.route_subscriber:
+    class: Drupal\entity_version_history\Routing\EntityVersionHistoryRouteSubscriber
+    arguments: ['@entity_type.manager']
+    tags:
+      - { name: event_subscriber }

@@ -1,0 +1,58 @@
+entity.field_bundle.version_history:
+  path: '/field-bundle/{field_bundle}/revisions'
+  defaults:
+    _title: 'Revisions'
+    _controller: '\Drupal\field_bundle\Controller\FieldBundleRevisionController::overview'
+  requirements:
+    _access_field_bundle_revision: 'view'
+    field_bundle: \d+
+  options:
+    _admin_route: TRUE
+
+entity.field_bundle.revision:
+  path: '/field-bundle/{field_bundle}/revisions/{field_bundle_revision}/view'
+  defaults:
+    _controller: '\Drupal\Core\Entity\Controller\EntityViewController::viewRevision'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  options:
+    parameters:
+      field_bundle:
+        type: entity:field_bundle
+      field_bundle_revision:
+        type: entity_revision:field_bundle
+  requirements:
+    _access_field_bundle_revision: 'view'
+    field_bundle: \d+
+
+field_bundle.revision_revert_confirm:
+  path: '/field-bundle/{field_bundle}/revisions/{field_bundle_revision}/revert'
+  defaults:
+    _form: '\Drupal\field_bundle\Form\FieldBundleRevisionRevertForm'
+    _title: 'Revert to earlier revision'
+  requirements:
+    _access_field_bundle_revision: 'update'
+    field_bundle: \d+
+  options:
+    _admin_route: TRUE
+
+field_bundle.revision_revert_translation_confirm:
+  path: '/field-bundle/{field_bundle}/revisions/{field_bundle_revision}/revert/{langcode}'
+  defaults:
+    _form: '\Drupal\field_bundle\Form\FieldBundleRevisionRevertTranslationForm'
+    _title: 'Revert to earlier revision of a translation'
+  requirements:
+    _access_field_bundle_revision: 'update'
+    field_bundle: \d+
+  options:
+    _admin_route: TRUE
+
+field_bundle.revision_delete_confirm:
+  path: '/field-bundle/{field_bundle}/revisions/{field_bundle_revision}/delete'
+  defaults:
+    _form: '\Drupal\field_bundle\Form\FieldBundleRevisionDeleteForm'
+    _title: 'Delete earlier revision'
+  requirements:
+    _access_field_bundle_revision: 'delete'
+    field_bundle: \d+
+  options:
+    _admin_route: TRUE

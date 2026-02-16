@@ -1,0 +1,12 @@
+name: 'Group Flex test'
+description: 'Support module for Group Flex tests.'
+package: 'Testing'
+type: 'module'
+core_version_requirement: ^8.8 || ^9
+dependencies:
+  - 'group_flex:group_flex'
+
+# Information added by Drupal.org packaging script on 2021-05-19
+version: '1.0.0-beta5'
+project: 'group_flex'
+datestamp: 1621430306

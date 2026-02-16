@@ -1,0 +1,10 @@
+name: Config Terms Test
+type: module
+description: "Test creation of Config Entity based terms."
+core: 8.x
+package: Test
+
+# Information added by Drupal.org packaging script on 2021-04-01
+version: '8.x-1.4'
+project: 'config_terms'
+datestamp: 1617247084

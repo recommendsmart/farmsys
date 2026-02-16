@@ -1,0 +1,33 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.entity_version_workflows_example.field_version
+    - node.type.entity_version_workflows_example
+  module:
+    - entity_version
+    - user
+id: node.entity_version_workflows_example.default
+targetEntityType: node
+bundle: entity_version_workflows_example
+mode: default
+content:
+  content_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_version:
+    type: entity_version
+    weight: 2
+    region: content
+    label: above
+    settings:
+      minimum_category: patch
+    third_party_settings: {  }
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

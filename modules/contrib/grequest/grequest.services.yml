@@ -1,0 +1,4 @@
+services:
+  grequest.membership_request_manager:
+    class: 'Drupal\grequest\MembershipRequestManager'
+    arguments: ['@entity_type.manager', '@current_user']

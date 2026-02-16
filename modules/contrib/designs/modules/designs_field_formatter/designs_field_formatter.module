@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * @file
+ * Provides the main code for the designs_field_formatter module.
+ */
+
+/**
+ * Implements hook_field_formatter_info_alter().
+ */
+function designs_field_formatter_field_formatter_info_alter(array &$info) {
+  $definitions = Drupal::service('plugin.manager.field.field_type')->getDefinitions();
+  $info['design_formatter']['field_types'] = array_keys($definitions);
+}

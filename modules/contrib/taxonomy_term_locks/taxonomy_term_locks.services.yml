@@ -1,0 +1,4 @@
+services:
+  taxonomy_term_locks.term_lock:
+    class: Drupal\taxonomy_term_locks\Service\TaxonomyTermLocksService
+    arguments: ['@database', '@current_route_match', '@entity_type.manager', '@current_user']

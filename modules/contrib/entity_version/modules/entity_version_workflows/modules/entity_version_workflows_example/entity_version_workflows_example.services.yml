@@ -1,0 +1,6 @@
+services:
+  entity_version_workflows_example.event_subscriber.test_check_entity_changes:
+    arguments: ['@state']
+    class: Drupal\entity_version_workflows_example\EventSubscriber\TestCheckEntityChangedSubscriber
+    tags:
+      - { name: event_subscriber }

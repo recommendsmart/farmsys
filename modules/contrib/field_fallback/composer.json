@@ -1,0 +1,23 @@
+{
+    "name": "drupal/field_fallback",
+    "description": "Allows configuring fallback fields.",
+    "type": "drupal-module",
+    "homepage": "https://www.drupal.org/project/field_fallback",
+    "authors": [
+        {
+            "name": "JeroenT",
+            "homepage": "https://www.drupal.org/user/2228934"
+        }
+    ],
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/field_fallback",
+        "source": "https://git.drupalcode.org/project/field_fallback"
+    },
+    "license": [
+        "GPL-2.0-or-later"
+    ],
+    "require-dev": {
+        "drupal/paragraphs": "*",
+        "drupal/paragraphs_summary_token": "^2.0.4"
+    }
+}

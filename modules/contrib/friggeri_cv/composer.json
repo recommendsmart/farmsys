@@ -1,0 +1,24 @@
+{
+  "name": "drupal/friggeri_cv",
+  "type": "drupal-module",
+  "description": "Friggeri CV",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/friggeri_cv",
+  "authors": [
+    {
+      "name": "Ara Martirosyan",
+      "homepage": "https://www.drupal.org/u/ara-martirosyan",
+      "role": "Maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/friggeri_cv",
+    "source": "https://git.drupalcode.org/project/friggeri_cv"
+  },
+  "require-dev": {
+    "drupal/inline_entity_form": "^1.0@RC",
+    "drupal/multiple_fields_remove_button": "^1.0@alpha",
+    "mikehaertl/phpwkhtmltopdf": "^2.4.2"
+  }
+}

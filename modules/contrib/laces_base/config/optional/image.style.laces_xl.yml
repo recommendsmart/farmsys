@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - image_effects
+name: laces_xl
+label: 'Laces xl (width 1400)'
+effects:
+  afcfa7bc-9c63-4d2f-8ec0-8c0433fbfdd0:
+    uuid: afcfa7bc-9c63-4d2f-8ec0-8c0433fbfdd0
+    id: image_effects_auto_orient
+    weight: 1
+    data:
+      scan_exif: true
+  1dcd7dd1-f3b5-4c9c-969e-d4ab01eda6ee:
+    uuid: 1dcd7dd1-f3b5-4c9c-969e-d4ab01eda6ee
+    id: image_scale
+    weight: 2
+    data:
+      width: 1400
+      height: null
+      upscale: false

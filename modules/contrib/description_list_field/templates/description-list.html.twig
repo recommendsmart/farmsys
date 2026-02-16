@@ -1,0 +1,19 @@
+{#
+/**
+ * @file
+ * Description list template.
+ */
+#}
+
+{% if items %}
+  <dl>
+    {% for item in items %}
+      {% if item.term['#plain_text'] %}
+        <dt>{{ item.term }}</dt>
+      {% endif %}
+      {% if item.description['#text'] %}
+        <dd>{{ item.description }}</dd>
+      {% endif %}
+    {% endfor %}
+  </dl>
+{% endif %}

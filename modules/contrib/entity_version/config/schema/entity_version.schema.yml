@@ -1,0 +1,40 @@
+# Schema for the configuration files of the Entity version module.
+
+field.value.entity_version:
+  type: mapping
+  label: 'Default value'
+  mapping:
+    major:
+      type: integer
+      label: 'Major number'
+    minor:
+      type: integer
+      label: 'Minor number'
+    patch:
+      type: integer
+      label: 'Patch number'
+
+field.formatter.settings.entity_version:
+  type: mapping
+  label: 'Entity version formatter settings'
+  mapping:
+    minimum_category:
+      type: string
+      label: 'Minimum version'
+
+entity_version.settings.*.*:
+  type: config_entity
+  label: 'Entity version Settings'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    target_entity_type_id:
+      type: string
+      label: 'Entity type ID'
+    target_bundle:
+      type:  string
+      label: 'Bundle'
+    target_field:
+      type: string
+      label: 'Target field'

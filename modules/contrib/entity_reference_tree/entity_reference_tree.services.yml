@@ -1,0 +1,11 @@
+services:
+  # Taxonomy tree builder
+  entity_reference_taxonomy_term_tree_builder:
+    class: Drupal\entity_reference_tree\Tree\TaxonomyTreeBuilder
+    tags:
+      - { name: entity_reference_tree_builder, priority: 1000 }
+  # General entity builder    
+  entity_reference_entity_tree_builder:
+    class: Drupal\entity_reference_tree\Tree\EntityTreeBuilder
+    tags:
+      - { name: entity_reference_tree_builder, priority: 1000 }

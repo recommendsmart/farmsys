@@ -1,0 +1,221 @@
+<?php
+use \Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+// perform a transliteration of given string
+function lrn_helper_translit($str) {
+  // seems to be not handled well
+  $tmp = str_replace(["ø", "Ø"], ["o", "O"], $str);
+  /*
+  if (module_exists('transliteration')) {
+    $tmp = transliteration_get($tmp, '');
+  } else {
+  */ 
+    $tmp = iconv('utf-8', 'ascii//TRANSLIT', $tmp);
+  /*
+  }
+  */
+  
+  return $tmp;
+}
+
+// explode a compouned name to keep only first letters
+function lrn_helper_explode($name) {
+  $name = str_replace(["-", "'", "’"], " ", $name);
+  $name = str_replace(["  ", "   "], " ", $name);
+  $tbl = explode(" ", $name);
+  $result = "";
+  foreach($tbl as $el) {
+    $result .= mb_substr($el, 0, 1);
+  }
+  return $result;
+}
+
+
+// takes a name, and transform it according to options
+function lrn_helper_transf($name, $translit, $lowup, $change, $max) {
+  if (empty($name)) {
+    return "";
+  }
+  $remove = [" ","-","'",".","&","#","~","_","*",
+             "!",",",":",";","/","#",'"',"@","=","’",
+             "+",")","(","]","[","}","{","|","`","^"];
+  // transliteration needed?
+  if ($translit) {
+    $name = lrn_helper_translit($name);
+  }
+  // upper/lower
+  if ($lowup == 1) {
+    $name = mb_strtoupper($name);
+  } else if ($lowup == 2) {
+    $name = mb_strtolower($name);
+  } else if ($lowup == 3) {
+    $name = mb_convert_case($name, MB_CASE_TITLE);
+  }
+  // modifications
+  if ($change == 1) {
+    $name = str_replace($remove, "", $name);
+  } else if ($change == 2) {
+    $name = nb_substr($name, 0, 1);
+  } else if ($change == 3) {
+    $name = lrn_helper_explode($name);
+  }
+  
+  // max length
+  if (mb_strlen($name) > $max) {
+    $name = mb_substr($name, 0, $max);
+  }
+  return $name;
+}
+
+// get name part from form_state
+function lrn_helper_get_value($field, FormStateInterface $formState) {
+  $tmp = $formState->getValue($field);
+  if (($tmp === false) or ($tmp === null) or empty($tmp)) {
+    return "";
+  }
+  if (is_string($tmp)) {
+    return $tmp;
+  }
+  if (isset($tmp['value'])) {
+    return $tmp['value'];
+  }
+  if (isset($tmp[0]['value'])) {
+    return $tmp[0]['value'];
+  }
+  return "";
+}
+
+// implements hook_form_FORM_ID_alter() to insert our treatments
+function lrn_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // remove 'name' access (as it is generated)
+  $form['account']['name']['#access'] = FALSE;
+  $form['account']['name']['#default_value'] = 'tbd';
+  // insert our function at save time
+  array_unshift($form['#validate'],'lrn_form_validate');
+}
+
+// put name read-only when modifying so that people knows what it contains but can't change it
+function lrn_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // prevent 'name' access (as it was generated)
+  $form['account']['name']['#disabled'] = 'disabled';
+}
+
+// our validation: instanciate 'name' field from user data
+function lrn_form_validate($form, FormStateInterface $formState) {
+  $messenger = \Drupal::messenger();
+  // get our configuration
+  $config = \Drupal::config('lrn.settings');
+  $cf_firstname = $config->get('firstname_field');
+  $cf_lastname = $config->get('lastname_field');
+  $cf_middlename = $config->get('middlename_field');
+  $cf_buildstring = $config->get('build_string');
+  $cf_allownumbering = $config->get('allow_numbering');
+  $cf_maxnumbering = $config->get('max_numbering');
+  $cf_fnlowup = $config->get('fn_lowup');
+  $cf_lnlowup = $config->get('ln_lowup');
+  $cf_mnlowup = $config->get('mn_lowup');
+  $cf_fnchange = $config->get('fn_change');
+  $cf_lnchange = $config->get('ln_change');
+  $cf_mnchange = $config->get('mn_change');
+  $cf_fnmax = $config->get('fn_max');
+  $cf_lnmax = $config->get('ln_max');
+  $cf_mnmax = $config->get('mn_max');
+  $cf_fntranslit = $config->get('fn_translit');
+  $cf_lntranslit = $config->get('ln_translit');
+  $cf_mntranslit = $config->get('mn_translit');
+  $cf_fullmax = $config->get('full_max');
+
+  $firstname = "";
+  $lastname = "";
+  $middlename = "";
+  
+  // set empty name, so that it won't validate
+  $formState->setValue('name', '');
+  
+  // get field values if needed, and apply all transformations
+  if (!empty($cf_firstname)) {
+    $firstname = lrn_helper_transf(lrn_helper_get_value($cf_firstname, $formState),
+                                   $cf_fntranslit, $cf_fnlowup, $cf_fnchange, $cf_fnmax);
+  }
+  if (!empty($cf_lastname)) {
+    $lastname = lrn_helper_transf(lrn_helper_get_value($cf_lastname, $formState),
+                                   $cf_lntranslit, $cf_lnlowup, $cf_lnchange, $cf_lnmax);
+  }
+  if (!empty($cf_middlename)) {
+    $middlename = lrn_helper_transf(lrn_helper_get_value($cf_middlename, $formState),
+                                   $cf_mntranslit, $cf_mnlowup, $cf_mnchange, $cf_mnmax);
+  }
+  
+  // build result
+  $result = $cf_buildstring;
+  $result = str_replace("{FN}", $firstname, $result);
+  $result = str_replace("{LN}", $lastname, $result);
+  $result = str_replace("{MN}", $middlename, $result);
+  
+  // apply max length
+  if (mb_strlen($result) > $cf_fullmax) {
+    $result = mb_substr($result, 0, $cf_fullmax);
+  }
+
+  // to be sure
+  if (empty($result)) {
+    $messenger->addMessage(t('LRN: generated name is empty.'),
+                           $messenger::TYPE_ERROR);
+    return;
+  }
+
+  // check that name is unique
+  if (user_load_by_name($result) === FALSE) {
+    // no name collision: all is fine
+    $formState->setValue('name', $result);
+    return;
+  }
+  
+  // name still exists: if numbering not allowed this is an error
+  if (!$cf_allownumbering) {
+    $messenger->addMessage(t('LRN: generated name (@name) still exists and numbering is not activated.',
+                           ['@name' => $result ]), $messenger::TYPE_ERROR);
+    return;
+  }
+  
+  // numbering allowed: loop on numbers to find a free name
+  $nb = 2;
+  $temp = $result . $nb;
+  while (user_load_by_name($temp) !== FALSE) {
+    // still used, try next
+    $nb++;
+    $temp = $result . $nb;
+    if ($nb > $cf_maxnumbering) {
+      // too many attempts: fail
+      $messenger->addMessage(t('LRN: generated name (@name) still exists and failed to find place with numbers' .
+                               ' (max=@max). Please contact your admins.',
+                               ['@name' => $result, '@max' => $cf_maxnumbering]), $messenger::TYPE_ERROR);
+      return;
+    }
+  }
+  
+  // found a place, use it
+  $formState->setValue('name', $temp);
+  // set a warning to inform that main name was not available
+  $messenger->addMessage(t('LRN: generated name (@name) was still used. Chosen name is @nname.',
+                         ['@name' => $result, '@nname' => $temp]),
+                         $messenger::TYPE_WARNING);
+}
+
+
+// help
+function lrn_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+  case 'help.page.lrn':
+    $output = '';
+    $output = '<h3>' . t('About') . '</h3>';
+    $output = '<p>' . t('Login Registration Name (LRN) allows to choose user name at creation from a set of rules based on first/middle/lastname.') . '</p>';
+    $output .= '<h3>' . t('Usage') . '</h3>';
+      $output .= '<p>' . t('See configuration page at: <a href=":structure_types">configuration page</a>', [':structure_types' => Url::fromRoute('lrn.lrn_config')->toString()]) . '</p>';
+
+    return $output;
+  }
+
+}
+

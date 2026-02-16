@@ -1,0 +1,22 @@
+field_bundle.config.*:
+  type: config_entity
+  label: 'Field bundle config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    description:
+      type: text
+      label: 'Description'
+    status:
+      type: boolean
+      label: 'Whether field bundles should be published by default'
+    new_revision:
+      type: boolean
+      label: 'Whether a new revision should be created by default'
+    label_pattern:
+      type: string
+      label: 'A pattern to use for creating the label of the field bundle'

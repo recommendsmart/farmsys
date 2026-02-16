@@ -1,0 +1,7 @@
+<div{{ attributes.addClass(['yasm-columns']) }}>
+    {% for item in items %}
+        <div{{ content_attributes.addClass(['layout-column']) }}>
+          {{ item }}
+        </div>
+    {% endfor %}
+</div>

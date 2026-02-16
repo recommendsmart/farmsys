@@ -1,0 +1,12 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.colorpalette_filter_tags
+id: taxonomy_term.colorpalette_filter_tags.default
+targetEntityType: taxonomy_term
+bundle: colorpalette_filter_tags
+mode: default
+content: {  }
+hidden:
+  description: true

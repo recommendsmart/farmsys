@@ -1,0 +1,7 @@
+entity.entity_log_entry.collection:
+  route_name: entity.entity_log_entry.collection
+  title: 'List'
+  base_route: entity.entity_log_entry.collection
+entity_logger.entities:
+  class: \Drupal\Core\Menu\LocalTaskDefault
+  deriver: \Drupal\entity_logger\Plugin\Derivative\EntityLoggerLocalTask

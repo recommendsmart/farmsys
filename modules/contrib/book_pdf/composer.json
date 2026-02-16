@@ -1,0 +1,15 @@
+{
+    "name": "drupal/book_pdf",
+    "description": "A Drupal module to print entire Drupal books as PDFs.",
+    "type": "drupal-module",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "James Hall",
+            "email": "james@agile.coop"
+        }
+    ],
+    "require": {
+        "mikehaertl/phpwkhtmltopdf": "2.4"
+    }
+}

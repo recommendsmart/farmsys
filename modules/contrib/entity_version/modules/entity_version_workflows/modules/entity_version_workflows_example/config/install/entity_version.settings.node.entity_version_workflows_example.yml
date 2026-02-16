@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.entity_version_workflows_example.field_version
+    - node.type.entity_version_workflows_example
+id: node.entity_version_workflows_example
+target_entity_type_id: node
+target_bundle: entity_version_workflows_example
+target_field: field_version

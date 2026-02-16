@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * @file
+ * Runtime hooks.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\entity_inherit\EntityInherit;
+
+/**
+ * Quick access to the entity_inherit service, useful for debugging.
+ *
+ * @return \Drupal\entity_inherit\EntityInherit
+ *   The EntityInherit service.
+ */
+function entity_inherit() : EntityInherit {
+  return \Drupal::service('entity_inherit');
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function entity_inherit_entity_presave(EntityInterface $entity) {
+  entity_inherit()->hookPresave($entity);
+}
+
+/**
+ * A batch operation.
+ *
+ * @param array $context
+ *   The batch context array.
+ */
+function entity_inherit_batch_operation(array &$context) {
+  entity_inherit()->getQueue()->processor()->batchOperation($context);
+}
+
+/**
+ * A batch final operation.
+ *
+ * @param bool $success
+ *   A boolean indicating whether the batch has completed successfully.
+ * @param array $results
+ *   The value set in $context['results'] by callback_batch_operation().
+ * @param array $operations
+ *   Contains the operations that remained unprocessed.
+ */
+function entity_inherit_batch_finished(bool $success, array $results, array $operations) {
+  entity_inherit()->getQueue()->processor()->batchFinished($success, $results, $operations);
+}

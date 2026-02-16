@@ -1,0 +1,35 @@
+id: recipe61_recipe
+label: Recipe data
+migration_tags:
+  - Drupal 6
+source:
+  plugin: recipe61_recipe
+process:
+  nid: tnid
+  langcode:
+    plugin: default_value
+    source: language
+    default_value: "und"
+  recipe_cook_time: cooktime
+  recipe_description: description
+  recipe_ingredient:
+    plugin: sub_process
+    source: ingredients
+    process:
+      delta: weight
+      target_id: ingredient_id
+      unit_key: unit_key
+      quantity: quantity
+      note: note
+  recipe_instructions: instructions
+  recipe_notes: notes
+  recipe_prep_time: preptime
+  recipe_source: source
+  recipe_yield_amount: yield
+  recipe_yield_unit: yield_unit
+destination:
+  plugin: entity:node
+migration_dependencies:
+  required:
+    - d6_node
+    - recipe1x_ingredient

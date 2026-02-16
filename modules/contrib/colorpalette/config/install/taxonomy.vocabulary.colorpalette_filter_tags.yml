@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - colorpalette
+name: 'Color Filter Tags'
+vid: colorpalette_filter_tags
+description: 'Color palette filter tags.'
+weight: 0

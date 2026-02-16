@@ -1,0 +1,17 @@
+{
+  "title": "Hero events title with multiple words",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  "hero_styled_image_url": "http://placeimg.com/1200/423/tech",
+  "node_edit_url": "/node/ID/edit",
+  "node_edit_url_title": "Edit content",
+  "node_type": "event",
+  "button": "Enroll",
+  "styleguide": true,
+  "group_name": "Open Social Developers",
+  "event_timezone": "UTC",
+  "event_date": "May 26th, 2018",
+  "event_location": "Amsterdam",
+  "event_type": "Meetup",
+  "visibility_label": "community",
+  "visibility_icon": "community"
+}

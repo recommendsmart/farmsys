@@ -1,0 +1,9 @@
+name: Taxonomy term locks
+type: module
+description: Provides a lock on all taxonomy terms, so that only certain users can edit/delete.
+core_version_requirement: ^8 || ^9
+
+# Information added by Drupal.org packaging script on 2022-02-01
+version: '1.0.0-rc1'
+project: 'taxonomy_term_locks'
+datestamp: 1643730516

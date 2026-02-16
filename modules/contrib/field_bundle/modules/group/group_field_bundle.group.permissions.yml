@@ -1,0 +1,3 @@
+access group_field_bundle overview:
+  title: 'Access group field bundle overview'
+  description: 'Access the overview of all group field bundles, regardless of their bundle configuration'

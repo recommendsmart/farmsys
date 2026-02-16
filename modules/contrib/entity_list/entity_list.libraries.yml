@@ -1,0 +1,18 @@
+region-table:
+  version: VERSION
+  js:
+    js/region-table.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+    - core/jquery.once
+
+sortable-filters:
+  version: VERSION
+  js:
+    js/sortable-filters.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/once

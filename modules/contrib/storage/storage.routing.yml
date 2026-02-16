@@ -1,0 +1,19 @@
+# Storage routing definition
+
+entity.storage_type.edit_form:
+  path: '/admin/structure/storage_types/{storage_type}/edit'
+  defaults:
+    _entity_form: 'storage_type.edit'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.storage.revision:
+  path: '/storage/{storage}/revisions/{storage_revision}/view'
+  defaults:
+    _controller: '\Drupal\storage\Controller\StorageController::revisionShow'
+    _title_callback: '\Drupal\storage\Controller\StorageController::revisionPageTitle'
+  requirements:
+    _access_storage_revision: 'view'
+    storage: \d+
+

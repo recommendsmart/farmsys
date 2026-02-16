@@ -1,0 +1,15 @@
+form_filter_fields.settings:
+  path: '/admin/config/content/form_filter_fields'
+  defaults:
+    _form: '\Drupal\form_filter_fields\Form\FormFilterFieldsSettingsForm'
+    _title: 'Manage form filter field dependencies'
+  requirements:
+    _permission: "administer site configuration"
+
+form_filter_fields.delete:
+  path: '/admin/config/content/form_filter_fields/delete/{data_type}/{content_type_machine_name}/{control_field}/{target_field}'
+  defaults:
+    _form: '\Drupal\form_filter_fields\Form\FormFilterFieldsDelete'
+    _title: 'Delete form filter field dependency'
+  requirements:
+    _permission: "administer site configuration"

@@ -1,0 +1,71 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall hooks for group_members_extra.
+ */
+
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+
+/**
+ * Implements hook_install().
+ */
+function group_members_extra_install($is_syncing) {
+
+  // Add the field for all the group memberships.
+  // We don't add the form display as administrators can do this themselves.
+  $storage = \Drupal::entityTypeManager()
+    ->getStorage('group_content_type');
+
+  if (!$storage) {
+    return;
+  }
+
+  $entity_types = $storage
+    ->loadMultiple();
+
+  if ($entity_types) {
+    foreach ($entity_types as $entity_type) {
+      if ($entity_type->getContentPluginId() === 'group_membership') {
+        $bundle = $entity_type->id();
+
+        // Add the group_contact field to the newly added group content type. The
+        // field storage for this is defined in the config/install folder.
+        FieldConfig::create([
+          'field_storage' => FieldStorageConfig::loadByName('group_content', 'group_contact'),
+          'bundle' => $bundle,
+          'label' => t('Group contact'),
+          'description' => t('Members marked as group contact will be shown in the Contacts block on the Group page.'),
+          'on_label' => t('Yes'),
+          'off_label' => t('No'),
+        ])->save();
+      }
+    }
+  }
+
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function group_members_extra_uninstall($is_syncing) {
+  $field = FieldStorageConfig::loadByName('group_content', 'group_contact');
+  if ($field) {
+    // Delete this field.
+    $field->delete();
+  }
+
+  $view_names = [
+    'group_contacts',
+    'group_members_extra',
+  ];
+  foreach ($view_names as $view_name) {
+    \Drupal::service('config.factory')->getEditable('views.view.' . $view_name)->delete();
+    $block_config = \Drupal::service('config.factory')->getEditable('block.block.views_block__' . $view_name . '_block_1');
+    if ($block_config) {
+      $block_config->delete();
+    }
+  }
+
+}

@@ -1,0 +1,156 @@
+# Schema for the views plugins of the Storage module.
+
+views.area.storage_listing_empty:
+  type: views_area
+  label: 'Storage link'
+
+views.argument.storage_id:
+  type: views_argument
+  label: 'Storage ID'
+  mapping:
+    break_phrase:
+      type: boolean
+      label: 'Allow multiple values'
+    not:
+      type: boolean
+      label: 'Exclude'
+
+views.argument.storage_type:
+  type: views_argument
+  label: 'Storage type'
+  mapping:
+    glossary:
+      type: boolean
+      label: 'Glossary mode'
+    limit:
+      type: integer
+      label: 'Character limit'
+    case:
+      type: string
+      label: 'Case'
+    path_case:
+      type: string
+      label: 'Case in path'
+    transform_dash:
+      type: boolean
+      label: 'Transform spaces to dashes in URL'
+    break_phrase:
+      type: boolean
+      label: 'Allow multiple values'
+    add_table:
+      type: boolean
+      label: 'Allow multiple filter values to work together'
+    require_value:
+      type: boolean
+      label: 'Do not display items with no value in summary'
+
+views.argument.storage_used_id_revision:
+  type: views_argument
+  label: 'Storage user ID'
+  mapping:
+    break_phrase:
+      type: boolean
+      label: 'Allow multiple values'
+    not:
+      type: boolean
+      label: 'Exclude'
+
+views.argument.storage_vid:
+  type: views_argument
+  label: 'Storage revision ID'
+  mapping:
+    break_phrase:
+      type: boolean
+      label: 'Allow multiple values'
+    not:
+      type: boolean
+      label: 'Exclude'
+
+views.field.storage:
+  type: views_field
+  label: 'Storage'
+  mapping:
+    link_to_storage:
+      type: boolean
+      label: 'Link this field to the original data'
+
+views.field.storage_bulk_form:
+  type: views_field_bulk_form
+  label: 'Storage bulk form'
+
+views.field.storage_path:
+  type: views_field
+  label: 'Storage path'
+  mapping:
+    absolute:
+      type: boolean
+      label: 'Use absolute link (begins with "http://")'
+
+views.field.storage_revision_link:
+  type: views_field
+  label: 'Link to a storage revision'
+  mapping:
+    text:
+      type: label
+      label: 'Text to display'
+
+views.field.storage_revision_link_delete:
+  type: views_field
+  label: 'Link to delete a storage revision'
+  mapping:
+    text:
+      type: label
+      label: 'Text to display'
+
+views.field.storage_revision_link_revert:
+  type: views_field
+  label: 'Link to revert a storage to a revision'
+  mapping:
+    text:
+      type: label
+      label: 'Text to display'
+
+views.filter.storage_access:
+  type: views_filter
+  label: 'Storage access'
+
+views.filter.storage_status:
+  type: views_filter
+  label: 'Storage status'
+
+views.filter.storage_user_id_revision:
+  type: views_filter
+  label: 'Storage revisions of an user'
+  mapping:
+    operator:
+      type: string
+      label: 'Operator'
+    value:
+      type: sequence
+      label: 'Values'
+      sequence:
+        type: string
+        label: 'Value'
+    expose:
+      type: mapping
+      label: 'Expose'
+      mapping:
+        reduce:
+          type: boolean
+          label: 'Reduce'
+
+views.filter_value.storage_access:
+  type: string
+  label: 'Access'
+
+views.filter_value.storage_status:
+  type: boolean
+  label: 'Status'
+
+views.row.storage_rss:
+  type: views_row
+  label: 'Content options'
+  mapping:
+    view_mode:
+      type: string
+      label: 'Display type'

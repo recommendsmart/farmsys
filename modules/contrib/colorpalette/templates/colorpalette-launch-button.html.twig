@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * Theme implementation for color palette launch button.
+ *
+ * Available variables:
+ * - attributes: A list of HTML attributes for the input element.
+ * - children: Optional additional rendered elements.
+ * - hexcode_str: Field's color hexcode value without #.
+ * - field_type: Supporting field type value either entity_reference, string or text.
+ * - filter_tags: Comma separated filter tag ids (configured at field level).
+ * - launch_button: Link to launch color palette.
+ *
+ * @see template_preprocess_input()
+ * @see colorpalette_theme_suggestions_input_alter()
+ *
+ * @ingroup themeable
+ */
+#}
+<div class='colorpalette'>
+  <div class='palette-colors' data-launch-button='{{ attributes.offsetGet('data-drupal-selector') }}-btn'>
+    <div class='color-btn hexcode-{{ hexcode_str }}'>
+      {{ launch_button }}
+    </div>
+  </div>
+</div>
+<input{{ attributes }} />{{ children }}

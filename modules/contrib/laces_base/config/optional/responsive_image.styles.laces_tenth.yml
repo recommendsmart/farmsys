@@ -1,0 +1,24 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - image.style.laces_md
+    - image.style.laces_sm
+    - image.style.laces_xs
+  module:
+    - laces_base
+id: laces_tenth
+label: 'Laces Tenth'
+image_style_mappings:
+  -
+    breakpoint_id: laces_base.viewport_sizing
+    multiplier: 1x
+    image_mapping_type: sizes
+    image_mapping:
+      sizes: '(min-width: 992) 10vw, (min-width: 768px) 20vw, 100vw'
+      sizes_image_styles:
+        - laces_md
+        - laces_sm
+        - laces_xs
+breakpoint_group: laces_base
+fallback_image_style: laces_xs

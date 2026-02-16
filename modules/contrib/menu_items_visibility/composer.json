@@ -1,0 +1,24 @@
+{
+  "name": "drupal/menu_items_visibility",
+  "description": "This module exposes configurable and extendable visibility settings for menu links.",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "minimum-stability": "dev",
+  "homepage": "https://www.drupal.org/project/menu_items_visibility",
+  "authors": [
+    {
+      "name": "Rajeshreeputra Pravin Dhondiba Gaikwad",
+      "homepage": "https://www.drupal.org/u/Rajeshreeputra",
+      "role": "Maintainer"
+    },
+    {
+      "name": "Ganesh Suryawanshi",
+      "homepage": "hhttps://www.drupal.org/u/ganeshsurya11",
+      "role": "Maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/menu_items_visibility",
+    "source": "https://git.drupalcode.org/project/menu_items_visibility"
+  }
+}

@@ -1,0 +1,3 @@
+entity_logger.add_entry:
+  class: \Drupal\entity_logger\Plugin\Menu\LocalAction\EntityLogEntryAddLocalAction
+  deriver: \Drupal\entity_logger\Plugin\Derivative\EntityLoggerLocalAction

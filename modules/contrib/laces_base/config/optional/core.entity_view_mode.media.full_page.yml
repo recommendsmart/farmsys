@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - media
+id: media.full_page
+label: 'Full page'
+targetEntityType: media
+cache: true

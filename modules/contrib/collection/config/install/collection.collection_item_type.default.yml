@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies: {  }
+id: default
+label: Default
+allowed_bundles:
+  - node.article
+  - node.page
+attributes_access: administrators

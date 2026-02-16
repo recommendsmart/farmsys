@@ -1,0 +1,128 @@
+
+design_object:
+  type: mapping
+  label: 'Standard design configuration'
+  mapping:
+    design:
+      type: string
+      label: 'The design plugin name'
+    settings:
+      type: sequence
+      label: 'The settings to be applied to the design object.'
+      sequence:
+        type: design_setting.plugin.[type]
+    content:
+      type: sequence
+      label: 'The additional content provided for the design.'
+      sequence:
+        type: design_content
+    regions:
+      type: sequence
+      label: 'The mapping of content supplied to the regions of the design.'
+      sequence:
+        type: sequence
+        label: 'The content per region.'
+        sequence:
+          type: string
+
+design_setting.plugin:
+  type: mapping
+  mapping:
+    type:
+      type: string
+      label: 'The plugin identifier'
+    value:
+      type: string
+      label: 'The setting value.'
+    plugin:
+      type: string
+      label: 'The content plugin'
+    config:
+      type: design_content.plugin.[%parent.plugin]
+      label: 'The content plugin configuration.'
+
+design_content:
+  type: mapping
+  mapping:
+    plugin:
+      type: string
+      label: 'The content plugin identifier'
+    config:
+      type: design_content.plugin.[%parent.plugin]
+      label: 'The content plugin configuration'
+
+design_content.plugin:
+  type: mapping
+  mapping:
+    label:
+      type: string
+      label: 'The content label'
+
+design_setting.plugin.attributes:
+  type: design_setting.plugin
+  mapping:
+    attributes:
+      type: string
+      label: 'The attribute values.'
+    existing:
+      type: boolean
+      label: 'Use existing attributes.'
+
+design_setting.plugin.boolean:
+  type: design_setting.plugin
+  mapping:
+    string:
+      type: boolean
+      label: 'Use string value.'
+    on:
+      type: text
+      label: 'The value to use when true.'
+    off:
+      type: text
+      label: 'The value to use when false.'
+
+design_setting.plugin.number:
+  type: design_setting.plugin
+
+design_setting.plugin.select:
+  type: design_setting.plugin
+
+design_setting.plugin.textfield:
+  type: design_setting.plugin
+
+design_setting.plugin.uri:
+  type: design_setting.plugin
+  mapping:
+    absolute:
+      type: boolean
+      label: 'URI is absolute.'
+    default:
+      type: string
+      label: 'The default URI.'
+
+design_content.plugin.element:
+  type: design_content.plugin
+  mapping:
+    element:
+      type: string
+
+design_content.plugin.text:
+  type: design_content.plugin
+  mapping:
+    value:
+      type: string
+      label: 'The text value'
+
+design_content.plugin.token:
+  type: design_content.plugin
+  mapping:
+    value:
+      type: string
+      label: 'The token value'
+
+design_content.plugin.twig:
+  type: design_content.plugin
+  mapping:
+    value:
+      type: string
+      label: 'The twig template'

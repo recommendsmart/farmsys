@@ -1,0 +1,22 @@
+
+# Storage menu items definition
+entity.storage.collection:
+  title: 'Storage data'
+  route_name: entity.storage.collection
+  description: 'List Storage entities'
+  parent: system.admin_content
+  weight: 100
+
+
+# Storage type menu items definition
+entity.storage_type.collection:
+  title: 'Storage types'
+  route_name: entity.storage_type.collection
+  description: 'List Storage type (bundles)'
+  parent: system.admin_structure
+  weight: 99
+entity.storage_type.add_form:
+  route_name: entity.storage_type.add_form
+  title: 'Add Storage type'
+  weight: -1
+  parent: entity.storage_type.collection

@@ -1,0 +1,24 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_version
+    - node.type.entity_version_workflows_example
+  module:
+    - entity_version
+id: node.entity_version_workflows_example.field_version
+field_name: field_version
+entity_type: node
+bundle: entity_version_workflows_example
+label: Version
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    major: 0
+    minor: 0
+    patch: 0
+default_value_callback: ''
+settings: {  }
+field_type: entity_version

@@ -1,0 +1,12 @@
+name: Menu Link Clone
+description: Add a clone with link action for all menus
+core:  "8.x"
+core_version_requirement: ^8 || ^9
+type: module
+dependencies:
+  - entity_clone:entity_clone
+
+# Information added by Drupal.org packaging script on 2020-03-05
+version: '8.x-3.2'
+project: 'menu_link_clone'
+datestamp: 1583388239

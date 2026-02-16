@@ -1,0 +1,5 @@
+entity.field_bundle.canonical:
+  route_name: entity.field_bundle.canonical
+  base_route: entity.field_bundle.edit_form
+  title: 'View'
+  weight: 0

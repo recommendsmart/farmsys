@@ -1,0 +1,7 @@
+buttons_config.config.form:
+  path: "/admin/config/content/buttons-config"
+  defaults:
+    _form: '\Drupal\buttons_config\Form\ButtonsConfigForm'
+    _title: "Change Form Button Text"
+  requirements:
+    _permission: "admin buttons config"

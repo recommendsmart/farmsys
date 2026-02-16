@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Provides the install/uninstall code for designs_view.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function designs_view_install() {
+  // Enable design display extender plugin.
+  $config = \Drupal::service('config.factory')->getEditable('views.settings');
+  $display_extenders = $config->get('display_extenders') ?: [];
+  $display_extenders[] = 'design';
+  $config->set('display_extenders', $display_extenders);
+  $config->save();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function designs_view_uninstall() {
+  // Disable design display extender plugin.
+  $config = \Drupal::service('config.factory')->getEditable('views.settings');
+  $display_extenders = $config->get('display_extenders') ?: [];
+
+  $key = array_search('design', $display_extenders);
+  if ($key !== FALSE) {
+    unset($display_extenders[$key]);
+    $config->set('display_extenders', $display_extenders);
+    $config->save();
+  }
+}

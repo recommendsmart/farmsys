@@ -1,0 +1,5 @@
+name: Field Visibility Manager
+type: module
+description: To restict the field access to specific roles.
+package: PanKM
+core_version_requirement: ^8.8 || ^9 || 10

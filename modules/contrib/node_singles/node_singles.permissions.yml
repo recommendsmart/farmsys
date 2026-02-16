@@ -1,0 +1,6 @@
+administer node singles:
+    title: 'Administer node singles'
+    description: 'Allows, among others, to delete single nodes'
+
+access node singles overview:
+    title: 'Access the node singles overview page'

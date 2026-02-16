@@ -1,0 +1,22 @@
+{
+    "name": "drupal/commerce_transaction",
+    "type": "drupal-module",
+    "description": "Provides functionality for tracking transactions related to payments on Drupal Commerce.",
+    "keywords": ["Drupal", "commerce"],
+    "homepage": "https://www.drupal.org/project/commerce_transaction",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "krystalcode",
+            "homepage": "https://www.drupal.org/u/krystalcode",
+            "role": "Maintainer"
+        }
+    ],
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/commerce_transaction",
+        "source": "https://git.drupalcode.org/project/commerce_transaction"
+    },
+    "require": {
+        "drupal/commerce": "^2.17"
+    }
+}

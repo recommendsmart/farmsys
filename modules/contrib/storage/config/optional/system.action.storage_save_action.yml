@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - storage
+id: storage_save_action
+label: 'Save storage data'
+type: storage
+plugin: entity:save_action:storage
+configuration: {  }

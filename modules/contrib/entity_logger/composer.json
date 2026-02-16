@@ -1,0 +1,10 @@
+{
+    "name": "drupal/entity_logger",
+    "type": "drupal-module",
+    "description": "Adds log messages to specific entities",
+    "homepage": "https://drupal.org/project/entity_logger",
+    "license": "GPL-2.0+",
+    "require": {
+        "drupal/dynamic_entity_reference": "^1.12 || ^2.0"
+    }
+}

@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Contains typed_telephone.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function typed_telephone_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the typed_telephone module.
+    case 'help.page.typed_telephone':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Typed Telephone provides a type descriptor along with a standard telephone field.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function typed_telephone_theme($existing, $type, $theme, $path) {
+  return [
+    'typed_telephone_plain' => [
+      'variables' => ['type' => NULL, 'number' => NULL, 'concatenated' => TRUE, 'glue' => NULL]
+    ]
+  ];
+}

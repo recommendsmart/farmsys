@@ -1,0 +1,12 @@
+name: Key/Value Field
+type: module
+description: Provides a field with a key, value pair along with a description.
+core_version_requirement: ^8.7.7 || ^9
+package: Field types
+dependencies:
+  - drupal:text
+
+# Information added by Drupal.org packaging script on 2020-04-07
+version: '8.x-1.2'
+project: 'key_value_field'
+datestamp: 1586279691

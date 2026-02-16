@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - group
+    - group_members_extra
+id: group_content.group_contact
+field_name: group_contact
+entity_type: group_content
+type: boolean
+settings: {  }
+module: core
+locked: true
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: true
+custom_storage: false

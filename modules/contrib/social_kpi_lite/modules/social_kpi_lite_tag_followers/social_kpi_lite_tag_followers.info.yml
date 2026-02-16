@@ -1,0 +1,13 @@
+name: Social KPI Tag Followers
+type: module
+description: Social KPI submodule for showing tag followers block.
+core_version_requirement: ^8.8 || ^9
+dependencies:
+  - social_kpi_lite:social_kpi_lite
+  - social_follow_tag:social_follow_tag
+package: Social
+
+# Information added by Drupal.org packaging script on 2021-12-23
+version: '2.0.0-beta1'
+project: 'social_kpi_lite'
+datestamp: 1640285696

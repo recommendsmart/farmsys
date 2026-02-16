@@ -1,0 +1,4 @@
+services:
+  logger.channel.book_pdf:
+    parent: logger.channel_base
+    arguments: ['book_pdf']

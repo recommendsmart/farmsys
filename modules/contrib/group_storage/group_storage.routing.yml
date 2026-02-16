@@ -1,0 +1,2 @@
+route_callbacks:
+  - '\Drupal\group_storage\Routing\GroupStorageRouteProvider::getRoutes'

@@ -1,0 +1,23 @@
+# Fragments overview
+entity.fragment.collection:
+  title: 'Fragments'
+  route_name: entity.fragment.collection
+  description: 'Overview of fragments.'
+  parent: system.admin_content
+  weight: 100
+
+# Fragment type menu items definition
+entity.fragment_type.collection:
+  title: 'Fragment types'
+  route_name: entity.fragment_type.collection
+  description: 'List fragment types (bundles).'
+  parent: system.admin_structure
+  weight: 99
+
+# Add fragment menu items definition
+entity.fragment.add_page:
+  title: 'Add fragment'
+  route_name: entity.fragment.add_page
+  description: 'Add a fragment.'
+  parent: entity.fragment.collection
+  weight: 50

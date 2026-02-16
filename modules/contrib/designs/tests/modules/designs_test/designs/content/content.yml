@@ -1,0 +1,30 @@
+id: content
+label: Content
+description: A generic wrapper element.
+template: content.html.twig
+settings:
+  attributes:
+    type: attributes
+    label: Attributes
+    description: Attributes to add to the element.
+  tag:
+    type: select
+    label: Element
+    description: The element tag.
+    default_value: div
+    options:
+      div: DIV
+      span: SPAN
+      h1: H1
+      h2: H2
+      h3: H3
+      h4: H4
+      h5: H5
+      h6: H6
+      a: A
+      article: ARTICLE
+      nav: NAV
+      section: SECTION
+regions:
+  content:
+    label: Content

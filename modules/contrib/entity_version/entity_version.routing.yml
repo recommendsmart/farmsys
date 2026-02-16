@@ -1,0 +1,15 @@
+entity_version.index:
+  path: '/admin/config/entity-version'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Entity version'
+  requirements:
+    _permission: 'access administration pages'
+
+entity_version.settings:
+  path: '/admin/config/entity-version/settings'
+  defaults:
+    _form: '\Drupal\entity_version\Form\EntityVersionSettingsForm'
+    _title: 'Entity version settings'
+  requirements:
+    _permission: 'administer entity version'

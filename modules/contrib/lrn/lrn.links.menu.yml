@@ -1,0 +1,6 @@
+lrn.lrn_config:
+  title: 'Login realname'
+  description: 'Configuration form LRN'
+  route_name: lrn.lrn_config
+  parent: system.admin_config_system
+

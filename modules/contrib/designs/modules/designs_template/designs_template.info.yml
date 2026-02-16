@@ -1,0 +1,12 @@
+name: 'Designs: Template'
+description: Allows designs to be used directly within twig templates.
+package: Designs
+type: module
+core_version_requirement: ^9
+dependencies:
+  - designs:designs
+
+# Information added by Drupal.org packaging script on 2022-04-12
+version: '1.0.8'
+project: 'designs'
+datestamp: 1649726613

@@ -1,0 +1,4 @@
+services:
+  friggeri_cv.pdf:
+    class: Drupal\friggeri_cv\Service\PdfService
+    arguments: ['@file_system', '@logger.factory']

@@ -1,0 +1,11 @@
+name: MixItUp Views
+type: module
+description: Creates Mixitup style plugin for Views
+core: 8.x
+core_version_requirement: ^8 || ^9
+package: Other
+
+# Information added by Drupal.org packaging script on 2020-03-05
+version: '8.x-1.12'
+project: 'mixitup_views'
+datestamp: 1583422462

@@ -1,0 +1,23 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display item of list.
+ *
+ * Available variables:
+ * - attributes: HTML attributes to apply to the <table> tag.
+ * - element: Render array of rendering elements
+ *
+ * @see template_preprocess_field_ui_table()
+ *
+ * @ingroup themeable
+ */
+#}
+{%
+  set classes = [
+    list_id|replace({'_':'-'}) ~ '-item'
+  ]
+%}
+
+<li {{ attributes.addClass(classes) }}>
+  {{ element }}
+</li>

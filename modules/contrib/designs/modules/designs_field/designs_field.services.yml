@@ -1,0 +1,7 @@
+services:
+  designs_field.wrapper:
+    class: Drupal\designs_field\DesignsFieldWrapper
+    arguments:
+      - '@plugin.manager.design'
+      - '@plugin.manager.design_setting'
+      - '@plugin.manager.design_content'

@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - media
+id: media.three_quarters_page
+label: 'Three-quarters page'
+targetEntityType: media
+cache: true

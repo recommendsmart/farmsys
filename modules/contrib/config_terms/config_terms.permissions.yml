@@ -1,0 +1,5 @@
+administer config terms:
+  title: 'Administer vocabs and terms'
+
+permission_callbacks:
+  - Drupal\config_terms\ConfigTermsPermissions::permissions

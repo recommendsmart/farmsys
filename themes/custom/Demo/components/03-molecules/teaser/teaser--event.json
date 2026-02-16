@@ -1,0 +1,18 @@
+{
+  "title": "Event teaser title with multiple words",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  "image": "<img src=http://placeimg.com/220/220/tech class=img-responsive>",
+  "author": "Michelle Clark",
+  "date": "29 Jan 2017",
+  "topic_type": "Blog",
+  "group_name": "Open Social Developers",
+  "comment_count": "6",
+  "url": "/node/ID",
+  "event_timezone": "UTC",
+  "event_date": "May 26th, 2018",
+  "event_location": "Amsterdam",
+  "event_type": "Meetup",
+  "enrolled": "Enrolled",
+  "visibility_label": "community",
+  "visibility_icon": "community"
+}

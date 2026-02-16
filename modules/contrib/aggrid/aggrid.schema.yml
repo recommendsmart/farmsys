@@ -1,0 +1,7 @@
+field.formatter.settings.html_formatter_type:
+  type: mapping
+  label: 'HTML Formatter Suppression override'
+  mapping:
+    suppression_override:
+      type: boolean
+      label: 'Suppression override'

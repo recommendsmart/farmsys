@@ -1,0 +1,11 @@
+services:
+  access_check.resource.add:
+    class: Drupal\resource\Access\ResourceAddAccessCheck
+    arguments: ['@entity.manager']
+    tags:
+      - { name: access_check, applies_to: _resource_add_access }
+  resource.admin_path.route_subscriber:
+    class: Drupal\resource\EventSubscriber\ResourceAdminRouteSubscriber
+    arguments: ['@config.factory']
+    tags:
+      - { name: event_subscriber }

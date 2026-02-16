@@ -1,0 +1,23 @@
+{
+  "name": "drupal/widget_type",
+  "type": "drupal-module",
+  "description": "Widget type entities.",
+  "keywords": [
+    "Drupal",
+    "Widgets"
+  ],
+  "homepage": "https://www.drupal.org/project/widget_type",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Mateu Aguiló Bosch",
+      "email": "mateu@mateuaguilo.com"
+    }
+  ],
+  "require": {},
+  "require-dev": {},
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/widget_type",
+    "source": "https://git.drupalcode.org/project/widget_type"
+  }
+}

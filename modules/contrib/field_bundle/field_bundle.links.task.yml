@@ -1,0 +1,28 @@
+entity.field_bundle.edit_form:
+  title: Edit
+  route_name: entity.field_bundle.edit_form
+  base_route: entity.field_bundle.edit_form
+  weight: 10
+entity.field_bundle.delete_form:
+  title: Delete
+  route_name: entity.field_bundle.delete_form
+  base_route: entity.field_bundle.edit_form
+  weight: 20
+entity.field_bundle.collection:
+  title: Field bundles
+  route_name: entity.field_bundle.collection
+  base_route: system.admin_content
+  weight: 10
+entity.field_bundle_config.edit_form:
+  title: Edit
+  route_name: entity.field_bundle_config.edit_form
+  base_route: entity.field_bundle_config.edit_form
+entity.field_bundle.version_history:
+  route_name: entity.field_bundle.version_history
+  base_route: entity.field_bundle.edit_form
+  title: 'Revisions'
+  weight: 30
+entity.field_bundle_config.collection:
+  title: List
+  route_name: entity.field_bundle_config.collection
+  base_route: entity.field_bundle_config.collection

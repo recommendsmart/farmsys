@@ -1,0 +1,25 @@
+field.widget.settings.entity_reference_tree:
+  type: mapping
+  label: 'Entity reference tree widget settings'
+  mapping:
+    theme:
+      type: string
+      label: 'JsTree Theme'
+    dots:
+      type: integer
+      label: 'Dot line'
+    size:
+      type: integer
+      label: 'Size of URI field'
+    placeholder:
+      type: label
+      label: 'Placeholder'
+    match_operator:
+      type: string
+      label: 'Autocomplete matching'
+    match_limit:
+      type: integer
+      label: 'Maximum number of autocomplete suggestions'
+    dialog_title:
+      type: string
+      label: 'Dialog title'

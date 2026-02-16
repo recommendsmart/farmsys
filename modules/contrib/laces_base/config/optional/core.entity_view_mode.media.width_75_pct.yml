@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - media
+id: media.width_75_pct
+label: 'Width 75%'
+targetEntityType: media
+cache: true

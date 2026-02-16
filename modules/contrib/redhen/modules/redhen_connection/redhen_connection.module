@@ -1,0 +1,176 @@
+<?php
+
+/**
+ * @file
+ * Contains redhen_connection.module..
+ */
+
+use Drupal\Core\Access\AccessResultNeutral;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\redhen_connection\Entity\ConnectionType;
+use Drupal\redhen_contact\Entity\Contact;
+
+/**
+ * Denotes that the Connection is not active.
+ */
+const REDHEN_CONNECTION_INACTIVE = 0;
+
+/**
+ * Denotes that the Connection is active.
+ */
+const REDHEN_CONNECTION_ACTIVE = 1;
+
+
+/**
+ * Specifies the number of endpoint fields we ship with.
+ */
+const REDHEN_CONNECTION_ENDPOINTS = 2;
+
+/**
+ * Implements hook_help().
+ */
+function redhen_connection_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the redhen_connection module.
+    case 'help.page.redhen_connection':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Defines the base connection entity and features.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function redhen_connection_theme() {
+  $theme = [];
+  $theme['redhen_connection'] = [
+    'render element' => 'elements',
+    'file' => 'redhen_connection.page.inc',
+    'template' => 'redhen_connection',
+  ];
+  $theme['redhen_connection_content_add_list'] = [
+    'render element' => 'content',
+    'variables' => ['content' => NULL, 'entity' => NULL],
+    'file' => 'redhen_connection.page.inc',
+  ];
+  return $theme;
+}
+
+/**
+ * Return an array of Connection types to be used as an options list.
+ *
+ * @return array
+ *   Keyed by name with a label value.
+ */
+function redhen_connection_type_options_list() {
+  $options = [];
+  foreach (ConnectionType::loadMultiple() as $type) {
+    $options[$type->id()] = $type->label();
+  }
+
+  return $options;
+}
+
+/**
+ * Implements hook_entity_access().
+ */
+function redhen_connection_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+
+  $connection_plugin_manager = \Drupal::service('plugin.manager.connection_permission');
+  $plugin_definitions = $connection_plugin_manager->getDefinitions();
+
+  foreach ($plugin_definitions as $plugin_id => $plugin_definition) {
+    $plugin_instance = $connection_plugin_manager->createInstance($plugin_id);
+    if ($entity->getEntityTypeId() === $plugin_instance->get('subject_entity_type')) {
+      if (!empty($plugin_instance->get('subject_entity_bundle'))) {
+        if ($plugin_instance->get('subject_entity_bundle') != $entity->bundle()) {
+          continue;
+        }
+      }
+      $contact = Contact::loadByUser($account);
+      if ($contact) {
+        return $plugin_instance->hasRolePermissions($entity, $operation, $contact);
+      }
+    }
+  }
+
+  return new AccessResultNeutral();
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function redhen_connection_entity_update(EntityInterface $entity) {
+  // @todo replace with event dispatcher/subscribers.
+  // When updating contacts and orgs, check if they've been made inactive and
+  // set their associated connections to inactive.
+  if (in_array($entity->getEntityTypeId(), ['redhen_contact', 'redhen_org']) &&
+    (\Drupal::config('redhen_connection.settings')->get('auto_disable_connections') == TRUE)) {
+    $original = $entity->original;
+    if (!$entity->isActive() && $original->isActive()) {
+      // Get active connections for this entity.
+      $connections = \Drupal::service('redhen_connection.connections')->getConnections($entity, NULL, NULL, TRUE);
+      foreach ($connections as $connection) {
+        /** @var \Drupal\redhen_connection\ConnectionInterface $connection */
+        $connection->setActive(FALSE);
+        $connection->save();
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_delete().
+ */
+function redhen_connection_entity_delete(EntityInterface $entity) {
+  // @todo replace with event dispatcher/subscribers.
+  // When deleting contacts and orgs, also delete their connections.
+  if (in_array($entity->getEntityTypeId(), ['redhen_contact', 'redhen_org'])) {
+    $connections = \Drupal::service('redhen_connection.connections')->getConnections($entity, NULL, NULL, FALSE);
+    foreach ($connections as $connection) {
+      /** @var \Drupal\redhen_connection\ConnectionInterface $connection */
+      $connection->delete();
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function redhen_connection_entity_type_alter(array &$entity_types) {
+  // There's no good way to add a link template based on existing mapping
+  // definitions while we're building entity type definitions. We can't load
+  // existing mappings, because to do that we need to load entity types which
+  // creates an infinite recursion. So, we set the link template on any
+  // mappable entity, and hide it for any entity types that don't have
+  // mappings.
+  foreach ($entity_types as $entity_type_id => $entity_type) {
+    if ($entity_type->hasViewBuilderClass() && $entity_type->hasLinkTemplate('canonical')) {
+      $canonical = $entity_type->getLinkTemplate('canonical');
+      $entity_type->setLinkTemplate('redhen_connection', "$canonical/connections");
+    }
+  }
+}
+
+/**
+ * Extracts the entity for the current redhen_connection route.
+ *
+ * @return null|\Drupal\Core\Entity\EntityInterface
+ *   Entity type id.
+ */
+function redhen_connection_get_connection_entity_from_route() {
+  foreach (\Drupal::routeMatch()->getParameters() as $param) {
+    if ($param instanceof EntityInterface) {
+      if ($param->getEntityTypeId() !== 'redhen_connection_type') {
+        return $param;
+      }
+    }
+  }
+  return NULL;
+}

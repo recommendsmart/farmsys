@@ -1,0 +1,19 @@
+name: 'ag-Grid DEMO'
+description: 'Demo showing multiple config entities and content types with demo content. **Please note, this will add a new content type and content node. It will be up to you to delete these items on uninstall.'
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9
+package: 'ag-Grid Demo'
+dependencies:
+  - aggrid:aggrid
+  - drupal:field
+  - drupal:menu_ui
+  - drupal:node
+  - drupal:path
+  - drupal:text
+  - drupal:user
+
+# Information added by Drupal.org packaging script on 2021-10-28
+version: '8.x-1.0-alpha46'
+project: 'aggrid'
+datestamp: 1635464983

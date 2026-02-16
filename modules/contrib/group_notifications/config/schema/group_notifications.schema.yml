@@ -1,0 +1,24 @@
+group_notifications.mail:
+  type: config_object
+  label: 'Group notifications mail settings'
+  mapping:
+    membership_added:
+      type: mapping
+      label: 'Membership added e-mail settings'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Membership added e-mail status'
+        mail:
+          type: mail
+          label: 'Membership added e-mail'
+    membership_removed:
+      type: mapping
+      label: 'Membership removed e-mail settings'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Membership removed e-mail status'
+        mail:
+          type: mail
+          label: 'Membership removed e-mail'

@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - orders
+id: orders.field_order_item
+field_name: field_order_item
+entity_type: orders
+type: order_line_item
+settings: {  }
+module: orders
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

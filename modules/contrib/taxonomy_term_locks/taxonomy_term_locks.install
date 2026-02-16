@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for taxonomy term locks.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function taxonomy_term_locks_schema() {
+
+  $schema['taxonomy_term_locks'] = [
+    'description' => 'Taxonomy term locks',
+    'fields' => [
+      'tid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'Primary Key: term ID.',
+      ],
+    ],
+    'primary key' => ['tid'],
+    // For documentation purposes only; foreign keys are not created in the
+    // database.
+    'foreign keys' => [
+      'taxonomy_term_locks_tid' => [
+        'table' => 'taxonomy_term_data',
+        'columns' => [
+          'tid' => 'tid',
+        ],
+      ],
+    ],
+  ];
+
+  return $schema;
+}

@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * @file
+ * Contains functions for updating Ingredient module (part of Recipe).
+ */
+
+use Drupal\Core\Database\Database;
+
+/**
+ * Update unit configuration.
+ */
+function ingredient_update_8201() {
+  // Retrieve the unit configuration.
+  $config_factory = \Drupal::configFactory();
+  $config = $config_factory->getEditable('ingredient.units');
+
+  // Fix keys in the us and common unit sets.
+  $us_units = $config->get('unit_sets.us.units');
+  $pint_data = $us_units["us liquid pint'"];
+  unset($us_units["us liquid pint'"]);
+  $us_units['us liquid pint'] = $pint_data;
+  $config->set('unit_sets.us.units', $us_units);
+
+  $common_units = $config->get('unit_sets.common.units');
+  $loaf_data = $common_units['load'];
+  unset($common_units['load']);
+  $common_units['loaf'] = $loaf_data;
+  $config->set('unit_sets.common.units', $common_units);
+
+  // Save new configuration.
+  $config->save(TRUE);
+
+  // Get all ingredient fields.
+  $ingredient_fields = \Drupal::service('entity_field.manager')->getFieldMapByFieldType('ingredient');
+
+  // Update the pint and loaf units in each field, if any.
+  $pints_updated = $loaves_updated = 0;
+  foreach ($ingredient_fields as $entity_type => $fields) {
+    foreach ($fields as $field_name => $field_data) {
+      $table = $entity_type . '__' . $field_name;
+      $column = $field_name . '_unit_key';
+      // Update any existing ingredients that used bad units.
+      $pints_updated += Database::getConnection()->update($table)
+        ->fields([$column => 'us liquid pint'])
+        ->condition($column, "us liquid pint'", '=')
+        ->execute();
+      $loaves_updated += Database::getConnection()->update($table)
+        ->fields([$column => 'loaf'])
+        ->condition($column, "load", '=')
+        ->execute();
+    }
+  }
+
+  return t('Updated ingredient unit sets and fixed @ct existing ingredient(s).',
+    ['@ct' => ($pints_updated + $loaves_updated)]);
+}

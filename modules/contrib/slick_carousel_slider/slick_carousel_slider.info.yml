@@ -1,0 +1,11 @@
+name: Slick Carousel & Slider
+type: module
+description: Integarating Slick plugin to Drupal.
+core: 8.x
+core_version_requirement: ^8 || ^9
+package: media
+
+# Information added by Drupal.org packaging script on 2020-05-11
+version: '1.0.0'
+project: 'slick_carousel_slider'
+datestamp: 1589219157

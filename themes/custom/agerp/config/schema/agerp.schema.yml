@@ -1,0 +1,5 @@
+# Schema for the theme setting configuration file of the THEMETITLE theme.
+
+agerp.settings:
+  type: theme_settings
+  label: 'AGERP settings'

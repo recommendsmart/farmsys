@@ -1,0 +1,12 @@
+name: Config Terms Views
+type: module
+description: "Provides views plugins for config terms."
+core_version_requirement: ^8.7.12 || ^9.0
+package: Utility
+dependencies:
+  - config_terms
+
+# Information added by Drupal.org packaging script on 2021-04-01
+version: '8.x-1.4'
+project: 'config_terms'
+datestamp: 1617247084

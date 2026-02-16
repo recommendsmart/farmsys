@@ -1,0 +1,11 @@
+commerceg_context.configuration:
+  path: '/admin/commerce/config/shopping-context'
+  defaults:
+    _form: '\Drupal\commerceg_context\Form\Settings'
+    _title: 'Shopping context settings'
+  requirements:
+    # @I Introduce module-specific permission
+    #    type     : bug
+    #    priority : normal
+    #    labels   : security, 1.0@alpha
+    _permission: 'access commerce administration pages'

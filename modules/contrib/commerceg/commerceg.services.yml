@@ -1,0 +1,10 @@
+services:
+  # Hooks.
+  # Implemented as services for OOP.
+  commerceg.hook.entity_operation:
+    class: 'Drupal\commerceg\Hook\EntityOperation'
+    arguments:
+      - '@current_user'
+      - '@group_permission.checker'
+      - '@router.no_access_checks'
+      - '@string_translation'

@@ -1,0 +1,3 @@
+config:
+  delete_nodes: 1
+  delete_anonim: '30'

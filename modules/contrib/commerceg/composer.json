@@ -1,0 +1,34 @@
+{
+  "name": "drupal/commerceg",
+  "type": "drupal-module",
+  "description": "A Drupal module that provides integration between the Commerce and Group ecosystems.",
+  "keywords": ["Drupal"],
+  "homepage": "https://www.drupal.org/project/commerceg",
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "krystalcode",
+      "homepage": "https://www.drupal.org/u/krystalcode",
+      "role": "Maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/commerceg",
+    "source": "https://git.drupalcode.org/project/commerceg"
+  },
+  "require": {
+    "drupal/core": "^8.8 || ^9.0",
+    "drupal/commerce": "^2.17",
+    "drupal/group": "^1.3"
+  },
+  "suggest": {
+    "drupal/commerce_cart_advanced": "Provides advanced cart functionality and interface for Drupal Commerce. Required by the Commerce Group Cart Drupal module."
+  },
+  "extra": {
+    "patches": {
+      "drupal/group": {
+        "Group entity operations Views field plugin": "https://www.drupal.org/files/issues/2020-05-17/group.group-entity-operations-3137312-2.patch"
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+    "name": "drupal/contact_default_fields_override",
+    "type": "drupal-module",
+    "authors": [
+        {
+            "name": "Ruud Simons",
+            "email": "ruud@groowup.nl"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.6.2",
+        "drupal/coder": "^8.3"
+    }
+}

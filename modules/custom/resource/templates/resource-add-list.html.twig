@@ -1,0 +1,30 @@
+{#
+/**
+ * @file
+ * Default theme implementation to list resource types available for adding resource.
+ *
+ * This list is displayed on the Add resource admin page.
+ *
+ * Available variables:
+ * - types: A list of resource types, each with the following properties:
+ *   - add_link: Link to create a piece of content of this type.
+ *
+ * @see template_preprocess_resource_add_list()
+ *
+ * @ingroup themeable
+ */
+#}
+{% if types is not empty %}
+  <dl>
+    {% for type in types %}
+      <dt>{{ type.add_link }}</dt>
+    {% endfor %}
+  </dl>
+{% else %}
+  <p>
+    {% set create_resource = path('entity.resource_type.add_form') %}
+    {% trans %}
+      You have not created any resource types yet. Go to the <a href="{{ create_resource }}">resource type creation page</a> to add a new resource type.
+    {% endtrans %}
+  </p>
+{% endif %}

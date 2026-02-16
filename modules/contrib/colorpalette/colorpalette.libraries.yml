@@ -1,0 +1,11 @@
+palette:
+  version: VERSION
+  css:
+    theme:
+      css/colorpalette.css: {}
+  js:
+    js/colorpalette.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/jquery.once

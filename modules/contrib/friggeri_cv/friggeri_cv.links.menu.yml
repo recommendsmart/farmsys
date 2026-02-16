@@ -1,0 +1,5 @@
+friggeri_cv.admin.config.people.profiles:
+  title: Profiles
+  description: 'Profiles for friggeri-cv'
+  route_name: entity.profile.collection
+  parent: system.admin_content

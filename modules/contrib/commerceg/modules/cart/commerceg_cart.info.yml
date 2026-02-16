@@ -1,0 +1,15 @@
+name: Commerce Group Cart
+type: module
+description: Provides cart-related functionality for orders that belong to groups.
+package: Commerce Group
+core_version_requirement: ^8.8 || ^9.0
+dependencies:
+  - commerceg:commerceg_order
+  #  @I Force requiring `commerce_cart_advanced` beta4 version
+  #     type     : bug
+  #     priority : normal
+  #     labels   : cart, dependencies
+  #     notes    : We don't want to add the module to composer dependencies as
+  #                it is not required if you don't have the `commerceg_context`
+  #                module enabled. We can do that via `hook_requirements`.
+  - commerce_cart_advanced:commerce_cart_advanced

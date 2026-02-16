@@ -1,0 +1,13 @@
+name: 'Subgroup'
+description: 'Allows you to structure groups into a hierarchical tree with permissions inheriting up or down'
+package: 'Group'
+type: 'module'
+core_version_requirement: ^8.8 || ^9
+configure: 'subgroup.settings'
+dependencies:
+  - 'group:group'
+
+# Information added by Drupal.org packaging script on 2021-05-04
+version: '1.0.2'
+project: 'subgroup'
+datestamp: 1620133644

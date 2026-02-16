@@ -1,0 +1,8 @@
+services:
+  entity_version_workflows.entity_version_workflow_manager:
+    class: Drupal\entity_version_workflows\EntityVersionWorkflowManager
+    arguments: ['@content_moderation.moderation_information', '@entity_type.manager', '@event_dispatcher']
+  entity_version_workflows.route_subscriber:
+    class: Drupal\entity_version_workflows\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }

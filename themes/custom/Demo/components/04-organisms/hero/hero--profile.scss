@@ -1,0 +1,19 @@
+// Hero Profile
+//
+// markup: hero--profile.twig
+//
+// Weight: 2
+//
+// Style guide: organisms.hero.profile
+
+
+@import "settings";
+
+.hero--profile {
+
+  img {
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+
+}

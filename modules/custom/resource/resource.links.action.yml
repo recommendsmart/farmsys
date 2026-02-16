@@ -1,0 +1,12 @@
+resource.add_page:
+  route_name: resource.add_page
+  title: 'Add Resource'
+  appears_on:
+    - view.resource_admin.collection
+
+entity.resource_type.add_form:
+  route_name: 'entity.resource_type.add_form'
+  title: 'Add Resource type'
+  appears_on:
+    - entity.resource_type.collection
+

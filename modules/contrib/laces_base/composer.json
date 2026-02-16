@@ -1,0 +1,38 @@
+{
+    "name": "drupal/laces_base",
+    "description": "description",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "minimum-stability": "dev",
+    "homepage": "https://drupal.org/project/laces_base",
+    "keywords": [
+        "Drupal",
+        "Laces",
+        "Bootstrap",
+        "Grid",
+        "Layout Builder"
+    ],
+    "authors": [
+        {
+            "name": "John Rasmussen",
+            "email": "John@BigBaldy.com",
+            "homepage": "https://www.drupal.org/u/bigbaldy",
+            "role": "Maintainer"
+        }
+    ],
+    "support": {
+        "issues": "https://drupal.org/project/issues/laces_base",
+        "source": "https://git.drupalcode.org/project/laces_base"
+    },
+    "require": {
+        "drupal/core": "^8.9 || ^9",
+        "drupal/bootstrap_layout_builder": "*",
+        "drupal/bootstrap_styles": "*",
+        "drupal/layout_builder_blocks": "*",
+        "drupal/crop": "*",
+        "drupal/image_effects": "*",
+        "drupal/focal_point": "*",
+        "drupal/twig_tweak": "*"
+    }
+}
+

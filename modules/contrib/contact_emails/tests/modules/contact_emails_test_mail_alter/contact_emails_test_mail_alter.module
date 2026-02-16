@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * @file
+ * Contains contact_emails_test_mail_alter.module..
+ */
+
+/**
+ * Implements hook_mail_alter().
+ */
+function contact_emails_test_mail_alter_mail_alter(&$message) {
+  // Disable sending.
+  $message['send'] = FALSE;
+
+  // Output general email settings.
+  $messenger = \Drupal::messenger();
+  $messenger->addMessage('Message-to:' . $message['to']);
+  $messenger->addMessage('Message-from:' . $message['from']);
+  $messenger->addMessage('Message-reply-to:' . $message['reply-to']);
+  $messenger->addMessage('Message-subject:' . $message['subject']);
+
+  // Flatten body and output.
+  $body = (is_array($message['body']) ? implode(' ', $message['body']) : $message['body']);
+  $body = htmlentities($body);
+  $messenger->addMessage('Message-body:' . $body);
+
+  // Output which params are available.
+  foreach (array_keys($message['params']) as $param) {
+    $messenger->addMessage('Message-param:' .  $param);
+  }
+}

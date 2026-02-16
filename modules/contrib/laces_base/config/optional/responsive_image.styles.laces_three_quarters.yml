@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - image.style.laces_lg
+    - image.style.laces_md
+    - image.style.laces_sm
+    - image.style.laces_xl
+    - image.style.laces_xs
+    - image.style.laces_xxl
+id: laces_three_quarters
+label: 'Laces Three-quarters'
+image_style_mappings:
+  -
+    breakpoint_id: responsive_image.viewport_sizing
+    multiplier: 1x
+    image_mapping_type: sizes
+    image_mapping:
+      sizes: '(min-width: 767px) 75vw, 100vw'
+      sizes_image_styles:
+        - laces_lg
+        - laces_md
+        - laces_sm
+        - laces_xl
+        - laces_xs
+        - laces_xxl
+breakpoint_group: responsive_image
+fallback_image_style: laces_xs

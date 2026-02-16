@@ -1,0 +1,11 @@
+services:
+  flow_ui.subscriber:
+    class: Drupal\flow_ui\Routing\FlowUiRouteSubscriber
+    arguments: ['@entity_type.manager']
+    tags:
+      - { name: event_subscriber }
+  flow_ui.route_enhancer:
+    class: Drupal\flow_ui\Routing\FlowUiRouteEnhancer
+    arguments: ['@entity_type.manager']
+    tags:
+      - { name: route_enhancer }

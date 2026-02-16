@@ -1,0 +1,5 @@
+entity_version_history.entity.history:
+  class: Drupal\entity_version_history\Plugin\Menu\HistoryLocalTask
+  deriver: Drupal\entity_version_history\Plugin\Derivative\HistoryLocalTask
+  title: 'History'
+  weight: 20

@@ -1,0 +1,4 @@
+services:
+  entity_version.entity_version_installer:
+    class: Drupal\entity_version\EntityVersionInstaller
+    arguments: ['@entity_type.manager']

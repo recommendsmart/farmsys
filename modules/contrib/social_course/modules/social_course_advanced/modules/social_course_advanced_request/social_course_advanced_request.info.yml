@@ -1,0 +1,13 @@
+name: 'Social Advanced Course Request'
+description: 'Extend Group Request feature.'
+type: module
+core_version_requirement: ^9
+dependencies:
+  - social_course_advanced:social_course_advanced
+  - social:social_group_request
+package: Social
+
+# Information added by Drupal.org packaging script on 2022-07-04
+version: '4.1.0'
+project: 'social_course'
+datestamp: 1656953087

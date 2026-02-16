@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Module file browser_back_button.module.
+ */
+
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function browser_back_button_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.browser_back_button':
+      $text = file_get_contents(__DIR__ . '/README.txt');
+      if (!\Drupal::moduleHandler()->moduleExists('markdown')) {
+        return '<pre>' . Html::escape($text) . '</pre>';
+      }
+      else {
+        // Use the Markdown filter to render the README.
+        $filter_manager = \Drupal::service('plugin.manager.filter');
+        $settings = \Drupal::configFactory()->get('markdown.settings')->getRawData();
+        $config = ['settings' => $settings];
+        $filter = $filter_manager->createInstance('markdown', $config);
+        return $filter->process($text, 'en');
+      }
+  }
+  return NULL;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function browser_back_button_theme() {
+  return [
+    'browser_back_button_history' => [
+      'variables' => [               
+        'data' => NULL,               
+      ],
+      'template' => 'browser-back-button-history',
+    ],
+  ];
+}

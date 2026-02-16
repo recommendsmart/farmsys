@@ -1,0 +1,9 @@
+services:
+  entity_logger:
+    class: Drupal\entity_logger\EntityLogger
+    arguments: [ '@entity_type.manager', '@config.factory', '@logger.log_message_parser' ]
+  entity_logger.route_subscriber:
+    class: Drupal\entity_logger\Routing\RouteSubscriber
+    arguments: [ '@entity_type.manager' ]
+    tags:
+      - { name: event_subscriber }

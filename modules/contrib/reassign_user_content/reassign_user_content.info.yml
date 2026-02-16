@@ -1,0 +1,9 @@
+name: Reassign Deleted User Content
+type: module
+description: 'Reassign deleted user(s) content to another user.'
+core_version_requirement: ^8 || ^9
+
+# Information added by Drupal.org packaging script on 2022-01-30
+version: '1.0.1'
+project: 'reassign_user_content'
+datestamp: 1643539155

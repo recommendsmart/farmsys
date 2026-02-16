@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - resource
+id: resource_active_action
+label: 'Mark as active'
+type: resource
+plugin: resource_active_action
+configuration: {  }

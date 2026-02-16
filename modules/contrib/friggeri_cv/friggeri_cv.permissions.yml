@@ -1,0 +1,16 @@
+access profile overview:
+  title: 'Access profile overview page'
+delete profile:
+  title: Delete profile
+create profile:
+  title: Create profile
+view profile:
+  title: View profile
+edit profile:
+  title: Edit profile
+
+access profile section overview:
+  title: 'Access profile section overview page'
+
+access profile footer item overview:
+  title: 'Access profile footer item overview page'

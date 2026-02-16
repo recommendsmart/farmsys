@@ -1,0 +1,6 @@
+core_override_preset: core
+url_querystring:
+  core_override: FALSE
+  querystring_key: pg
+  index_base: 0
+  encode_method: none

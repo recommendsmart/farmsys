@@ -1,0 +1,55 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.colorpalette_colors.field_colorpalette_hexcode
+    - field.field.taxonomy_term.colorpalette_colors.field_colorpalette_filter_tags
+    - taxonomy.vocabulary.colorpalette_colors
+  module:
+    - path
+id: taxonomy_term.colorpalette_colors.default
+targetEntityType: taxonomy_term
+bundle: colorpalette_colors
+mode: default
+content:
+  field_colorpalette_hexcode:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_colorpalette_filter_tags:
+    weight: 2
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  name:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 4
+    region: content
+    third_party_settings: {  }
+hidden:
+  description: true

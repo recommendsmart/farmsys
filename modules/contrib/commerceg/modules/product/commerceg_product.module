@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * @file
+ * Hooks and functionality for the Commerce Group Product module.
+ *
+ * @I Implement group product access control
+ *    type     : bug
+ *    priority : high
+ *    labels   : security
+ */
+
+use Drupal\commerce_product\Entity\ProductTypeInterface;
+use Drupal\commerceg\MachineName\Routing\Route;
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ *
+ * Clear the cached group content enabler plugin definitions when a new product
+ * type is created so that it can be recognized without having to rebuild
+ * caches.
+ */
+function commerceg_product_commerce_product_type_insert(
+  ProductTypeInterface $product_type
+) {
+  \Drupal::service('plugin.manager.group_content_enabler')
+    ->clearCachedDefinitions();
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ *
+ * Clear the cached group content enabler plugin definitions when an existing
+ * product type is deleted so that it can be removed from the available plugins
+ * without having to rebuild caches.
+ */
+function commerceg_product_commerce_product_type_delete(
+  ProductTypeInterface $product_type
+) {
+  \Drupal::service('plugin.manager.group_content_enabler')
+    ->clearCachedDefinitions();
+}
+
+/**
+ * Implements hook_entity_operation().
+ *
+ * @I Display the Products operation only for groups with plugins installed
+ *    type     : bug
+ *    priority : low
+ *    labels   : product
+ */
+function commerceg_product_entity_operation(EntityInterface $entity) {
+  return \Drupal::service('commerceg.hook.entity_operation')->groupOperation(
+    $entity,
+    'access commerceg_product overview',
+    Route::GROUP_PRODUCTS,
+    t('Products')
+  );
+}

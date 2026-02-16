@@ -1,0 +1,7 @@
+browser_back_button.history:  
+  js:
+    js/browser_back_button.history.js: {}
+  dependencies:    
+    - core/drupal
+    - core/jquery
+    - core/jquery.once

@@ -1,0 +1,13 @@
+readme:
+  title: 'README'
+  file: '../README.md'
+  # Advanced Help will ignore README files in the module root if YAML file is
+  # defined. This allows us to have both advanced help AND README files.
+  readme file: '../README.md'
+  weight: -10
+included-filters:
+  title: 'Included filters'
+  weight: -8
+creating-plugins:
+  title: 'Creating plugins for Freelinking'
+  weight: -7

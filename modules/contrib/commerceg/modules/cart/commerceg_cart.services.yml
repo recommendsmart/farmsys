@@ -1,0 +1,9 @@
+services:
+  # Hooks.
+  # Implemented as services for OOP.
+  # Services required only when the Context submodule is enabled are defined in
+  # the service provider.
+  commerceg_cart.hook.entity_access:
+    class: 'Drupal\commerceg_cart\Hook\EntityAccess'
+    arguments:
+      - '@entity_type.manager'

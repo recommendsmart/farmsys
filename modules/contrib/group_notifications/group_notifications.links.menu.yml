@@ -1,0 +1,6 @@
+group_notifications.settings:
+  title: 'Notifications'
+  description: 'Configure the group notifications settings.'
+  route_name: 'group_notifications.settings'
+  parent: 'system.admin_group'
+  weight: 15

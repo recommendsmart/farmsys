@@ -1,0 +1,68 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,800,700,400italic);
+.entity-title {
+  position: relative;
+}
+
+.authority-name-loc,
+.entity-name,
+div[class*="col-"] {
+  display: inline-block;
+}
+
+.tenure {
+  margin-left: -15px;
+  text-align: right;
+}
+
+.entity-name {
+  font-size: 18px;
+}
+
+.entity-box {
+  page-break-inside: avoid;
+  page-break-after: auto;
+  padding-right: 10px;
+  margin-bottom: 5px;
+}
+
+.entity-title {
+  margin-bottom: 2px;
+}
+
+.authority-name-loc {
+  float: right;
+  font-style: italic;
+  /*font-size: 12px;*/
+  margin-top: 3px;
+  color: #aaa;
+}
+
+.entity-position {
+  clear: both;
+  font-size: 14px;
+  color: #4d4d4d;
+  margin-bottom: 5px;
+  font-style: italic;
+}
+
+.entity-info {
+  clear: both;
+}
+
+.entity-info p {
+  margin-bottom: 2px;
+}
+
+div.col-xs-9 {
+  width: 73%;
+}
+
+.column {
+  float: left;
+  width: 304px;
+}
+
+div[class*="col-"] {
+  float: none;
+  vertical-align: top;
+}

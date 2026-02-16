@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * @file
+ * Main module file for the Fragments module.
+ */
+
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function fragments_theme() {
+  return [
+    'fragment' => [
+      'render element' => 'content',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function fragments_theme_suggestions_fragment(array $variables) {
+  $suggestions = [];
+  $fragment = $variables['content']['#fragment'];
+  $sanitized_view_mode = strtr($variables['content']['#view_mode'], '.', '_');
+
+  $suggestions[] = 'fragment__' . $sanitized_view_mode;
+  $suggestions[] = 'fragment__' . $fragment->bundle();
+  $suggestions[] = 'fragment__' . $fragment->bundle() . '__' . $sanitized_view_mode;
+
+  return $suggestions;
+}
+
+/**
+ * Implements hook_help().
+ */
+function fragments_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.fragments':
+      $text = file_get_contents(__DIR__ . '/README.md');
+      if (!\Drupal::moduleHandler()->moduleExists('markdown')) {
+        return '<pre>' . Html::escape($text) . '</pre>';
+      }
+      else {
+        // Use the Markdown filter to render the README.
+        $filter_manager = \Drupal::service('plugin.manager.filter');
+        $settings = \Drupal::configFactory()->get('markdown.settings')->getRawData();
+        $config = ['settings' => $settings];
+        $filter = $filter_manager->createInstance('markdown', $config);
+        return $filter->process($text, 'en');
+      }
+  }
+  return NULL;
+}

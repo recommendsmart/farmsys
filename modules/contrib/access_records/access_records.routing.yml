@@ -1,0 +1,85 @@
+entity.access_record.version_history:
+  path: '/access-record/{access_record}/revisions'
+  defaults:
+    _title: 'Revisions'
+    _controller: '\Drupal\access_records\Controller\AccessRecordRevisionController::overview'
+  requirements:
+    _access_access_record_revision: 'view'
+    access_record: \d+
+  options:
+    _admin_route: TRUE
+
+entity.access_record.revision:
+  path: '/access-record/{access_record}/revisions/{access_record_revision}/view'
+  defaults:
+    _controller: '\Drupal\Core\Entity\Controller\EntityViewController::viewRevision'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  options:
+    parameters:
+      access_record:
+        type: entity:access_record
+      access_record_revision:
+        type: entity_revision:access_record
+  requirements:
+    _access_access_record_revision: 'view'
+    access_record: \d+
+
+access_record.revision_revert_confirm:
+  path: '/access-record/{access_record}/revisions/{access_record_revision}/revert'
+  defaults:
+    _form: '\Drupal\access_records\Form\AccessRecordRevisionRevertForm'
+    _title: 'Revert to earlier revision'
+  requirements:
+    _access_access_record_revision: 'update'
+    access_record: \d+
+  options:
+    _admin_route: TRUE
+
+access_record.revision_revert_translation_confirm:
+  path: '/access-record/{access_record}/revisions/{access_record_revision}/revert/{langcode}'
+  defaults:
+    _form: '\Drupal\access_records\Form\AccessRecordRevisionRevertTranslationForm'
+    _title: 'Revert to earlier revision of a translation'
+  requirements:
+    _access_access_record_revision: 'update'
+    access_record: \d+
+  options:
+    _admin_route: TRUE
+
+access_record.revision_delete_confirm:
+  path: '/access-record/{access_record}/revisions/{access_record_revision}/delete'
+  defaults:
+    _form: '\Drupal\access_records\Form\AccessRecordRevisionDeleteForm'
+    _title: 'Delete earlier revision'
+  requirements:
+    _access_access_record_revision: 'delete'
+    access_record: \d+
+  options:
+    _admin_route: TRUE
+
+access_records.admin_subjects:
+  path: '/admin/content/access-record/subjects'
+  defaults:
+    _controller: '\Drupal\access_records\Controller\AccessRecordEmptyAdminController::emptyPageBecauseNoViewsConfig'
+  requirements:
+    _permission: 'access access_record overview'
+  options:
+    _admin_route: TRUE
+
+access_records.admin_targets:
+  path: '/admin/content/access-record/targets'
+  defaults:
+    _controller: '\Drupal\access_records\Controller\AccessRecordEmptyAdminController::emptyPageBecauseNoViewsConfig'
+  requirements:
+    _permission: 'access access_record overview'
+  options:
+    _admin_route: TRUE
+
+access_records.admin_subjects_targets:
+  path: '/admin/content/access-record/subjects-targets'
+  defaults:
+    _controller: '\Drupal\access_records\Controller\AccessRecordEmptyAdminController::emptyPageBecauseNoViewsConfig'
+  requirements:
+    _permission: 'access access_record overview'
+  options:
+    _admin_route: TRUE

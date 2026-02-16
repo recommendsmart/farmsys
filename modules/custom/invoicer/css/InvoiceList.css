@@ -1,0 +1,11 @@
+.invoicer-filter-form .form-type-select,
+.invoicer-filter-form .form-type-textfield,
+.invoicer-filter-form .form-actions {
+    display: table-cell;
+    vertical-align: bottom;
+    padding: 5px;
+}
+
+.invoicer-filter-form  fieldset {
+    display: table;
+}

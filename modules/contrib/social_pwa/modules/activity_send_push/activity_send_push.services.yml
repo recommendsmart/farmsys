@@ -1,0 +1,5 @@
+services:
+  activity_send_push.overrider:
+    class: \Drupal\activity_send_push\MessageTemplatesOverrides
+    tags:
+      - {name: config.factory.override, priority: 5}

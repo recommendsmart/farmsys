@@ -1,0 +1,10 @@
+{% if info.config.template.value %}
+	{{ prefix }}
+	{% set body = {
+	  '#type':   'processed_text',
+	  '#text':    info.config.template.value,
+	  '#format':  info.config.template.format,
+	} %}
+	{{ body|raw }}
+	{{ suffix }}
+{% endif %}

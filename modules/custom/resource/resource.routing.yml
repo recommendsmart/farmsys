@@ -1,0 +1,50 @@
+resource.add_page:
+  path: '/resource/add'
+  defaults:
+    _title: 'Add content'
+    _controller: '\Drupal\resource\Controller\ResourceController::addPage'
+  options:
+    _resource_operation_route: TRUE
+  requirements:
+    _resource_add_access: 'resource'
+
+resource.add:
+  path: '/resource/add/{resource_type}'
+  defaults:
+    _controller: '\Drupal\resource\Controller\ResourceController::add'
+    _title_callback: '\Drupal\resource\Controller\ResourceController::addPageTitle'
+  requirements:
+    _resource_add_access: 'resource:{resource_type}'
+  options:
+    _resource_operation_route: TRUE
+    parameters:
+      resource_type:
+        with_config_overrides: TRUE
+
+# ResourceType routing definition
+entity.resource_type.collection:
+  path: '/admin/structure/resources'
+  defaults:
+    _entity_list: 'resource_type'
+    _title: 'Resource type'
+  requirements:
+    _permission: 'administer resource types'
+  options:
+    _admin_route: TRUE
+
+entity.resource_type.add_form:
+  path: '/admin/structure/resources/add'
+  defaults:
+    _entity_form: 'resource_type.add'
+    _title: 'Add Resource type'
+  requirements:
+    _permission: 'administer resource types'
+  options:
+    _admin_route: TRUE
+
+resource.multiple_delete_confirm:
+  path: '/admin/content/resource/delete'
+  defaults:
+    _form: '\Drupal\resource\Form\DeleteMultiple'
+  requirements:
+    _custom_access: '\Drupal\resource\Form\DeleteMultiple::access'

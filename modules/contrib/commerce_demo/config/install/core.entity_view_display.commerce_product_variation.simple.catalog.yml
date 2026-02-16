@@ -1,0 +1,39 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_variation_type.simple
+    - core.entity_view_mode.commerce_product_variation.catalog
+    - field.field.commerce_product_variation.simple.field_images
+    - field.field.commerce_product_variation.simple.weight
+  module:
+    - commerce_price
+id: commerce_product_variation.simple.catalog
+targetEntityType: commerce_product_variation
+bundle: simple
+mode: catalog
+content:
+  field_images:
+    weight: 0
+    label: hidden
+    settings:
+      image_style: catalog
+      image_link: content
+    third_party_settings: {  }
+    type: image
+    region: content
+  price:
+    label: hidden
+    type: commerce_price_calculated
+    weight: 1
+    region: content
+    settings:
+      strip_trailing_zeroes: false
+      currency_display: symbol
+      adjustment_types: {  }
+    third_party_settings: {  }
+hidden:
+  product_id: true
+  sku: true
+  title: true
+  weight: true

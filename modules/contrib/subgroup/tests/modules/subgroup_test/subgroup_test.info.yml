@@ -1,0 +1,12 @@
+name: 'Subgroup test'
+description: 'Support module for Subgroup tests.'
+package: 'Testing'
+type: 'module'
+core_version_requirement: ^8.8 || ^9
+dependencies:
+  - 'subgroup:subgroup'
+
+# Information added by Drupal.org packaging script on 2021-05-04
+version: '1.0.2'
+project: 'subgroup'
+datestamp: 1620133644

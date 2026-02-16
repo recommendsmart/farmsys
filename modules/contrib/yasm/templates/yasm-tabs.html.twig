@@ -1,0 +1,12 @@
+<nav class="yasm-tabs is-horizontal">
+  <ul class="tabs secondary clearfix">
+    {% for item in items %}
+      {% set activeClass = item.link == active_link ? ' is-active' : '' %}
+      <li class="tabs__tab{{ activeClass }}">
+        <a href="{{ item.link }}" class="link{{ activeClass }}">
+          {{ item.label }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>

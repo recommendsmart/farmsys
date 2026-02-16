@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - resource
+id: resource_delete_action
+label: 'Delete resource'
+type: resource
+plugin: resource_delete_action
+configuration: {  }

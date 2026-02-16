@@ -1,0 +1,15 @@
+entity.profile.canonical:
+  path: '/friggeri-cv/profile/{profile}'
+  defaults:
+    _controller: '\Drupal\friggeri_cv\Controller\ProfileController::profile'
+  requirements:
+    # Calls the access controller of the entity, $operation 'view'
+    # _entity_access: 'profile.view'
+    _permission: 'access content'
+
+entity.profile.pdf:
+  path: '/friggeri-cv/pdf/profile/{profile}'
+  defaults:
+    _controller: '\Drupal\friggeri_cv\Controller\PdfController::pdf'
+  requirements:
+    _permission: 'access content'

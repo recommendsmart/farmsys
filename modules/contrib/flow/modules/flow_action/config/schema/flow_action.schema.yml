@@ -1,0 +1,13 @@
+flow.task.settings.action:
+  type: mapping
+  label: 'Merge plugin settings'
+  mapping:
+    replace_tokens:
+      type: boolean
+      label: 'Replace tokens setting'
+    access_check:
+      type: string
+      label: 'Access check setting'
+    action:
+      type: ignore
+      label: 'Action plugin settings'

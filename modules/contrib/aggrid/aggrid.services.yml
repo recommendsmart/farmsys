@@ -1,0 +1,3 @@
+services:
+  aggrid.helper_functions:
+    class: Drupal\aggrid\Utils\HelperFunctions

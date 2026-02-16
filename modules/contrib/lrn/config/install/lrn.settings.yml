@@ -1,0 +1,20 @@
+firstname_field: ''
+lastname_field: ''
+middlename_field: ''
+build_string: ''
+allow_numbering: true
+max_numbering: 5
+fn_lowup: 2
+ln_lowup: 2
+mn_lowup: 2
+fn_change: 3
+ln_change: 1
+mn_change: 3
+fn_max: 8
+ln_max: 16
+mn_max: 8
+fn_translit: true
+ln_translit: true
+mn_translit: true
+full_max: 64
+

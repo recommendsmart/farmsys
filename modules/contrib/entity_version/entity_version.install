@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * @file
+ * Install and update functions for the Entity version module.
+ */
+
+declare(strict_types = 1);
+
+use Drupal\Core\Config\Entity\ConfigEntityType;
+use Drupal\Core\Entity\EntityDefinitionUpdateManager;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+
+/**
+ * Implements hook_uninstall().
+ */
+function entity_version_uninstall() {
+  // Remove the existing config entities.
+  $storage = \Drupal::entityTypeManager()->getStorage('entity_version_settings');
+  $configs = $storage->loadMultiple();
+  $storage->delete($configs);
+}
+
+/**
+ * Install the Entity Version Settings entity types.
+ *
+ * Since we are running this update hook after the entity type has been
+ * defined, we need to check if they have not been already installed. If they
+ * have, we bail out and don't fail the update path.
+ */
+function entity_version_update_8101(&$sandbox): TranslatableMarkup {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $config_entity_type = [
+    'id' => 'entity_version_settings',
+    'handlers' => [
+      'storage' => 'Drupal\entity_version\Entity\EntityVersionSettingsStorage',
+    ],
+    'label' => new TranslatableMarkup('Entity Version Settings'),
+    'admin_permission' => 'administer entity version',
+    'config_prefix' => 'settings',
+    'entity_keys' => [
+      'id' => 'id',
+    ],
+    'config_export' => [
+      'id',
+      'target_entity_type_id',
+      'target_bundle',
+      'target_field',
+    ],
+  ];
+
+  $change_list = $update_manager->getChangeList();
+  if (!isset($change_list['entity_version_settings']['entity_type']) || $change_list['entity_version_settings']['entity_type'] !== EntityDefinitionUpdateManager::DEFINITION_CREATED) {
+    return t('The entity version settings entity type did not have to be installed.');
+  }
+
+  $update_manager->installEntityType(new ConfigEntityType($config_entity_type));
+  return t('The entity version settings entity type was installed.');
+}

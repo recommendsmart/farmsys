@@ -1,0 +1,7 @@
+views.field.approve_membership_request:
+  type: views.field.entity_link
+  label: 'Approve group request membership'
+
+views.field.reject_membership_request:
+  type: views.field.entity_link
+  label: 'Reject group request membership'

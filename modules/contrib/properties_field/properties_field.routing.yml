@@ -1,0 +1,6 @@
+properties_field.label_autocomplete:
+  path: /properties-field/label/{entity_type_id}/{bundle}/{field_name}/{entity_id}
+  defaults:
+    _controller: \Drupal\properties_field\Controller\LabelController::autocomplete
+  requirements:
+    _custom_access: \Drupal\properties_field\Controller\LabelController::autocompleteAccess

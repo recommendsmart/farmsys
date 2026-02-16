@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.orders.field_order_item
+    - orders.type.default
+  module:
+    - orders
+id: orders.default.field_order_item
+field_name: field_order_item
+entity_type: orders
+bundle: default
+label: 'Order Items'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: order_line_item
