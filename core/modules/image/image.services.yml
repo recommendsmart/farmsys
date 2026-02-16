@@ -15,3 +15,7 @@ services:
     public: false
     tags:
       - { name: page_cache_response_policy }
+  image.field_manager:
+    class: Drupal\image\ImageFieldManager
+    autowire: true
+  Drupal\image\ImageFieldManagerInterface: '@image.field_manager'

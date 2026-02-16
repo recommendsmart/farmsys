@@ -1,3 +1,0 @@
-administer most_simple types:
-  title: 'Administer MostSimpleEntity types'
-  restrict access: true

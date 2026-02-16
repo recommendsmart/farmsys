@@ -42,6 +42,11 @@ class MetatagEntityFieldItemList extends FieldItemList {
     $renderer = \Drupal::service('renderer');
     assert($renderer instanceof RendererInterface);
 
+    $batch = &batch_get();
+    if ($batch) {
+      return;
+    }
+
     // @todo capture the cacheable metadata and properly bubble it up.
     // @see https://www.drupal.org/project/metatag/issues/3175269
     // @see https://www.drupal.org/project/metatag/issues/3039650

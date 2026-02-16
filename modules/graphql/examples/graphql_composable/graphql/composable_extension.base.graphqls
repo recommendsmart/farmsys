@@ -1,6 +1,6 @@
-type Mutation
+#type Mutation
 
-scalar Violation
+#scalar Violation
 
 type Article {
   id: Int!
@@ -8,14 +8,14 @@ type Article {
   author: String
 }
 
-type ArticleResponse implements Response {
-  errors: [Violation]
-  article: Article
-}
+#type ArticleResponse implements Response {
+#  errors: [Violation]
+#  article: Article
+#}
 
-interface Response {
-  errors: [Violation]
-}
+#interface Response {
+#  errors: [Violation]
+#}
 
 input ArticleInput {
   title: String!

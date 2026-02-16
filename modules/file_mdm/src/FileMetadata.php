@@ -138,12 +138,6 @@ class FileMetadata implements FileMetadataInterface {
       $metadata = NULL;
     }
     catch (\Exception $e) {
-      $this->logger->error('Error getting @metadata_id@key metadata for @uri. Message: @message', [
-        '@metadata_id' => $metadataId,
-        '@key' => $key ? ' (' . var_export($key, TRUE) . ')' : '',
-        '@uri' => $this->uri ?? '',
-        '@message' => $e->getMessage(),
-      ]);
       $metadata = NULL;
     }
     return $metadata;

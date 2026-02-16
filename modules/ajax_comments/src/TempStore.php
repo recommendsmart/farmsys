@@ -51,6 +51,23 @@ class TempStore {
   }
 
   /**
+  * @param $entity_type
+  * @param $viewmode
+  */
+  public function setViewMode($entity_type, $viewmode) {
+    $this->privateTempStore->set('view_mode_entity_type_' . $entity_type, $viewmode);
+  }
+
+  /**
+  * @param $entity_type
+  *
+  * @return mixed
+  */
+  public function getViewMode($entity_type) {
+    return $this->privateTempStore->get('view_mode_entity_type_' . $entity_type);
+  }
+
+  /**
    * Get a single selector value, without the '#' prefix.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request

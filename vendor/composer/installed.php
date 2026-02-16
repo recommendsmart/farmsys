@@ -3,7 +3,7 @@
         'name' => 'goalgorilla/open_social',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'b0a9e3ed470677a88dbb12707758f2a461b89042',
+        'reference' => '5a388b804d3aa2cf84162da896c85f043704fbfa',
         'type' => 'drupal-profile',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -1111,7 +1111,7 @@
         'goalgorilla/open_social' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'b0a9e3ed470677a88dbb12707758f2a461b89042',
+            'reference' => '5a388b804d3aa2cf84162da896c85f043704fbfa',
             'type' => 'drupal-profile',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

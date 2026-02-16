@@ -143,6 +143,7 @@ class RouteNormalizerRequestSubscriberTest extends UnitTestCase {
           'default_status_code' => 301,
         ],
       ]),
+      $this->getLanguageManagerMock($call_expected),
       $this->getRedirectCheckerStub($call_expected),
       $alias_manager,
       $current_path
@@ -163,7 +164,7 @@ class RouteNormalizerRequestSubscriberTest extends UnitTestCase {
   protected function getUrlGeneratorStub($request_uri, $call_expected = TRUE) {
     $url_generator = $this->createMock('\Drupal\Core\Routing\UrlGeneratorInterface');
 
-    $options = ['absolute' => TRUE];
+    $options = ['absolute' => TRUE, 'language' => (object) ['id' => 'en']];
 
     $expectation = $call_expected ? $this->once() : $this->never();
 
@@ -193,6 +194,28 @@ class RouteNormalizerRequestSubscriberTest extends UnitTestCase {
       ->withAnyParameters()
       ->willReturn(FALSE);
     return $path_matcher;
+  }
+
+  /**
+   * Gets the LanguageManagerInterface mock object
+   *
+   * @param bool $call_expected
+   * If true, we expect getCurrentLanguage() to be called once.
+   *
+   * @return \Drupal\Core\Language\LanguageManagerInterface|PHPUnit_Framework_MockObject_MockObject
+   */
+  protected function getLanguageManagerMock($call_expected = TRUE) {
+    $language_manager = $this->getMockBuilder('\Drupal\Core\Language\LanguageManagerInterface')
+      ->getMock();
+
+    $expectation = $call_expected ? $this->once() : $this->never();
+
+    $language_manager->expects($expectation)
+      ->method('getCurrentLanguage')
+      ->withAnyParameters()
+      ->willReturn((object) ['id' => 'en']);
+
+    return $language_manager;
   }
 
   /**

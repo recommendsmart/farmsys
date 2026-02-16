@@ -27,6 +27,7 @@ class BootstrapDropdown extends PreprocessBase implements PreprocessInterface {
 
     $toggle = Element::create($variables->toggle);
     $toggle->setProperty('split', $variables->split);
+    $toggle->setProperty('default_button', $variables->default_button);
 
     // Convert the items into a proper item list.
     $variables->items = [
@@ -108,7 +109,7 @@ class BootstrapDropdown extends PreprocessBase implements PreprocessInterface {
 
       // Iterate over all provided "links". The array may be associative, so
       // this cannot rely on the key to be numeric, it must be tracked manually.
-      $i = -1;
+      $i = $variables->default_button ? -1 : 0;
       foreach ($links->children(TRUE) as $key => $child) {
         $i++;
 
@@ -171,15 +172,22 @@ class BootstrapDropdown extends PreprocessBase implements PreprocessInterface {
       }
 
       // Create a toggle button, extracting relevant info from primary action.
-      $toggle = Element::createStandalone([
-        '#type' => 'button',
-        '#attributes' => $primary_action->getAttributes()->getArrayCopy(),
-        '#value' => $primary_action->getProperty('value', $primary_action->getProperty('title', $primary_action->getProperty('text'))),
-      ]);
+      if ($variables->default_button) {
+        $toggle = Element::createStandalone([
+          '#type' => 'button',
+          '#attributes' => $primary_action->getAttributes()->getArrayCopy(),
+          '#value' => $primary_action->getProperty('value', $primary_action->getProperty('title', $primary_action->getProperty('text'))),
+        ]);
 
-      // Remove the "hidden" class that was added to the primary action.
-      $toggle->removeClass('hidden')->removeAttribute('id')->setAttribute('data-dropdown-target', '#' . $primary_action->getAttribute('id'));
-
+        // Remove the "hidden" class that was added to the primary action.
+        $toggle->removeClass('hidden')->removeAttribute('id')->setAttribute('data-dropdown-target', '#' . $primary_action->getAttribute('id'));
+      }
+      else {
+        $toggle = Element::createStandalone([
+          '#type' => 'button',
+          '#value' => $variables->toggle_label,
+        ]);
+      }
       // Make operations smaller.
       if ($operations) {
         $toggle->setButtonSize('btn-xs', FALSE);

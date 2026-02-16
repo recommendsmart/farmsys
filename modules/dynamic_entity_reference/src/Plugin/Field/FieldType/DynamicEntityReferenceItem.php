@@ -302,7 +302,7 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
   protected function targetTypeFieldSettingsForm(array $form, FormStateInterface $form_state, $target_type) {
     /** @var \Drupal\field\FieldConfigInterface $field */
     $field = $form_state->getFormObject()->getEntity();
-    $field_settings = $field->getSettings();
+    $field_settings = $field->getSettings() + self::defaultFieldSettings();
     /** @var \Drupal\dynamic_entity_reference\SelectionPluginManager $manager */
     $manager = \Drupal::service('plugin.manager.dynamic_entity_reference_selection');
     // Get all selection plugins for this entity type.
@@ -559,7 +559,7 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
     // also covers the 'auto_create_bundle' setting, if any, because its value
     // is included in the 'target_bundles' list.
     $entity_type_manager = \Drupal::entityTypeManager();
-    $settings = $field_definition->getSettings();
+    $settings = $field_definition->getSettings() + self::defaultFieldSettings();
     foreach (static::getTargetTypes($settings) as $target_type) {
       $handler = $settings[$target_type]['handler_settings'];
       if (!empty($handler['target_bundles'])) {
@@ -600,7 +600,7 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
     $entity_type_manager = \Drupal::entityTypeManager();
     // Update the 'target_bundles' handler setting if a bundle config dependency
     // has been removed.
-    $settings = $field_definition->getSettings();
+    $settings = $field_definition->getSettings() + self::defaultFieldSettings();
     foreach (static::getTargetTypes($settings) as $target_type) {
       $bundles_changed = FALSE;
       $handler_settings = $settings[$target_type]['handler_settings'];

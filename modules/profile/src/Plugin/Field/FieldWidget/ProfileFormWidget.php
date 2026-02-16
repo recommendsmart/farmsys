@@ -218,7 +218,20 @@ class ProfileFormWidget extends WidgetBase implements ContainerFactoryPluginInte
    * Process callback: Adds the widget's submit handler.
    */
   public static function attachSubmit(array $form, FormStateInterface $form_state) {
-    $form['actions']['submit']['#submit'][] = [static::class, 'saveProfiles'];
+    // Ensure the our save function runs in between ::submitForm which generates
+    // the entity and ::save which stores the user.
+    $submitFormIndex = array_search("::submitForm", $form['actions']['submit']['#submit'], TRUE);
+    if ($submitFormIndex !== -1) {
+      $form['actions']['submit']['#submit'] = array_merge(
+        array_slice($form['actions']['submit']['#submit'], 0, $submitFormIndex+1),
+        [[static::class, 'saveProfiles']],
+        array_slice($form['actions']['submit']['#submit'], $submitFormIndex + 1)
+      );
+    }
+    else {
+      $form['actions']['submit']['#submit'][] = [static::class, 'saveProfiles'];
+    }
+    
     return $form;
   }
 
@@ -268,18 +281,29 @@ class ProfileFormWidget extends WidgetBase implements ContainerFactoryPluginInte
    *   The current state of the form.
    */
   public static function saveProfiles(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\Core\Session\AccountInterface $account */
+    /** @var \Drupal\user\UserInterface $account */
     $account = $form_state->getFormObject()->getEntity();
     if (!$account) {
       return;
     }
+
     $profiles = $form_state->get('profiles');
     foreach ($profiles as $profile_list) {
-      foreach ($profile_list as $profile) {
-        assert($profile instanceof ProfileInterface);
-        $profile->setOwnerId($account->id());
-        $profile->setPublished();
-        $profile->save();
+      // For new users we don't have an ID yet to set an owner on the profile and
+      // thus we can't save the profile yet but doo this in hook_user_insert
+      // instead.
+      if ($account->isNew()) {
+        foreach ($profile_list as $profile) {
+          _profile_add_prepared_profile($account, $profile);
+        }
+      }
+      else {
+        foreach ($profile_list as $profile) {
+          assert($profile instanceof ProfileInterface);
+          $profile->setOwnerId($account->id());
+          $profile->setPublished();
+          $profile->save();
+        }
       }
     }
   }

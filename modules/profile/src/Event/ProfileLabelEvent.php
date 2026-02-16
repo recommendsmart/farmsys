@@ -22,7 +22,7 @@ class ProfileLabelEvent extends Event {
   /**
    * The label.
    *
-   * @var string|null
+   * @var string|\Stringable|null
    */
   protected $label;
 
@@ -31,10 +31,10 @@ class ProfileLabelEvent extends Event {
    *
    * @param \Drupal\profile\Entity\ProfileInterface $profile
    *   The profile.
-   * @param string|null $label
+   * @param null|string|\Stringable $label
    *   The profile label.
    */
-  public function __construct(ProfileInterface $profile, ?string $label) {
+  public function __construct(ProfileInterface $profile, null|string|\Stringable $label) {
     $this->profile = $profile;
     $this->label = $label;
   }
@@ -52,22 +52,22 @@ class ProfileLabelEvent extends Event {
   /**
    * Gets the profile label.
    *
-   * @return string|null
+   * @return null|string|\Stringable
    *   The profile label.
    */
-  public function getLabel(): ?string {
+  public function getLabel(): null|string|\Stringable {
     return $this->label;
   }
 
   /**
    * Sets the profile label.
    *
-   * @param string|null $label
+   * @param null|string|\Stringable $label
    *   The profile label.
    *
    * @return $this
    */
-  public function setLabel(?string $label) {
+  public function setLabel(null|string|\Stringable $label) {
     $this->label = $label;
     return $this;
   }

@@ -119,7 +119,7 @@ class DynamicEntityReferenceWidget extends EntityReferenceAutocompleteWidget {
     $entity = $items->getEntity();
     $referenced_entities = $items->referencedEntities();
 
-    $settings = $this->getFieldSettings();
+    $settings = $this->getFieldSettings() + DynamicEntityReferenceItem::defaultFieldSettings();
     $labels = $this->entityTypeRepository->getEntityTypeLabels();
     $available = DynamicEntityReferenceItem::getTargetTypes($settings);
     $cardinality = $items->getFieldDefinition()->getFieldStorageDefinition()->getCardinality();
@@ -250,7 +250,7 @@ class DynamicEntityReferenceWidget extends EntityReferenceAutocompleteWidget {
         array_pop($parents);
         $values = $form_state->getValue($parents);
       }
-      $settings = $this->getFieldSettings();
+      $settings = $this->getFieldSettings() + DynamicEntityReferenceItem::defaultFieldSettings();
       $element['#target_type'] = $values['target_type'];
       $element['#selection_handler'] = $settings[$values['target_type']]['handler'];
       $element['#selection_settings'] = $settings[$values['target_type']]['handler_settings'];
@@ -284,7 +284,7 @@ class DynamicEntityReferenceWidget extends EntityReferenceAutocompleteWidget {
     if ($target_type === NULL) {
       return parent::getSelectionHandlerSetting($setting_name);
     }
-    $settings = $this->getFieldSettings();
+    $settings = $this->getFieldSettings() + DynamicEntityReferenceItem::defaultFieldSettings();
     return $settings[$target_type]['handler_settings'][$setting_name] ?? NULL;
   }
 
@@ -333,7 +333,7 @@ class DynamicEntityReferenceWidget extends EntityReferenceAutocompleteWidget {
    */
   protected function createAutoCompletePaths(array $target_types) {
     $auto_complete_paths = [];
-    $settings = $this->getFieldSettings();
+    $settings = $this->getFieldSettings() + DynamicEntityReferenceItem::defaultFieldSettings();
     foreach ($target_types as $target_type) {
       // Store the selection settings in the key/value store and pass a hashed
       // key in the route parameters.

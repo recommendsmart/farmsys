@@ -15,6 +15,7 @@ use Drupal\field\FieldStorageConfigInterface;
 use Drupal\file\FileInterface;
 use Drupal\image\Controller\ImageStyleDownloadController;
 use Drupal\image\Entity\ImageStyle;
+use Drupal\image\ImageFieldManagerInterface;
 
 /**
  * The name of the query parameter for image derivative tokens.
@@ -143,7 +144,7 @@ function image_file_download($uri) {
   if (str_starts_with($path, 'styles/')) {
     $args = explode('/', $path);
 
-    // Discard "styles", style name, and scheme from the path
+    // Discard "styles", style name, and scheme from the path.
     $args = array_slice($args, 3);
 
     // Then the remaining parts are the path to the image.
@@ -179,6 +180,25 @@ function image_file_download($uri) {
       }
     }
     return -1;
+  }
+
+  // Private file access for image fields' default images.
+  // Default images are displayed as a fallback when an image is not uploaded to
+  // an image field.
+  if (str_starts_with($path, ImageFieldManagerInterface::DEFAULT_IMAGE_DIRECTORY . '/')) {
+    /** @var \Drupal\image\ImageFieldManagerInterface $image_field_manager */
+    $image_field_manager = \Drupal::service('image.field_manager');
+    $image = \Drupal::service('image.factory')->get($uri);
+    if ($image_field_manager->checkAccessToDefaultImage($image)->isAllowed()) {
+      return [
+        // Send headers describing the image's size, and MIME-type.
+        'Content-Type' => $image->getMimeType(),
+        'Content-Length' => $image->getFileSize(),
+        // By not explicitly setting them here, this uses normal Drupal
+        // Expires, Cache-Control and ETag headers to prevent proxy or
+        // browser caching of private images.
+      ];
+    }
   }
 
   // If it is the sample image we need to grant access.
@@ -429,7 +449,7 @@ function image_field_storage_config_update(FieldStorageConfigInterface $field_st
 
   // If the upload destination changed, then move the file.
   if ($file_new && (StreamWrapperManager::getScheme($file_new->getFileUri()) != $field_storage->getSetting('uri_scheme'))) {
-    $directory = $field_storage->getSetting('uri_scheme') . '://default_images/';
+    $directory = $field_storage->getSetting('uri_scheme') . '://' . ImageFieldManagerInterface::DEFAULT_IMAGE_DIRECTORY . '/';
     \Drupal::service('file_system')->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
     \Drupal::service('file.repository')->move($file_new, $directory . $file_new->getFilename());
   }
@@ -467,7 +487,7 @@ function image_field_config_update(FieldConfigInterface $field) {
 
   // If the upload destination changed, then move the file.
   if ($file_new && (StreamWrapperManager::getScheme($file_new->getFileUri()) != $field_storage->getSetting('uri_scheme'))) {
-    $directory = $field_storage->getSetting('uri_scheme') . '://default_images/';
+    $directory = $field_storage->getSetting('uri_scheme') . '://' . ImageFieldManagerInterface::DEFAULT_IMAGE_DIRECTORY . '/';
     \Drupal::service('file_system')->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
     \Drupal::service('file.repository')->move($file_new, $directory . $file_new->getFilename());
   }

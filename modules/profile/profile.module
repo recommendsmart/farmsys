@@ -18,8 +18,10 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\field\FieldConfigInterface;
+use Drupal\profile\Entity\ProfileInterface;
 use Drupal\profile\Entity\ProfileType;
 use Drupal\profile\Plugin\Field\ProfileEntityFieldItemList;
+use Drupal\user\UserInterface;
 
 /**
  * Implements hook_help().
@@ -150,6 +152,51 @@ function profile_user_delete(EntityInterface $entity) {
 
   foreach ($list as $profile) {
     $profile->delete();
+  }
+}
+
+/**
+ * Get and reset the profiles pending for creation.
+ *
+ * @param \Drupal\user\UserInterface $user
+ *   The user to get profiles for.
+ *
+ * @return \Drupal\profile\Entity\ProfileInterface[]
+ *   The array of profiles.
+ *
+ * @internal
+ */
+function _profile_flush_prepared_profiles(UserInterface $user) : array {
+  $profiles = drupal_static("profile_prepared_profiles." . $user->uuid(), []);
+  drupal_static_reset("profile_prepared_profiles." . $user->uuid());
+  return $profiles;
+}
+
+/**
+ * Add a profile that should be saved as soon as the user is.
+ *
+ * @param \Drupal\user\UserInterface $user
+ *   The user to add the profile for.
+ * @param \Drupal\profile\Entity\ProfileInterface $profile
+ *   The profile to add.
+ *
+ * @internal
+ */
+function _profile_add_prepared_profile(UserInterface $user, ProfileInterface $profile) : void {
+  $profiles = &drupal_static("profile_prepared_profiles." . $user->uuid(), []);
+  $profiles[] = $profile;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function profile_user_insert(UserInterface $user) : void {
+  // Save any profiles that were prepared for the user.
+  $profiles = _profile_flush_prepared_profiles($user);
+  foreach ($profiles as $profile) {
+    $profile->setOwnerId($user->id());
+    $profile->setPublished();
+    $profile->save();
   }
 }
 

@@ -152,7 +152,10 @@ class ViewsEFFieldset extends DefaultDisplayExtender {
     ];
     $exposed_fields[] = $submit_button;
 
-    if ($form['exposed_form_options']['reset_button']['#default_value'] === 1) {
+    if (
+      $form['exposed_form_options']['reset_button']['#default_value'] === 1 ||
+      $form['exposed_form_options']['bef']['general']['reset_button']['#default_value'] != 0
+    ) {
       $reset_button = [];
       $reset_button['handler_type'] = 'buttons';
       $reset_button['id'] = 'reset';
@@ -307,7 +310,8 @@ class ViewsEFFieldset extends DefaultDisplayExtender {
             '#default_value' => $item['container_type'],
             '#options' => [
               'container' => $this->t('Container'),
-              'details' => $this->t('Fieldset'),
+              'details' => $this->t('Details'),
+              'fieldset' => $this->t('Fieldset'),
               'vertical_tabs' => $this->t('Vertical tabs'),
             ],
           ],
@@ -324,6 +328,11 @@ class ViewsEFFieldset extends DefaultDisplayExtender {
           'open' => [
             '#type' => 'checkbox',
             '#default_value' => $item['open'],
+            '#states' => [
+              'visible' => [
+                ':input[name="views_ef_fieldset[options][sort][' . $item['id'] . '][container_type]"]' => ['value' => 'details'],
+              ],
+            ],
           ],
         ];
       }

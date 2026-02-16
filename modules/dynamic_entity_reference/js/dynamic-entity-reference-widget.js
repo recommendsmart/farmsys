@@ -9,7 +9,7 @@
       function dynamicEntityReferenceWidgetSelect(e) {
         const selectElement = e.currentTarget;
         const container = selectElement.closest('.container-inline');
-        const autocomplete = container.querySelector('.form-autocomplete');
+        const autocomplete = container.querySelector('input.form-autocomplete');
         autocomplete.value = '';
         const entityTypeId = selectElement.value;
         autocomplete.dataset.autocompletePath =

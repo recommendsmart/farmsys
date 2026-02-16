@@ -346,7 +346,7 @@ abstract class BackendPluginBase extends ConfigurablePluginBase implements Backe
    *
    * Reloads the server entity.
    */
-  public function __wakeup(): void {
+  public function __wakeup() {
     parent::__wakeup();
 
     if ($this->serverId) {

@@ -1,7 +1,0 @@
-name: Invoicer
-type: module
-description: Base data structure for Invoices.
-core: 8.x
-package: 'AGERP'
-js:
-  js/InvoiceForm.js: {}

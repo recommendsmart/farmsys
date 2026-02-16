@@ -182,13 +182,6 @@ class EntityListBuilder extends EntityHandlerBase implements EntityListBuilderIn
       $operations['delete'] = [
         'title' => $this->t('Delete'),
         'weight' => 100,
-        'attributes' => [
-          'class' => ['use-ajax'],
-          'data-dialog-type' => 'modal',
-          'data-dialog-options' => Json::encode([
-            'width' => 880,
-          ]),
-        ],
         'url' => $delete_url,
       ];
     }
@@ -240,10 +233,6 @@ class EntityListBuilder extends EntityHandlerBase implements EntityListBuilderIn
     $build = [
       '#type' => 'operations',
       '#links' => $this->getOperations($entity),
-      // Allow links to use modals.
-      '#attached' => [
-        'library' => ['core/drupal.dialog.ajax'],
-      ],
     ];
 
     return $build;

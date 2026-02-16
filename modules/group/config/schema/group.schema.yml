@@ -119,3 +119,11 @@ entity_reference_selection.group_type:group_role:
     group_type_id:
       type: 'string'
       label: 'The group type to check for available roles.'
+
+condition.plugin.group_type:
+  type: condition.plugin
+  mapping:
+    group_types:
+      type: sequence
+      sequence:
+        type: string

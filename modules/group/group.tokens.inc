@@ -172,10 +172,6 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
           $replacements[$original] = $group->language()->getId();
           break;
 
-        case 'url':
-          $replacements[$original] = $group->toUrl('canonical', $url_options)->toString();
-          break;
-
         case 'edit-url':
           $replacements[$original] = $group->toUrl('edit-form', $url_options)->toString();
           break;
@@ -198,6 +194,12 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
           $bubbleable_metadata->addCacheableDependency($date_format);
           $replacements[$original] = \Drupal::service('date.formatter')->format($group->getChangedTime(), 'medium', '', NULL, $langcode);
           break;
+
+        case 'url':
+          $url = $group->toUrl('canonical', $url_options);
+          $bubbleable_metadata->addCacheableDependency($url);
+          $replacements[$original] = $url->toString();
+          break;
       }
     }
 
@@ -212,6 +214,10 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
 
     if ($changed_tokens = $token_service->findWithPrefix($tokens, 'changed')) {
       $replacements += $token_service->generate('date', $changed_tokens, ['date' => $group->getChangedTime()], $options, $bubbleable_metadata);
+    }
+
+    if ($url_tokens = $token_service->findWithPrefix($tokens, 'url')) {
+      $replacements += $token_service->generate('url', $url_tokens, ['url' => $group->toUrl()], $options, $bubbleable_metadata);
     }
   }
   elseif ($type == 'group_content' && !empty($data[$type])) {

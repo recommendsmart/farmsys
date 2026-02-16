@@ -223,6 +223,11 @@ class EntityAutocomplete extends Textfield {
 
         foreach ($input_values as $input) {
           $match = static::extractEntityIdFromAutocompleteInput($input);
+          // Handling the case when the entity label contains parentheses.
+          if (!empty($match)) {
+            $match = static::matchEntityByTitle($handler, $input, $element, $form_state, FALSE) ?? $match;
+          }
+
           if ($match === NULL) {
             // Try to get a match from the input string when the user didn't use
             // the autocomplete but filled in a value manually.

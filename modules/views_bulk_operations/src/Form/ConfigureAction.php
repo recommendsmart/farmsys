@@ -79,6 +79,9 @@ class ConfigureAction extends FormBase {
       '#type' => 'submit',
       '#button_type' => 'primary',
       '#value' => $this->t('Apply'),
+      '#submit' => [
+        [$this, 'submitForm'],
+      ],
     ];
     $this->addCancelButton($form);
 

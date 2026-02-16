@@ -40,18 +40,42 @@ function views_infinite_scroll_preprocess_views_infinite_scroll_pager(&$vars) {
  * Implements hook_preprocess_views_view().
  */
 function views_infinite_scroll_preprocess_views_view(&$vars) {
+  $has_pager = _views_infinite_scroll_has_pager($vars);
+  if ($has_pager) {
+    $vars['rows']['#theme_wrappers'] = ['container'];
+    $vars['rows']['#attributes'] = [
+      'data-drupal-views-infinite-scroll-content-wrapper' => TRUE,
+      'class' => [
+        'views-infinite-scroll-content-wrapper',
+        'clearfix',
+      ],
+    ];
+  }
+}
+
+/**
+ * Implements hook_preprocess_views_view_table().
+ */
+function views_infinite_scroll_preprocess_views_view_table(&$vars) {
+  $has_pager = _views_infinite_scroll_has_pager($vars);
+  if ($has_pager) {
+    $vars['attributes']['data-drupal-views-infinite-scroll-table'] = TRUE;
+  }
+}
+
+/**
+ * Helper function that determines whether views_infinite_scroll pager is in use.
+ */
+function _views_infinite_scroll_has_pager($vars) {
+  $has_pager = FALSE;
   $view = $vars['view'];
   if ($view->getDisplay()->isPagerEnabled() && !empty($vars['rows'])) {
     $pager = $view->getPager();
     if ($pager && $pager instanceof InfiniteScroll) {
-      if (!isset($vars['rows']['#theme_wrappers'])) {
-        $vars['rows']['#theme_wrappers'] = [];
-      }
-      $vars['rows']['#theme_wrappers']['container']['#attributes']['data-drupal-views-infinite-scroll-content-wrapper'] = TRUE;
-      $vars['rows']['#theme_wrappers']['container']['#attributes']['class'][] = 'views-infinite-scroll-content-wrapper';
-      $vars['rows']['#theme_wrappers']['container']['#attributes']['class'][] = 'clearfix';
+      $has_pager = TRUE;
     }
   }
+  return $has_pager;
 }
 
 /**

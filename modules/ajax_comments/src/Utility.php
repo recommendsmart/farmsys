@@ -2,11 +2,13 @@
 
 namespace Drupal\ajax_comments;
 
+use Drupal\ajax_comments\Controller\AjaxCommentsController;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\EventSubscriber\AjaxResponseSubscriber;
 use Drupal\Core\EventSubscriber\MainContentViewSubscriber;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Markup;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -90,10 +92,13 @@ class Utility {
    *   The value of the id attribute of the comment field wrapper element.
    */
   public static function getWrapperIdFromEntity(ContentEntityInterface $commented_entity, $field_name) {
+    /** @var \Drupal\ajax_comments\TempStore $tempStore */
+    $tempStore = \Drupal::service('ajax_comments.temp_store');
+    $view_mode = $tempStore->getViewMode($commented_entity->getEntityType()->getLabel()->getUntranslatedString());
     // Load the early-stage render array for the commented entity.
     $build = \Drupal::entityTypeManager()
       ->getViewBuilder($commented_entity->getEntityTypeId())
-      ->view($commented_entity, 'full');
+      ->view($commented_entity, $view_mode);
 
     // First, attempt to retrieve the cached markup for the commented entity
     // and use a regular expression to get the id attribute value of the
@@ -151,7 +156,7 @@ class Utility {
       // retrieve the render array from the static variable on this class
       // or from the cache set by this class (both approaches are tried
       // in the method static::getEntityRenderArray()).
-      $render_array = static::getEntityRenderArray($commented_entity, 'full');
+      $render_array = static::getEntityRenderArray($commented_entity, $view_mode);
       if (isset($render_array[$field_name])) {
         $wrapper_html_id = $render_array[$field_name]['#attributes']['id'];
       }
@@ -162,6 +167,8 @@ class Utility {
         $wrapper_html_id = $render_array['#attributes']['id'];
       }
     }
+    // Make sure users can alter the wrapper if necessary.
+    \Drupal::moduleHandler()->alter('ajax_comments_wrapper_id', $wrapper_html_id, $commented_entity, $field_name);
 
     return $wrapper_html_id;
   }
@@ -203,6 +210,21 @@ class Utility {
     return $request
       ->query
       ->get(MainContentViewSubscriber::WRAPPER_FORMAT) === 'drupal_modal';
+  }
+
+  /**
+   * Helper function to add wrapper classes to comments render arrays.
+   *
+   * @param array $elements
+   *   The comment field render array.
+   */
+  public static function addCommentClasses(array &$elements) {
+    foreach (Element::children($elements) as $key) {
+      if (!isset($elements[$key]['#comment'])) {
+        continue;
+      }
+      $elements[$key]['#attributes']['class'][] = AjaxCommentsController::$commentClassPrefix . $elements[$key]['#comment']->id();
+    }
   }
 
 }

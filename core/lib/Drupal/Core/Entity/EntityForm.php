@@ -247,16 +247,9 @@ class EntityForm extends FormBase implements EntityFormInterface {
         '#title' => $this->t('Delete'),
         '#access' => $this->entity->access('delete'),
         '#attributes' => [
-          'class' => ['button', 'button--danger', 'use-ajax'],
-          'data-dialog-type' => 'modal',
-          'data-dialog-options' => Json::encode([
-            'width' => 880,
-          ]),
+          'class' => ['button', 'button--danger'],
         ],
         '#url' => $route_info,
-        '#attached' => [
-          'library' => ['core/drupal.dialog.ajax'],
-        ],
       ];
     }
 
@@ -373,6 +366,9 @@ class EntityForm extends FormBase implements EntityFormInterface {
           $values[$bundle_key] = $route_match->getParameter($bundle_entity_type_id)->id();
         }
         elseif ($route_match->getRawParameter($bundle_key)) {
+          $values[$bundle_key] = $route_match->getParameter($bundle_key);
+        }
+        elseif ($route_match->getParameter($bundle_key)) {
           $values[$bundle_key] = $route_match->getParameter($bundle_key);
         }
       }
