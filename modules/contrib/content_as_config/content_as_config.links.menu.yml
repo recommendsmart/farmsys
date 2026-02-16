@@ -1,5 +1,0 @@
-content_as_config:
-  title: Content as config
-  description: 'Sync structure items that are stored as content.'
-  parent: system.admin_structure
-  route_name: content_as_config.config

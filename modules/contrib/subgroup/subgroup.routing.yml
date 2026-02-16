@@ -1,7 +1,0 @@
-subgroup.settings:
-  path: '/admin/group/subgroup'
-  defaults:
-    _form: '\Drupal\subgroup\Form\SubgroupSettingsForm'
-    _title: 'Subgroup settings'
-  requirements:
-    _permission: 'administer subgroup'

@@ -1,5 +1,0 @@
-flow_ui.flow:
-  title: 'Flow (automation)'
-  description: 'List and manage configured flow.'
-  route_name: entity.flow.collection
-  parent: system.admin_structure

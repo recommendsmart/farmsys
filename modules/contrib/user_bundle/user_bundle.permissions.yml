@@ -1,4 +1,0 @@
-administer account types:
-  title: 'Administer account types'
-  description: 'Manage user account types and the fields that are associated with those types.'
-  restrict access: true

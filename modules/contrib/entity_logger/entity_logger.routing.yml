@@ -1,9 +1,0 @@
-entity_logger.settings:
-  path: '/admin/config/system/entity_logger'
-  defaults:
-    _form: '\Drupal\entity_logger\Form\EntityLoggerSettingsForm'
-    _title: 'Entity logger settings'
-  requirements:
-    _permission: 'administer entity logger'
-  options:
-    _admin_route: TRUE

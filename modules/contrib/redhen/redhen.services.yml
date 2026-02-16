@@ -1,5 +1,0 @@
-services:
-  redhen.route_subscriber:
-    class: Drupal\redhen\Routing\RouteSubscriber
-    tags:
-      - { name: event_subscriber }

@@ -1,7 +1,0 @@
-banana_dashboard.banana_dash:
-  path: '/admin/banana-dashboard'
-  defaults:
-    _controller: '\Drupal\banana_dashboard\Controller\BananaDashboardController::getBananaDashboard'
-    _title: 'Dashboard'
-  requirements:
-    _permission: 'access banana dashboard'

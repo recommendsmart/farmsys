@@ -1,5 +1,0 @@
-lc_simple_accordion:
-  version: VERSION
-  css:
-    layout:
-      css/lc_simple_accordion.css: {}

@@ -1,5 +1,0 @@
-commerce_funds.settings:
-  title: 'Commerce funds mails'
-  base_route_name: commerce_funds.settings_mails
-  names:
-    - commerce_funds.settings

@@ -1,4 +1,0 @@
-services:
-  file_de_duplicator.duplicate_finder:
-    class: \Drupal\file_de_duplicator\DuplicateFinder
-    arguments: ['@entity_type.manager', '@entity_field.manager', '@database', '@messenger']

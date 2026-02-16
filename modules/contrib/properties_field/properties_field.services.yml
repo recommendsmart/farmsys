@@ -1,4 +1,0 @@
-services:
-  plugin.manager.properties_value_type:
-    class: Drupal\properties_field\PropertiesValueType\PropertiesValueTypeManager
-    parent: default_plugin_manager

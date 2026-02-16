@@ -1,9 +1,0 @@
-langcode: en
-status: true
-dependencies:
-  module:
-    - media
-id: media.tenth_page
-label: 'Tenth Page'
-targetEntityType: media
-cache: true

@@ -1,5 +1,0 @@
-entity.entity_list.add_form:
-  route_name: entity.entity_list.add_form
-  title: 'Add Entity list'
-  appears_on:
-    - entity.entity_list.collection

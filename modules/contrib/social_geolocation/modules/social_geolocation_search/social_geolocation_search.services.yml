@@ -1,6 +1,0 @@
-services:
-  social_geolocation_search.override:
-    class: Drupal\social_geolocation_search\SocialGeolocationSearchApiConfigOverride
-    arguments: ['@config.factory', '@module_handler']
-    tags:
-      - {name: config.factory.override, priority: 5}

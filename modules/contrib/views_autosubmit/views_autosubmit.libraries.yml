@@ -1,8 +1,0 @@
-autosubmit:
-  version: 1.0
-  js:
-    js/views_autosubmit.js: {}
-  dependencies:
-    - core/jquery
-    - core/jquery.once
-    - core/drupal

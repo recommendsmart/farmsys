@@ -1,8 +1,0 @@
-go_back:
-  css:
-    theme:
-      css/go_back.css: {}
-  dependencies:
-    - core/jquery
-    - core/drupal
-    - core/drupalSettings

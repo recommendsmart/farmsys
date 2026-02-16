@@ -1,6 +1,0 @@
-field_visibility_manager.admin_settings_form:  
-  title: 'Field visibility manager configuration'  
-  route_name: field_visibility_manager.admin_settings_form
-  description: 'Field visibility manager admin'  
-  parent: system.admin_config_system  
-  weight: 99 

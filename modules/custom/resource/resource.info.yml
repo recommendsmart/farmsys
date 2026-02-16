@@ -1,5 +1,0 @@
-name: Resource
-type: module
-description: Provides a resource entity type for real world record keeping.
-core: 8.x
-package: 'AGERP'

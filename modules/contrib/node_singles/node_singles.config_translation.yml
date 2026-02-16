@@ -1,5 +1,0 @@
-node_singles.settings:
-  title: 'Settings'
-  base_route_name: node_singles.settings
-  names:
-    - node_singles.settings

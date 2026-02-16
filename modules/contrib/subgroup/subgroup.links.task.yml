@@ -1,5 +1,0 @@
-subgroup.settings:
-  title: 'Subgroup'
-  base_route: 'entity.group.collection'
-  route_name: 'subgroup.settings'
-  weight: 9

@@ -1,5 +1,0 @@
-lc_simple_card:
-  version: VERSION
-  css:
-    layout:
-      css/lc_simple_card.css: {}

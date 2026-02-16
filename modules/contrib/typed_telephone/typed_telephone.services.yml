@@ -1,4 +1,0 @@
-services:
-  typed_telephone.confighelper:
-    class: Drupal\typed_telephone\ConfigHelperService
-    arguments: ['@config.factory']

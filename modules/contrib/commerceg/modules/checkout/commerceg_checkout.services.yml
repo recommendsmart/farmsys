@@ -1,5 +1,0 @@
-services:
-  commerceg_checkout.route_subscriber:
-    class: Drupal\commerceg_checkout\EventSubscriber\RouteSubscriber
-    tags:
-      - { name: event_subscriber }

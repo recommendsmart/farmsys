@@ -1,2 +1,0 @@
-catalog:
-  deriver: \Drupal\commerce_demo\Plugin\Derivative\CatalogLinkDerivative

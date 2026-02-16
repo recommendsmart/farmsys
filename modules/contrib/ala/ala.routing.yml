@@ -1,7 +1,0 @@
-ala.admin_settings:
-  path: '/admin/config/ala'
-  defaults:
-    _form: '\Drupal\ala\Form\ModuleConfigurationForm'
-    _title: 'Advance Link Attributes configuration screen'
-  requirements:
-    _permission: 'administer site configuration'

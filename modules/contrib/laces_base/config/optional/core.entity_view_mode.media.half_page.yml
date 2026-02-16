@@ -1,9 +1,0 @@
-langcode: en
-status: true
-dependencies:
-  module:
-    - media
-id: media.half_page
-label: 'Half page'
-targetEntityType: media
-cache: true

@@ -1,5 +1,0 @@
-ingredient.ingredient_add:
-  route_name: ingredient.ingredient_add
-  title: 'Add Ingredient'
-  appears_on:
-    - ingredient.admin

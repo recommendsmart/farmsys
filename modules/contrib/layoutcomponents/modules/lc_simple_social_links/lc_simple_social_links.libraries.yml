@@ -1,5 +1,0 @@
-lc_simple_social_links:
-  version: VERSION
-  css:
-    layout:
-      css/lc_simple_social_links.css: {}

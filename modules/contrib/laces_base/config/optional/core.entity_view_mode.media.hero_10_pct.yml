@@ -1,9 +1,0 @@
-langcode: en
-status: true
-dependencies:
-  module:
-    - media
-id: media.hero_10_pct
-label: 'Hero 10%'
-targetEntityType: media
-cache: true

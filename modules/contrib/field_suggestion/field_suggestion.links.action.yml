@@ -1,5 +1,0 @@
-field_suggestion.type_add:
-  route_name: field_suggestion.type_add
-  title: 'Add field suggestion type'
-  appears_on:
-    - entity.field_suggestion_type.collection

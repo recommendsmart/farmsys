@@ -1,5 +1,0 @@
-dependencies:
-  enforced:
-    module:
-      - redhen
-redhen_admin_path: false

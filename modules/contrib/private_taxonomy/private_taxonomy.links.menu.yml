@@ -1,5 +1,0 @@
-private_taxonomy.settings:
-  title: 'Private taxonomy settings'
-  parent: user.admin_index
-  description: 'Configure private taxonomy.'
-  route_name: private_taxonomy.settings

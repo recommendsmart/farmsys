@@ -1,4 +1,0 @@
-entity.log.collection:
-  route_name: entity.log.collection
-  title: 'Logs'
-  base_route: system.admin_content

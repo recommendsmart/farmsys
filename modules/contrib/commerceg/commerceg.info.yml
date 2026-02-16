@@ -1,8 +1,0 @@
-name: Commerce Group
-description: Provides integration between the Commerce and Group ecosystems.
-type: module
-package: Commerce Group
-core_version_requirement: ^8.8 || ^9.0
-dependencies:
-  - commerce:commerce
-  - group:group

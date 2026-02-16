@@ -1,7 +1,0 @@
-# Config term vocab menu items definition
-entity.config_terms_vocab.collection:
-  title: 'Config terms vocab'
-  route_name: entity.config_terms_vocab.collection
-  description: 'List Config terms vocabularies'
-  parent: system.admin_structure
-  weight: 99

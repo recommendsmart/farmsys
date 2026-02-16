@@ -1,9 +1,0 @@
-langcode: en
-status: true
-dependencies:
-  module:
-    - media
-id: media.quarter_page
-label: 'Quarter page'
-targetEntityType: media
-cache: true

@@ -1,4 +1,0 @@
-services:
-  colorpalette.utility:
-    class: Drupal\colorpalette\ColorPaletteUtility
-    arguments: ['@current_user', '@entity_type.manager']
